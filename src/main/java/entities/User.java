@@ -9,7 +9,6 @@ import java.util.List;
 public class User {
     private String username;
     private String password;
-    private String userId;
 
     private ArrayList<Recipe> savedRecipes;
     private GroceryList groceryList;
@@ -19,16 +18,11 @@ public class User {
     public User(String username, String password) {
         this.username = username;
         this.password = password;
-        this.userId = generateUserId();
         this.savedRecipes = new ArrayList<>();
         this.groceryList = new GroceryList();
         this.nutritionGoal = new NutritionGoal();
     }
 
-    // Generate simple unique ID (this needs to be changed to generate a unique one)
-    private String generateUserId() {
-        return "USER-" + System.currentTimeMillis();
-    }
 
     // Getters and setters
     public String getUsername() {
@@ -47,9 +41,6 @@ public class User {
         this.password = password;
     }
 
-    public String getUserId() {
-        return userId;
-    }
 
     public List<Recipe> getSavedRecipes() {
         return savedRecipes;
