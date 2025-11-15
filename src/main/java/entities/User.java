@@ -42,7 +42,7 @@ public class User {
     }
 
     public String getName(){
-        return this.toString()
+        return this.toString();
     }
 
 
