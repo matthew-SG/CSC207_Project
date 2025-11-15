@@ -1,6 +1,6 @@
 package use_case.logout;
 
-import entity.User;
+import entities.User;
 import use_case.login.LoginOutputData;
 
 /**
