@@ -41,6 +41,10 @@ public class User {
         this.password = password;
     }
 
+    public String getName(){
+        return this.toString();
+    }
+
 
     public List<Recipe> getSavedRecipes() {
         return savedRecipes;
