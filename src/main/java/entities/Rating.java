@@ -1,6 +1,6 @@
-package entity;
+package entities;
 
-public Rating {
+public class Rating {
     private int ratingId;
     private int recipeId;
     private int userId;
