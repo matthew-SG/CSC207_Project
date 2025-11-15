@@ -16,46 +16,20 @@ public class App extends JFrame {
         setSize(600, 400);
         setLayout(new BorderLayout());
 
-        // 1. Create the Navigation Panel
+        // Create the Navigation Panel
         JPanel navPanel = new JPanel();
         navPanel.setBackground(Color.LIGHT_GRAY);
-        JButton homeButton = new JButton("Home");
-        JButton settingsButton = new JButton("Settings");
-        navPanel.add(homeButton);
-        navPanel.add(settingsButton);
+        JButton communityButton = new JButton("community");
+        JButton signUpButton = new JButton("sign up");
+        JButton loginButton = new JButton("log in");
+        JButton generateRecipe = new JButton("generate recipe");
+        navPanel.add(communityButton);
+        navPanel.add(signUpButton);
+        navPanel.add(loginButton);
+        navPanel.add(generateRecipe);
 
-        // 2. Create the Content Panel with CardLayout
-        contentPanel = new JPanel();
-        cardLayout = new CardLayout();
-        contentPanel.setLayout(cardLayout);
 
-        // Create individual content panels
-        JPanel homeContent = new JPanel();
-        homeContent.add(new JLabel("Welcome to the Home Page!"));
-        JPanel settingsContent = new JPanel();
-        settingsContent.add(new JLabel("Adjust your Settings here."));
-
-        contentPanel.add(homeContent, "Home");
-        contentPanel.add(settingsContent, "Settings");
-
-        // Add action listeners to navigation buttons
-        homeButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                cardLayout.show(contentPanel, "Home");
-            }
-        });
-
-        settingsButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                cardLayout.show(contentPanel, "Settings");
-            }
-        });
-
-        // 3. Add panels to the JFrame
         add(navPanel, BorderLayout.NORTH);
-        add(contentPanel, BorderLayout.CENTER);
 
         setVisible(true);
     }
