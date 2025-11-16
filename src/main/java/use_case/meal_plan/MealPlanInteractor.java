@@ -23,15 +23,15 @@ public class MealPlanInteractor implements MealPlanInputBoundary{
 
     public void execute(MealPlanInputData mealPlanInputData) {
         final List<Recipe> savedRecipes = userDataAccessObject.getSavedRecipes();
-        final int calories = mealPlanInputData.getTargetCalories();
-        final int protein = mealPlanInputData.getTargetProtein();
-        final int carbs = mealPlanInputData.getTargetCarbs();
-        final int fats = mealPlanInputData.getTargetFats();
+        final double calories = mealPlanInputData.getTargetCalories();
+        final double protein = mealPlanInputData.getTargetProtein();
+        final double carbs = mealPlanInputData.getTargetCarbs();
+        final double fats = mealPlanInputData.getTargetFats();
         MealPlan mealPlan;
         String[] recipeNames = new String[3];
         String[] recipeImages = new String[3];
         List<List<Ingredient>> recipeIngredients = new ArrayList<>();
-        List<Map<String, Map<Integer,String>>> recipeNutritionalValues = new ArrayList<>();
+        List<Map<String, Double>> recipeNutritionalValues = new ArrayList<>();
 
         if (savedRecipes.size() < 3) {
             mealPlanPresenter.prepareFailView("At least 3 saved recipes must be saved for meal plan generation.");
@@ -75,8 +75,8 @@ public class MealPlanInteractor implements MealPlanInputBoundary{
      * @param targetFats the target fats
      * @return the best three recipes that match the meal plan target as close as possible
      */
-    private List<Recipe> computeBestFittingRecipes(List<Recipe> recipes, int targetCalories, int targetProtein,
-                                                   int targetCarbs, int targetFats) {
+    private List<Recipe> computeBestFittingRecipes(List<Recipe> recipes, double targetCalories, double targetProtein,
+                                                   double targetCarbs, double targetFats) {
         assert recipes.size() > 3;
 
         List<List<Recipe>> recipeTriplets = createTripletCombinations(recipes);
@@ -96,13 +96,13 @@ public class MealPlanInteractor implements MealPlanInputBoundary{
      * @param targetFats the target fats
      * @return the recipe triplet with the lowest nutritional error
      */
-    private static List<Recipe> computeLowestNutritionalError(List<List<Recipe>> recipeTriplets, int targetCalories,
-                                                              int targetProtein, int targetCarbs, int targetFats) {
+    private static List<Recipe> computeLowestNutritionalError(List<List<Recipe>> recipeTriplets, double targetCalories,
+                                                              double targetProtein, double targetCarbs, double targetFats) {
         assert recipeTriplets.size() > 1;
-        int targetTotal =  targetCalories + targetProtein + targetCarbs + targetFats;
-        int currentTotal;
-        int currentError;
-        int lowestError = -1;
+        double targetTotal =  targetCalories + targetProtein + targetCarbs + targetFats;
+        double currentTotal;
+        double currentError;
+        double lowestError = -1;
         List<Recipe> bestFittingTriplet = new ArrayList<>();
 
         for (List<Recipe> recipeTriplet : recipeTriplets) {
@@ -110,11 +110,12 @@ public class MealPlanInteractor implements MealPlanInputBoundary{
             currentTotal = 0;
 
             for (Recipe recipe : recipeTriplet) {
-                Map<String, Map<Integer, String>> recipeNutritionalValues = recipe.getNutritionalValues();
-                int protein = recipeNutritionalValues.get("protein").keySet().iterator().next();
-                int carbs = recipeNutritionalValues.get("carbs").keySet().iterator().next();
-                int fats = recipeNutritionalValues.get("fats").keySet().iterator().next();
-                currentTotal += recipe.getCalories() + protein + carbs + fats;
+                Map<String, Double> recipeNutritionalValues = recipe.getNutritionalValues();
+                double calories = recipeNutritionalValues.get("calories");
+                double protein = recipeNutritionalValues.get("protein");
+                double carbs = recipeNutritionalValues.get("carbs");
+                double fats = recipeNutritionalValues.get("fats");
+                currentTotal += calories + protein + carbs + fats;
 
             }
             currentError = Math.abs(targetTotal - currentTotal);

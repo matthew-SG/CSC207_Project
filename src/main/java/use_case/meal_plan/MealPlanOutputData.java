@@ -2,7 +2,6 @@ package use_case.meal_plan;
 
 import entities.Ingredient;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -14,10 +13,10 @@ public class MealPlanOutputData {
     private final String[] recipeNames;
     private final String[] recipeImages;
     private final List<List<Ingredient>> recipeIngredients;
-    private final List<Map<String, Map<Integer, String>>> recipeNutritionalValues;
+    private final List<Map<String, Double>> recipeNutritionalValues;
 
     public MealPlanOutputData(String[] recipeNames, String[] recipeImages, List<List<Ingredient>> recipeIngredients,
-                              List<Map<String, Map<Integer, String>>> recipeNutritionalValues) {
+                              List<Map<String, Double>> recipeNutritionalValues) {
         this.recipeNames = recipeNames;
         this.recipeImages = recipeImages;
         this.recipeIngredients = recipeIngredients;
@@ -30,6 +29,6 @@ public class MealPlanOutputData {
 
     public List<List<Ingredient>> getIngredients() { return  recipeIngredients; }
 
-    public List<Map<String, Map<Integer, String>>> getNutritionalValues() { return  recipeNutritionalValues; }
+    public List<Map<String, Double>> getNutritionalValues() { return  recipeNutritionalValues; }
 
 }
