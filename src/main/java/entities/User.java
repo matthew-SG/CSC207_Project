@@ -12,15 +12,15 @@ public class User {
 
     private ArrayList<Recipe> savedRecipes;
     private GroceryList groceryList;
-    private NutritionGoal nutritionGoal;
+//    private NutritionGoal nutritionGoal;
 
     // Constructors
     public User(String username, String password) {
         this.username = username;
         this.password = password;
         this.savedRecipes = new ArrayList<>();
-        this.groceryList = new GroceryList();
-        this.nutritionGoal = new NutritionGoal();
+//        this.groceryList = new GroceryList();
+//        this.nutritionGoal = new NutritionGoal();
     }
 
 
@@ -42,7 +42,7 @@ public class User {
     }
 
     public String getName(){
-        return this.toString()
+        return this.username;
     }
 
 
@@ -54,9 +54,10 @@ public class User {
         return groceryList;
     }
 
-    public NutritionGoal getNutritionGoal() {
-        return nutritionGoal;
-    }
+//    public NutritionGoal getNutritionGoal() {
+//        return nutritionGoal;
+//    }
+
 
 
     @Override
@@ -64,7 +65,7 @@ public class User {
         return "User{" +
                 "username='" + username + '\'' +
                 ", savedRecipes=" + savedRecipes.size() +
-                ", groceryListItems=" + groceryList.getItems().size() +
+//                ", groceryListItems=" + groceryList.getItems().size() +
                 '}';
     }
 }
