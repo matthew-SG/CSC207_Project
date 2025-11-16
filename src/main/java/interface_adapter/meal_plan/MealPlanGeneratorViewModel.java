@@ -5,7 +5,7 @@ import interface_adapter.ViewModel;
 /**
  * The View Model for the Meal Plan generator
  */
-public class MealPlanGeneratorViewModel extends ViewModel<MealPlanState> {
+public class MealPlanGeneratorViewModel extends ViewModel<MealPlanGeneratorState> {
 
     private static final String TITLE_LABEL = "Meal Plan Generator View";
     private static final String CALORIES_LABEL = "Enter target calories for the day";
@@ -17,6 +17,6 @@ public class MealPlanGeneratorViewModel extends ViewModel<MealPlanState> {
 
     public MealPlanGeneratorViewModel() {
         super("meal plan generator");
-        setState(new MealPlanState());
+        setState(new MealPlanGeneratorState());
     }
 }

@@ -30,7 +30,7 @@ public class MealPlanInteractor implements MealPlanInputBoundary{
         MealPlan mealPlan;
         String[] recipeNames = new String[3];
         String[] recipeImages = new String[3];
-        List<List<Ingredient>> recipeIngredients = new ArrayList<>();
+        List<List<String[]>> recipeIngredients = new ArrayList<>();
         List<Map<String, Double>> recipeNutritionalValues = new ArrayList<>();
 
         if (savedRecipes.size() < 3) {
@@ -54,7 +54,7 @@ public class MealPlanInteractor implements MealPlanInputBoundary{
             for (Recipe recipe : savedRecipes) {
                 recipeNames[i] = recipe.getRecipeName();
                 recipeImages[i] = recipe.getRecipeImage();
-                recipeIngredients.add(recipe.getIngredients());
+                recipeIngredients.add(toOrderedString(recipe.getIngredients()));
                 recipeNutritionalValues.add(recipe.getNutritionalValues());
                 i++;
 
@@ -64,6 +64,23 @@ public class MealPlanInteractor implements MealPlanInputBoundary{
             mealPlanPresenter.prepareSuccessView(mealPlanOutputData);
 
         }
+    }
+
+    /**
+     * Converts a list of ingredients into a list of string arrays
+     * @param ingredients the list of ingredients to be converted
+     * @return the list string array representation of the ingredients
+     */
+    private static List<String[]> toOrderedString(List<Ingredient> ingredients) {
+        List<String[]> list = new ArrayList<>();
+        for (Ingredient ingredient : ingredients) {
+            String[] ingredientEntry = new String[3];
+            ingredientEntry[0] = ingredient.getName();
+            ingredientEntry[1] = ingredient.getQuantity() + "";
+            ingredientEntry[2] = ingredient.getUnit();
+            list.add(ingredientEntry);
+        }
+        return list;
     }
 
     /**

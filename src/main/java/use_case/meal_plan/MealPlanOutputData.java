@@ -12,10 +12,10 @@ public class MealPlanOutputData {
 
     private final String[] recipeNames;
     private final String[] recipeImages;
-    private final List<List<Ingredient>> recipeIngredients;
+    private final List<List<String[]>> recipeIngredients;
     private final List<Map<String, Double>> recipeNutritionalValues;
 
-    public MealPlanOutputData(String[] recipeNames, String[] recipeImages, List<List<Ingredient>> recipeIngredients,
+    public MealPlanOutputData(String[] recipeNames, String[] recipeImages, List<List<String[]>> recipeIngredients,
                               List<Map<String, Double>> recipeNutritionalValues) {
         this.recipeNames = recipeNames;
         this.recipeImages = recipeImages;
@@ -27,7 +27,7 @@ public class MealPlanOutputData {
 
     public String[] getRecipeImage() { return  recipeImages; }
 
-    public List<List<Ingredient>> getIngredients() { return  recipeIngredients; }
+    public List<List<String[]>> getIngredients() { return  recipeIngredients; }
 
     public List<Map<String, Double>> getNutritionalValues() { return  recipeNutritionalValues; }
 

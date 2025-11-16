@@ -5,10 +5,10 @@ import interface_adapter.ViewModel;
 /**
  * The View Model for the generated Meal Plans
  */
-public class MealPlanGeneratedViewModel extends ViewModel<MealPlanState> {
+public class MealPlanGeneratedViewModel extends ViewModel<MealPlanGeneratedState> {
 
     public MealPlanGeneratedViewModel() {
         super("meal plan generated");
-        setState(new MealPlanState());
+        setState(new MealPlanGeneratedState());
     }
 }
