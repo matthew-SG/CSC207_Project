@@ -9,8 +9,7 @@ public class Recipe {
     private String recipeName;
     private String recipeImage;
     private List<Ingredient> ingredients;
-    private int calories;
-    private Map<String, String> nutritionalValues;
+    private Map<String, Double> nutritionalValues;
     private String mealType;
     private String steps;
 
@@ -31,9 +30,7 @@ public class Recipe {
 
     public List<Ingredient> getIngredients() { return ingredients; }
 
-    public int getCalories() { return calories; }
-
-    public Map<String, String> getNutritionalValues() { return nutritionalValues; }
+    public Map<String, Double> getNutritionalValues() { return nutritionalValues; }
 
     public String getMealType() { return mealType; }
 
