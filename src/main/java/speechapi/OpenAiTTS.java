@@ -12,7 +12,10 @@ import java.io.IOException;
 import java.util.*;
 
 public class OpenAiTTS implements SpeechService {
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/main
     private final OkHttpClient client = new OkHttpClient();
     private final String apiKey;
 

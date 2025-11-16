@@ -4,5 +4,8 @@ import java.io.IOException;
 
 public interface SpeechService {
     byte[] synthesize(String text) throws IOException;
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/main
 }
