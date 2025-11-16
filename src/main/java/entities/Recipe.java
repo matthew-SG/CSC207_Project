@@ -9,6 +9,7 @@ public class Recipe {
     private List<Ingredient> ingredients;
     private Map<String, Double> nutritionalValues;
     private String mealType;
+    private String steps;
 
     public int getRecipeId() { return recipeId; }
 
@@ -21,4 +22,6 @@ public class Recipe {
     public Map<String, Double> getNutritionalValues() { return nutritionalValues; }
 
     public String getMealType() { return mealType; }
+
+    public String getSteps() { return steps; }
 }
