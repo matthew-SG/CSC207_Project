@@ -1,4 +1,6 @@
 package entities;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -10,6 +12,15 @@ public class Recipe {
     private Map<String, Double> nutritionalValues;
     private String mealType;
     private String steps;
+
+    public Recipe(int recipeId, String recipeName, String recipeImage, String mealType) {
+        this.recipeId = recipeId;
+        this.recipeName = recipeName;
+        this.recipeImage = recipeImage;
+        this.ingredients = new ArrayList<>();
+        this.mealType = mealType;
+        nutritionalValues = new HashMap<>();
+    }
 
     public int getRecipeId() { return recipeId; }
 
