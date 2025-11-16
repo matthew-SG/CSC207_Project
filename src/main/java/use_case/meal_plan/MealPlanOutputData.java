@@ -11,24 +11,25 @@ import java.util.Map;
  */
 public class MealPlanOutputData {
 
-    private String recipeName;
-    private String recipeImage;
-    private List<Ingredient> ingredients;
-    private Map<String, Double> nutritionalValues;
+    private final String[] recipeNames;
+    private final String[] recipeImages;
+    private final List<List<Ingredient>> recipeIngredients;
+    private final List<Map<String, Double>> recipeNutritionalValues;
 
-    public MealPlanOutputData(String recipe, String recipeImage, List<Ingredient> ingredients, Map<String, Double> nutritionalValues) {
-        this.recipeName = recipe;
-        this.recipeImage = recipeImage;
-        this.ingredients = ingredients;
-        this.nutritionalValues = nutritionalValues;
+    public MealPlanOutputData(String[] recipeNames, String[] recipeImages, List<List<Ingredient>> recipeIngredients,
+                              List<Map<String, Double>> recipeNutritionalValues) {
+        this.recipeNames = recipeNames;
+        this.recipeImages = recipeImages;
+        this.recipeIngredients = recipeIngredients;
+        this.recipeNutritionalValues = recipeNutritionalValues;
     }
 
-    public String getRecipeName() { return recipeName; }
+    public String[] getRecipeName() { return recipeNames; }
 
-    public String getRecipeImage() { return  recipeImage; }
+    public String[] getRecipeImage() { return  recipeImages; }
 
-    public List<Ingredient> getIngredients() { return  ingredients; }
+    public List<List<Ingredient>> getIngredients() { return  recipeIngredients; }
 
-    public Map<String, Double> getNutritionalValues() { return  nutritionalValues; }
+    public List<Map<String, Double>> getNutritionalValues() { return  recipeNutritionalValues; }
 
 }
