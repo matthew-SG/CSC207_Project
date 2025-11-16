@@ -19,8 +19,7 @@ public interface MealPlanUserDataAccessInterface {
 
     /**
      * Saves the generated meal plan to the current user of the application.
-     * @param user the current user
      * @param mealPlan the generated meal plan
      */
-    void saveMealPlan(User user, MealPlan mealPlan);
+    void saveMealPlan(MealPlan mealPlan);
 }
