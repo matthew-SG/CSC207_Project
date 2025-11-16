@@ -11,6 +11,7 @@ public class Recipe {
     private List<Ingredient> ingredients;
     private Map<String, Double> nutritionalValues;
     private String mealType;
+    private String steps;
 
     public Recipe(int recipeId, String recipeName, String recipeImage, String mealType) {
         this.recipeId = recipeId;
@@ -21,10 +22,6 @@ public class Recipe {
         nutritionalValues = new HashMap<>();
     }
 
-
-    public String getMealType() {
-        return mealType;
-    }
     public int getRecipeId() { return recipeId; }
 
     public String getRecipeName() { return recipeName; }
@@ -35,4 +32,7 @@ public class Recipe {
 
     public Map<String, Double> getNutritionalValues() { return nutritionalValues; }
 
+    public String getMealType() { return mealType; }
+
+    public String getSteps() { return steps; }
 }
