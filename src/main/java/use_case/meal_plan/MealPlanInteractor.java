@@ -30,7 +30,7 @@ public class MealPlanInteractor implements MealPlanInputBoundary{
         String[] recipeNames = new String[3];
         String[] recipeImages = new String[3];
         List<List<Ingredient>> recipeIngredients = new ArrayList<>();
-        List<Map<String, Double>> recipeNutritionalValues = new ArrayList<>();
+        List<Map<String, Map<Integer,String>>> recipeNutritionalValues = new ArrayList<>();
         if (savedRecipes.size() < 3) {
             mealPlanPresenter.prepareFailView("At least 3 saved recipes must be saved for meal plan generation.");
         } else if (calories < 0 || protein < 0 || carbs < 0 || fats < 0) {
@@ -56,31 +56,74 @@ public class MealPlanInteractor implements MealPlanInputBoundary{
     }
 
     /**
-     * Helper function that computes the best fitting recipes for the designated meal plan
-     * @param recipes the user's currently saved recipes (with recipes.size() > 3)
-     * @return the three recipes that fit closest to the meal plan parameters
+     * Helper function that computes the best fitting recipe triplet for the designated meal plan
+     * @param recipes list of possible recipes (with recipe size > 3)
+     * @param targetCalories the target calories
+     * @param targetProtein the target protein
+     * @param targetCarbs the target carbs
+     * @param targetFats the target fats
+     * @return the best three recipes that match the meal plan target as close as possible
      */
-    private List<Recipe> computeBestFittingRecipes(List<Recipe> recipes) {
+    private List<Recipe> computeBestFittingRecipes(List<Recipe> recipes, int targetCalories, int targetProtein,
+                                                   int targetCarbs, int targetFats) {
         assert recipes.size() > 3;
 
         List<List<Recipe>> recipeTriplets = createTripletCombinations(recipes);
 
-        int currentTotal = 0;
-        int lowestTotal;
-        List<Recipe> bestFittingRecipes = new ArrayList<>();
+        return computeLowestNutritionalError(recipeTriplets, targetCalories, targetProtein, targetCarbs, targetFats);
+
+    }
+
+    /**
+     * Helper function that computes the lowest nutritional error of all the recipe triplets, where the nutritional
+     *      error is determined by the absolute difference between the sum of the target nutrients and the sum of the
+     *      associated nutrients of the recipe triplet
+     * @param recipeTriplets list of recipe triplets (recipeTriplets.size() > 1)
+     * @param targetCalories the target calories
+     * @param targetProtein the target protein
+     * @param targetCarbs the target carbs
+     * @param targetFats the target fats
+     * @return the recipe triplet with the lowest nutritional error
+     */
+    private static List<Recipe> computeLowestNutritionalError(List<List<Recipe>> recipeTriplets, int targetCalories,
+                                                              int targetProtein, int targetCarbs, int targetFats) {
+        assert recipeTriplets.size() > 1;
+        int targetTotal =  targetCalories + targetProtein + targetCarbs + targetFats;
+        int currentTotal;
+        int currentError;
+        int lowestError = -1;
+        List<Recipe> bestFittingTriplet = new ArrayList<>();
 
         for (List<Recipe> recipeTriplet : recipeTriplets) {
+            assert recipeTriplet.size() == 3;
+            currentTotal = 0;
+
             for (Recipe recipe : recipeTriplet) {
-                Map<String, Double> recipeNutritionalValues = recipe.getNutritionalValues();
+                Map<String, Map<Integer, String>> recipeNutritionalValues = recipe.getNutritionalValues();
+                int protein = recipeNutritionalValues.get("protein").keySet().iterator().next();
+                int carbs = recipeNutritionalValues.get("carbs").keySet().iterator().next();
+                int fats = recipeNutritionalValues.get("fats").keySet().iterator().next();
+                currentTotal += recipe.getCalories() + protein + carbs + fats;
 
             }
+            currentError = Math.abs(targetTotal - currentTotal);
+            if (currentError == 0) {
+                return recipeTriplet;
+
+            } else if (lowestError == -1 || currentError < lowestError) {
+                lowestError = currentError;
+                bestFittingTriplet = recipeTriplet;
+
+            }
+
         }
+        return bestFittingTriplet;
 
     }
 
     /**
      * Helper function that creates the n choose 3 combinations of recipe triplets out of the overall list of recipes
-     * recipe, where n = recipe.size() > 3.
+     *      recipe, where n = recipe.size() > 3.
      * @param recipes the overall/total list of individual recipes
      * @return the unique triplet combinations of recipes
      */
