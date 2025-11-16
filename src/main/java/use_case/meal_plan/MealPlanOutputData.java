@@ -23,9 +23,9 @@ public class MealPlanOutputData {
         this.recipeNutritionalValues = recipeNutritionalValues;
     }
 
-    public String[] getRecipeName() { return recipeNames; }
+    public String[] getRecipeNames() { return recipeNames; }
 
-    public String[] getRecipeImage() { return  recipeImages; }
+    public String[] getRecipeImages() { return  recipeImages; }
 
     public List<List<String[]>> getIngredients() { return  recipeIngredients; }
 
