@@ -75,8 +75,8 @@ public class MealPlanInteractor implements MealPlanInputBoundary{
      * @param targetFats the target fats
      * @return the best three recipes that match the meal plan target as close as possible
      */
-    private List<Recipe> computeBestFittingRecipes(List<Recipe> recipes, double targetCalories, double targetProtein,
-                                                   double targetCarbs, double targetFats) {
+    private static List<Recipe> computeBestFittingRecipes(List<Recipe> recipes, double targetCalories,
+                                                          double targetProtein, double targetCarbs, double targetFats) {
         assert recipes.size() > 3;
 
         List<List<Recipe>> recipeTriplets = createTripletCombinations(recipes);
