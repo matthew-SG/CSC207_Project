@@ -35,5 +35,4 @@ public class Recipe {
 
     public Map<String, Double> getNutritionalValues() { return nutritionalValues; }
 
-    public String getMealType() { return mealType; }
 }
