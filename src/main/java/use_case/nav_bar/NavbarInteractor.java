@@ -28,6 +28,11 @@ public class NavbarInteractor implements NavbarInputBoundary{
     }
 
     @Override
+    public void switchToApproveRecipe() {
+        this.navbarPresenter.switchToApproveRecipe();
+    }
+
+    @Override
     public void switchToProfile(){
         this.navbarPresenter.switchToProfile();
     }

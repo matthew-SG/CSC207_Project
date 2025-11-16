@@ -24,6 +24,10 @@ public class NavbarController {
         this.navbarInteractor.switchToGenerateRecipe();
     }
 
+    public void switchToApproveRecipe(){
+        this.navbarInteractor.switchToApproveRecipe();
+    }
+
     public void switchToProfile(){
         this.navbarInteractor.switchToProfile();
     }

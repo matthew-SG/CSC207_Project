@@ -1,6 +1,7 @@
 package interface_adapter.nav_bar;
 
 import interface_adapter.ViewManagerModel;
+import interface_adapter.approve_recipe.ApproveRecipeViewModel;
 import interface_adapter.community.CommunityViewModel;
 import interface_adapter.logged_in.LoggedInViewModel;
 import interface_adapter.login.LoginViewModel;
@@ -9,9 +10,14 @@ import use_case.nav_bar.NavbarOutputBoundary;
 
 public class NavbarPresenter implements NavbarOutputBoundary {
     ViewManagerModel viewManagerModel;
+    private interface_adapter.approve_recipe.ApproveRecipeController approveRecipeController;
 
     public NavbarPresenter(ViewManagerModel viewManagerModel){
         this.viewManagerModel = viewManagerModel;
+    }
+
+    public void setApproveRecipeController(interface_adapter.approve_recipe.ApproveRecipeController controller) {
+        this.approveRecipeController = controller;
     }
 
     @Override
@@ -35,6 +41,16 @@ public class NavbarPresenter implements NavbarOutputBoundary {
     @Override
     public void switchToGenerateRecipe() {
         // TODO: implement this
+    }
+
+    @Override
+    public void switchToApproveRecipe() {
+        // Load recipes before switching to the view
+        if (approveRecipeController != null) {
+            approveRecipeController.loadRecipes();
+        }
+        viewManagerModel.getState().viewName = ApproveRecipeViewModel.viewName;
+        viewManagerModel.firePropertyChange();
     }
 
     @Override
