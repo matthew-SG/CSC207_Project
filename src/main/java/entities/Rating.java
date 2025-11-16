@@ -7,6 +7,14 @@ public class Rating {
     private int stars;
     private String comment;
 
+    public Rating(int ratingId, int recipeId, int userId, int stars, String comment) {
+        this.ratingId = ratingId;
+        this.recipeId = recipeId;
+        this.userId = userId;
+        this.stars = stars;
+        this.comment = comment;
+    }
+
     public String getComment() {
         return comment;
     }

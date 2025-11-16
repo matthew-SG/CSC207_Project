@@ -1,5 +1,6 @@
 package view;
 
+import interface_adapter.ViewManagerModel;
 import interface_adapter.community.CommunityController;
 import interface_adapter.community.CommunityState;
 import interface_adapter.community.CommunityViewModel;
@@ -19,17 +20,17 @@ import java.util.List;
 public class CommunityView extends JPanel implements PropertyChangeListener {
     private final String viewName = CommunityViewModel.VIEWING;
     private final CommunityViewModel communityViewModel;
+    private final ViewManagerModel viewManagerModel;
     private CommunityController communityController;
 
     private final JPanel reviewListPanel;
     private final JScrollPane scrollPane;
     private final JLabel titleLabel;
     private final JButton postReviewButton;
-    private String currentUsername = "";
-    private boolean isLoggedIn = false;
 
-    public CommunityView(CommunityViewModel communityViewModel) {
+    public CommunityView(CommunityViewModel communityViewModel, ViewManagerModel viewManagerModel) {
         this.communityViewModel = communityViewModel;
+        this.viewManagerModel = viewManagerModel;
         this.communityViewModel.addPropertyChangeListener(this);
 
         this.setLayout(new BorderLayout(10, 10));
@@ -51,7 +52,7 @@ public class CommunityView extends JPanel implements PropertyChangeListener {
         postReviewButton.setFocusPainted(false);
         postReviewButton.addActionListener(e -> {
             if (communityController != null) {
-                communityController.viewToPost(currentUsername, isLoggedIn);
+                communityController.viewToPost(viewManagerModel.getState().userName, viewManagerModel.getState().isLoggedIn);
             }
         });
         
@@ -209,24 +210,5 @@ public class CommunityView extends JPanel implements PropertyChangeListener {
 
     public void setCommunityController(CommunityController communityController) {
         this.communityController = communityController;
-    }
-
-    /**
-     * Sets the current username for posting reviews.
-     * This should be called when initializing the view or when user logs in.
-     * @param username The username of the current user
-     */
-    public void setCurrentUsername(String username) {
-        this.currentUsername = username;
-    }
-
-    /**
-     * Sets the login status of the current user.
-     * This determines whether the user can post reviews.
-     * @param loggedIn True if user is logged in, false otherwise
-     */
-    public void setLoggedIn(boolean loggedIn) {
-        this.isLoggedIn = loggedIn;
-        postReviewButton.setEnabled(loggedIn);
     }
 }

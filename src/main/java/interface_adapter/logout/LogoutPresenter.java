@@ -52,6 +52,8 @@ public class LogoutPresenter implements LogoutOutputBoundary {
         this.navbarManagerViewModel.setState(NavbarManagerViewModel.UNLOGGED_IN);
         this.navbarManagerViewModel.firePropertyChange();
         this.viewManagerModel.getState().viewName = loginViewModel.getViewName();
+        this.viewManagerModel.getState().isLoggedIn = false;
+        this.viewManagerModel.getState().userName = "";
         this.viewManagerModel.firePropertyChange();
     }
 }

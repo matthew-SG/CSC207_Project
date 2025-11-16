@@ -40,6 +40,8 @@ public class LoginPresenter implements LoginOutputBoundary {
         this.navbarManagerViewModel.setState(NavbarManagerViewModel.LOGGED_IN);
         this.navbarManagerViewModel.firePropertyChange();
         this.viewManagerModel.getState().viewName = loggedInViewModel.getViewName();
+        this.viewManagerModel.getState().isLoggedIn = true;
+        this.viewManagerModel.getState().userName = response.getUsername();
         this.viewManagerModel.firePropertyChange();
     }
 

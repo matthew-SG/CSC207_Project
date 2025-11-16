@@ -1,5 +1,7 @@
 package app;
 
+import data_access.DummyCommunityDataAccessObject;
+import data_access.InMemoryCommunityDataAccessObject;
 import data_access.InMemoryUserDataAccessObject;
 import data_access.UserDataAccess;
 import entities.UserFactory;
@@ -19,6 +21,7 @@ import interface_adapter.nav_bar.NavbarPresenter;
 import interface_adapter.signup.SignupController;
 import interface_adapter.signup.SignupPresenter;
 import interface_adapter.signup.SignupViewModel;
+import use_case.community.CommunityDataAccessInterface;
 import use_case.community.CommunityInputBoundary;
 import use_case.community.CommunityMarketInteractor;
 import use_case.community.CommunityOutputBoundary;
@@ -46,6 +49,7 @@ public class AppBuilder {
     // Required components
     private UserFactory userFactory = new UserFactory();
     private UserDataAccess userDataAccessObject = new InMemoryUserDataAccessObject();
+    private CommunityDataAccessInterface communityDataAccessObject = new DummyCommunityDataAccessObject();
     private JPanel contentPanel;
     private CardLayout cardLayout;
     private ViewManagerModel viewManagerModel;
@@ -117,7 +121,7 @@ public class AppBuilder {
         communityContentPanel.setLayout(communityCardLayout);
 
         // Create community views
-        communityView = new CommunityView(communityViewModel);
+        communityView = new CommunityView(communityViewModel, viewManagerModel);
         selectLikedRecipeView = new SelectLikedRecipeView(communityViewModel);
         writeReviewView = new WriteReviewView(communityViewModel);
 
@@ -139,7 +143,7 @@ public class AppBuilder {
                 communityViewModel
         );
         CommunityInputBoundary communityInteractor = new CommunityMarketInteractor(
-                null,
+                communityDataAccessObject,
                 communityPresenter
         );
         communityController = new CommunityController(communityInteractor);
