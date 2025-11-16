@@ -3,7 +3,7 @@ package interface_adapter.community;
 import java.util.List;
 
 public class CommunityState {
-    String subviewName;
+    public String subviewName;
 
     // presented in ratings and recipe selection view;
     // from: requested after user clicks pose
@@ -27,5 +27,41 @@ public class CommunityState {
 
     public String getSubviewName() {
         return subviewName;
+    }
+
+    public List<Integer> getRecipeIds() {
+        return recipeIds;
+    }
+
+    public List<String> getRecipeNames() {
+        return recipeNames;
+    }
+
+    public List<Integer> getStars() {
+        return stars;
+    }
+
+    public List<String> getComments() {
+        return comments;
+    }
+
+    public List<String> getRecipeImages() {
+        return recipeImages;
+    }
+
+    public String getPrompt() {
+        return prompt;
+    }
+
+    public int getSeletedRecipe() {
+        return seletedRecipe;
+    }
+
+    public String getReview() {
+        return review;
+    }
+
+    public int getStar() {
+        return star;
     }
 }
