@@ -1,7 +1,5 @@
 package use_case.meal_plan;
 
-import entities.Ingredient;
-
 import java.util.List;
 import java.util.Map;
 
