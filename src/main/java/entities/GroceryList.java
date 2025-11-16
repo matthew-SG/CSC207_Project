@@ -7,10 +7,10 @@ public final class GroceryList {
     private final String listName;
     private final ArrayList<Ingredient> items;
 
-    public GroceryList(int listId, String listName, ArrayList<Ingredient> items) {
+    public GroceryList(int listId, String listName, List<Ingredient> items) {
         this.listId = listId;
         this.listName = listName;
-        this.items = items;
+        this.items = new ArrayList<>(items);
     }
     public int getListId() {
         return listId;
