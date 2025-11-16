@@ -1,12 +1,27 @@
-//package use_case.community;
-//
+package use_case.community;
+
+
+import use_case.community.input_data.CommunityPoseSelectionInputData;
+import use_case.community.input_data.CommunityPublishInputData;
+import use_case.community.input_data.CommunityRecipeSelectionInputData;
+
 /**
- * Input Boundary for actions related to community features (e.g., creating, joining, or interacting with a community).
+ * Input Boundary for actions which are related to logging in.
  */
 public interface CommunityInputBoundary {
+    void viewCommunity();
+
     /**
-     * Executes the community use case.
-     * @param inputData the input data for the community action
+     * Executes the view to view liked recipes.
+     * @param data the input data
      */
-    void execute(CommunityInputData inputData);
+    void viewToPost(CommunityPoseSelectionInputData data);
+
+    /**
+     * Executes the view to choose the recipe to pose use case.
+     * @param data the input data
+     */
+    void selectRecipe(CommunityRecipeSelectionInputData data);
+
+    void publish(CommunityPublishInputData data);
 }
