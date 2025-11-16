@@ -116,26 +116,30 @@ public class MealPlanInteractor implements MealPlanInputBoundary{
     private static List<Recipe> computeLowestNutritionalError(List<List<Recipe>> recipeTriplets, double targetCalories,
                                                               double targetProtein, double targetCarbs, double targetFats) {
         assert recipeTriplets.size() > 1;
-        double targetTotal =  targetCalories + targetProtein + targetCarbs + targetFats;
-        double currentTotal;
+        double currentCalories;
+        double currentProtein;
+        double currentCarbs;
+        double currentFats;
         double currentError;
         double lowestError = -1;
         List<Recipe> bestFittingTriplet = new ArrayList<>();
 
         for (List<Recipe> recipeTriplet : recipeTriplets) {
             assert recipeTriplet.size() == 3;
-            currentTotal = 0;
+            currentCalories = 0;
+            currentProtein = 0;
+            currentCarbs = 0;
+            currentFats = 0;
 
             for (Recipe recipe : recipeTriplet) {
                 Map<String, Double> recipeNutritionalValues = recipe.getNutritionalValues();
-                double calories = recipeNutritionalValues.get("calories");
-                double protein = recipeNutritionalValues.get("protein");
-                double carbs = recipeNutritionalValues.get("carbs");
-                double fats = recipeNutritionalValues.get("fats");
-                currentTotal += calories + protein + carbs + fats;
-
+                currentCalories += recipeNutritionalValues.get("calories");
+                currentProtein += recipeNutritionalValues.get("protein");
+                currentCarbs += recipeNutritionalValues.get("carbs");
+                currentFats += recipeNutritionalValues.get("fats");
             }
-            currentError = Math.abs(targetTotal - currentTotal);
+            currentError = Math.abs(currentCalories - targetCalories) + Math.abs(currentProtein - targetProtein) + (
+                    Math.abs(currentCarbs - targetCarbs) + Math.abs(currentFats - targetFats));
             if (currentError == 0) {
                 return recipeTriplet;
 
