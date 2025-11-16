@@ -37,4 +37,20 @@ public class CommunityRatingsOutputData {
     public String getPrompt() {
         return prompt;
     }
+
+    public List<Integer> getRecipeIds() {
+        return recipeIds;
+    }
+
+    public List<Integer> getStars() {
+        return stars;
+    }
+
+    public List<String> getComments() {
+        return comments;
+    }
+
+    public List<String> getRecipeNames() {
+        return recipeNames;
+    }
 }

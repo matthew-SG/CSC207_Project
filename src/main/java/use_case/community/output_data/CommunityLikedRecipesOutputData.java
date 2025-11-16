@@ -26,4 +26,16 @@ public class CommunityLikedRecipesOutputData {
         this.recipeNames = recipeNames;
         this.recipeImages = recipeImages;
     }
+
+    public List<String> getRecipeNames() {
+        return recipeNames;
+    }
+
+    public List<Integer> getRecipeIds() {
+        return recipeIds;
+    }
+
+    public List<String> getRecipeImages() {
+        return recipeImages;
+    }
 }
