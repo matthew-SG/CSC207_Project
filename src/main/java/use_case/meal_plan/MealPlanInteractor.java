@@ -67,6 +67,17 @@ public class MealPlanInteractor implements MealPlanInputBoundary{
 
         List<List<Recipe>> recipeTriplets = createTripletCombinations(recipes);
 
+        int currentTotal = 0;
+        int lowestTotal;
+        List<Recipe> bestFittingRecipes = new ArrayList<>();
+
+        for (List<Recipe> recipeTriplet : recipeTriplets) {
+            for (Recipe recipe : recipeTriplet) {
+                Map<String, Double> recipeNutritionalValues = recipe.getNutritionalValues();
+
+            }
+        }
+
     }
 
     /**
@@ -83,8 +94,10 @@ public class MealPlanInteractor implements MealPlanInputBoundary{
 
         for (int i = 0; i < n - 2; i++) {
             recipeTriplet.add(recipes.get(i));
+
             for (int j = i + 1; j < n - 1; j++) {
                 recipeTriplet.add(recipes.get(j));
+
                 for (int k = j + 1; k < n; k++) {
                     recipeTriplet.add(recipes.get(k));
                     recipeTriplets.add(recipeTriplet);
@@ -92,11 +105,9 @@ public class MealPlanInteractor implements MealPlanInputBoundary{
                     
                 }
                 recipeTriplet.remove(1);
-
             }
             recipeTriplet.remove(0);
         }
-
         return recipeTriplets;
     }
 
