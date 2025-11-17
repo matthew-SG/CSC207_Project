@@ -25,14 +25,7 @@ public class CommunityPresenter implements CommunityOutputBoundary {
 
     @Override
     public void prepareViewRating(CommunityRatingsOutputData response) {
-        CommunityState communityState = this.communityViewModel.getState();
-        communityState.subviewName = CommunityViewModel.VIEWING;
-        communityState.recipeIds = response.getRecipeIds();
-        communityState.recipeNames = response.getRecipeNames();
-        communityState.stars = response.getStars();
-        communityState.comments = response.getComments();
-        communityState.prompt = response.getPrompt();
-        this.communityViewModel.firePropertyChange();
+        prepareView(response);
     }
 
     @Override
@@ -55,8 +48,14 @@ public class CommunityPresenter implements CommunityOutputBoundary {
 
     @Override
     public void preparePublishSucc(CommunityRatingsOutputData response) {
+        prepareView(response);
         CommunityState communityState = this.communityViewModel.getState();
         communityState.subviewName = CommunityViewModel.PUB_SUCC;
+    }
+
+    private void prepareView(CommunityRatingsOutputData response) {
+        CommunityState communityState = this.communityViewModel.getState();
+        communityState.subviewName = CommunityViewModel.VIEWING;
         communityState.recipeIds = response.getRecipeIds();
         communityState.recipeNames = response.getRecipeNames();
         communityState.stars = response.getStars();

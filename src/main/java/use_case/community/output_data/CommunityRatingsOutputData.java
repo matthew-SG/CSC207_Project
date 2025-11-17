@@ -11,7 +11,7 @@ public class CommunityRatingsOutputData {
     private final List<Integer> stars;
 
     private final List<String> comments;
-
+    public static String PROMPT = "Welcome to Community!~~ Please view and leave reviews!";
     protected String prompt;
 
     public CommunityRatingsOutputData(List<Rating> currentRatings) {
@@ -30,7 +30,7 @@ public class CommunityRatingsOutputData {
         this.recipeNames = recipeNames;
         this.stars = stars;
         this.comments = comments;
-        prompt = "Welcome to Community!~~ Please view and leave reviews!";
+        prompt = PROMPT;
 
     }
 
