@@ -40,8 +40,9 @@ public class SearchByIngredientSpoonacular {
                 .build();
         try {
             Response response = client.newCall(request).execute();
-            final JSONArray responseBody = new JSONArray(response.body().string());
-            if (responseBody.isEmpty()) throw new IOException("Empty response");
+           String rspns = response.body().string();
+            final JSONArray responseBody = new JSONArray(rspns);
+            if (responseBody.length() == 0) throw new IOException("Empty response");
             for (int i = 0; i < responseBody.length() && result.size() < 5; i++) {
                 JSONObject object = responseBody.getJSONObject(i);
                 int missedIngredients = object.getInt("missedIngredientCount");
@@ -61,12 +62,14 @@ public class SearchByIngredientSpoonacular {
     }
     //The api only allows 2 calls per second, so we cant populate the recipe with its steps and ingredient in the same method
     public void populateRecipeDetails(Recipe recipe) {
-    if (!recipe.getIngredients().isEmpty()&&!recipe.getSteps().isEmpty()) {
-        return;
-        }
-        String recipeInfoUrl = RECIPEINFOURL+recipe.getRecipeId()+"/information?apiKey="+apiKey;
+        if (recipe.getIngredients() != null && !recipe.getIngredients().isEmpty()
+                && recipe.getSteps() != null && !recipe.getSteps().isEmpty()) {
+            return;
+    }
+        String recipeInfoUrl = RECIPEINFOURL+recipe.getRecipeId()+"/information";
+        HttpUrl url = HttpUrl.parse(recipeInfoUrl).newBuilder().addQueryParameter("apiKey", apiKey).build();
         final OkHttpClient client = new OkHttpClient.Builder().build();
-        Request request = new Request.Builder().url(recipeInfoUrl).get().build();
+        Request request = new Request.Builder().url(url).get().build();
         try{
             Response response = client.newCall(request).execute();
             final JSONObject responseBody = new JSONObject(response.body().string());
@@ -74,7 +77,7 @@ public class SearchByIngredientSpoonacular {
             //setting the ingredients
             JSONArray extendedIngredients = responseBody.optJSONArray("extendedIngredients");
             List<Ingredient> ingredients = new ArrayList<>();
-            for(int i=0;i<extendedIngredients.length();i++){
+            for(int i=0;extendedIngredients != null&&i<extendedIngredients.length();i++){
                 JSONObject ingredient = extendedIngredients.getJSONObject(i);
                 String ingredientName = ingredient.getString("name");
                 double ingredientQuantity = ingredient.getDouble("amount");
@@ -86,7 +89,7 @@ public class SearchByIngredientSpoonacular {
             String instructions = responseBody.optString("instructions", null);
             String stepText="";
             if (instructions!=null&& !instructions.isEmpty())
-                stepText = instructions;
+                stepText = instructions.trim();
             else
                 stepText = "No instructions provided";
             recipe.setSteps(stepText);
