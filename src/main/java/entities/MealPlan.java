@@ -2,9 +2,9 @@ package entities;
 
 public class MealPlan {
 
-    final private int targetCalories;
-    final private int targetProtein;
-    final private int targetPrice;
+    private final int targetCalories;
+    private final int targetProtein;
+    private final int targetPrice;
 
     public MealPlan(int targetCalories, int targetProtein, int targetPrice) {
         this.targetCalories = targetCalories;
