@@ -19,7 +19,7 @@ public class RecipeGeneratorPresenter implements RecipeGeneratorOutputBoundary {
         state.setRecipes(outputData.getRecipes());
         state.setMessage(outputData.getMessage());
         recipeViewModel.firePropertyChange();
-        viewManagerModel.setState("recipe generator");
+        viewManagerModel.getState().viewName = recipeViewModel.getViewName();
         viewManagerModel.firePropertyChange();
     }
 }
