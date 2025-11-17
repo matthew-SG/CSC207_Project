@@ -5,6 +5,6 @@ public interface NavbarInputBoundary {
     public void switchToSignUp();
     public void switchToCommunity();
     public void switchToGenerateRecipe();
-
+    public void switchToApproveRecipe();
     public void switchToProfile();
 }

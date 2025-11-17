@@ -7,6 +7,12 @@ public final class GroceryList {
     private final String listName;
     private final ArrayList<Ingredient> items;
 
+    public GroceryList() {
+        this.listId = 0;
+        this.listName = "My Grocery List";
+        this.items = new ArrayList<>();
+    }
+
     public GroceryList(int listId, String listName, List<Ingredient> items) {
         this.listId = listId;
         this.listName = listName;
