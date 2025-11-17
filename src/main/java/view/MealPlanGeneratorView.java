@@ -16,7 +16,7 @@ import java.beans.PropertyChangeListener;
 /**
  * The View for when the user wants to generate a Meal Plan for the day.
  */
-public class MealPlanGeneratorView extends JPanel implements ActionListener, PropertyChangeListener {
+public class MealPlanGeneratorView extends JPanel implements PropertyChangeListener {
 
     private static final String VIEW_NAME = "meal plan generator";
     private final MealPlanGeneratorViewModel mealPlanGeneratorViewModel;
@@ -48,16 +48,16 @@ public class MealPlanGeneratorView extends JPanel implements ActionListener, Pro
         targetCaloriesPanel.add(targetCaloriesInputField);
 
         final JPanel targetProteinPanel = new JPanel();
-        targetCaloriesPanel.add(new JLabel("Input Target Protein (in grams):"));
-        targetCaloriesPanel.add(targetProteinInputField);
+        targetProteinPanel.add(new JLabel("Input Target Protein (in grams):"));
+        targetProteinPanel.add(targetProteinInputField);
 
         final JPanel targetCarbsPanel = new JPanel();
-        targetCaloriesPanel.add(new JLabel("Input Target Carbs (in grams):"));
-        targetCaloriesPanel.add(targetCarbsInputField);
+        targetCarbsPanel.add(new JLabel("Input Target Carbs (in grams):"));
+        targetCarbsPanel.add(targetCarbsInputField);
 
         final JPanel targetFatsPanel = new JPanel();
-        targetCaloriesPanel.add(new JLabel("Input Target Fats (in grams):"));
-        targetCaloriesPanel.add(targetFatsInputField);
+        targetFatsPanel.add(new JLabel("Input Target Fats (in grams):"));
+        targetFatsPanel.add(targetFatsInputField);
 
         final JPanel buttons = new JPanel();
         generate = new JButton("Generate");
@@ -66,90 +66,31 @@ public class MealPlanGeneratorView extends JPanel implements ActionListener, Pro
         generate.addActionListener(
                 new ActionListener() {
                     public void actionPerformed(ActionEvent evt) {
-                        if (evt.getSource().equals(generate)) {
-                            final MealPlanGeneratorState currentState = mealPlanGeneratorViewModel.getState();
+                        final MealPlanGeneratorState currentState = mealPlanGeneratorViewModel.getState();
 
-                            mealPlanController.execute(
-                                    currentState.getTargetCalories(),
-                                    currentState.getTargetProtein(),
-                                    currentState.getTargetCarbs(),
-                                    currentState.getTargetFats()
-                            );
-                        }
+                        mealPlanController.execute(
+                                currentState.getTargetCalories(),
+                                currentState.getTargetProtein(),
+                                currentState.getTargetCarbs(),
+                                currentState.getTargetFats()
+                        );
                     }
                 }
         );
 
-        targetCaloriesInputField.getDocument().addDocumentListener(new DocumentListener() {
-
-            private void documentListenerHelper() {
-                final MealPlanGeneratorState currentState = mealPlanGeneratorViewModel.getState();
-                currentState.setTargetCalories(targetCaloriesInputField.getText());
-                mealPlanGeneratorViewModel.setState(currentState);
-            }
-
-            @Override
-            public void insertUpdate(DocumentEvent e) { documentListenerHelper(); }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) { documentListenerHelper(); }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) { documentListenerHelper(); }
-        });
+        addTextFieldListener(mealPlanGeneratorViewModel, targetCaloriesInputField);
 
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        targetCaloriesPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        targetProteinPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        targetCarbsPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        targetFatsPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        targetProteinInputField.getDocument().addDocumentListener(new DocumentListener() {
-            private void documentListenerHelper() {
-                final MealPlanGeneratorState currentState = mealPlanGeneratorViewModel.getState();
-                currentState.setTargetProtein(targetProteinInputField.getText());
-                mealPlanGeneratorViewModel.setState(currentState);
-            }
+        addTextFieldListener(mealPlanGeneratorViewModel, targetProteinInputField);
 
-            @Override
-            public void insertUpdate(DocumentEvent e) { documentListenerHelper(); }
+        addTextFieldListener(mealPlanGeneratorViewModel, targetCarbsInputField);
 
-            @Override
-            public void removeUpdate(DocumentEvent e) { documentListenerHelper(); }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) { documentListenerHelper(); }
-        });
-
-        targetCarbsInputField.getDocument().addDocumentListener(new DocumentListener() {
-            private void documentListenerHelper() {
-                final MealPlanGeneratorState currentState = mealPlanGeneratorViewModel.getState();
-                currentState.setTargetCarbs(targetCarbsInputField.getText());
-                mealPlanGeneratorViewModel.setState(currentState);
-            }
-
-            @Override
-            public void insertUpdate(DocumentEvent e) { documentListenerHelper(); }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) { documentListenerHelper(); }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) { documentListenerHelper(); }
-        });
-
-        targetFatsInputField.getDocument().addDocumentListener(new DocumentListener() {
-            private void documentListenerHelper() {
-                final MealPlanGeneratorState currentState = mealPlanGeneratorViewModel.getState();
-                currentState.setTargetFats(targetFatsInputField.getText());
-                mealPlanGeneratorViewModel.setState(currentState);
-            }
-
-            @Override
-            public void insertUpdate(DocumentEvent e) { documentListenerHelper(); }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) { documentListenerHelper(); }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) { documentListenerHelper(); }
-        });
+        addTextFieldListener(mealPlanGeneratorViewModel, targetFatsInputField);
 
         this.add(title);
         this.add(targetCaloriesPanel);
@@ -162,10 +103,29 @@ public class MealPlanGeneratorView extends JPanel implements ActionListener, Pro
     }
 
     /**
-     * React to a button click that results in evt.
-     * @param evt the event to be processed
+     * Helper method to create a text field listener for a given field
+     * @param mealPlanGeneratorViewModel the View Model
+     * @param field the text field
      */
-    public void actionPerformed(ActionEvent evt) { System.out.println("Click" + evt.getActionCommand()); }
+    private static void addTextFieldListener(MealPlanGeneratorViewModel mealPlanGeneratorViewModel, JTextField field) {
+        field.getDocument().addDocumentListener(new DocumentListener() {
+
+            private void documentListenerHelper() {
+                final MealPlanGeneratorState currentState = mealPlanGeneratorViewModel.getState();
+                currentState.setTargetCalories(field.getText());
+                mealPlanGeneratorViewModel.setState(currentState);
+            }
+
+            @Override
+            public void insertUpdate(DocumentEvent e) { documentListenerHelper(); }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) { documentListenerHelper(); }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) { documentListenerHelper(); }
+        });
+    }
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
