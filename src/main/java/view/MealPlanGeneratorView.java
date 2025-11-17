@@ -175,7 +175,7 @@ public class MealPlanGeneratorView extends JPanel implements PropertyChangeListe
         targetFatsInputField.setText(state.getTargetFats());
     }
 
-    public String getViewName() { return VIEW_NAME; }
+    public static String getViewName() { return VIEW_NAME; }
 
     public void setMealPlanController(MealPlanController mealPlanController) {
         this.mealPlanController = mealPlanController;

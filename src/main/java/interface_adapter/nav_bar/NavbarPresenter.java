@@ -7,6 +7,7 @@ import interface_adapter.logged_in.LoggedInViewModel;
 import interface_adapter.login.LoginViewModel;
 import interface_adapter.signup.SignupViewModel;
 import use_case.nav_bar.NavbarOutputBoundary;
+import view.MealPlanGeneratorView;
 
 public class NavbarPresenter implements NavbarOutputBoundary {
     ViewManagerModel viewManagerModel;
@@ -56,6 +57,12 @@ public class NavbarPresenter implements NavbarOutputBoundary {
     @Override
     public void switchToProfile() {
         viewManagerModel.getState().viewName = LoggedInViewModel.viewName;
+        viewManagerModel.firePropertyChange();
+    }
+
+    @Override
+    public void switchToMealPlan() {
+        viewManagerModel.getState().viewName = MealPlanGeneratorView.getViewName();
         viewManagerModel.firePropertyChange();
     }
 }

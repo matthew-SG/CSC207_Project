@@ -117,7 +117,7 @@ public class MealPlanGeneratedView extends JPanel implements PropertyChangeListe
             Image scaledImg = icon.getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH);
             imageLabel.setIcon(new ImageIcon(scaledImg));
             imageLabel.setText(null);
-        } catch (Exception _) {
+        } catch (Exception e) {
             imageLabel.setText("[Image Failed]");
         }
 

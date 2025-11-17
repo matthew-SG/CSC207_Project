@@ -31,7 +31,7 @@ public class MealPlanPresenter implements MealPlanOutputBoundary {
         mealPlanGeneratedState.setRecipeNutritionalValues(response.getNutritionalValues());
         mealPlanGeneratedViewModel.firePropertyChange();
 
-        viewManagerModel.setState(mealPlanGeneratedViewModel.getViewName());
+        viewManagerModel.getState().viewName = mealPlanGeneratedViewModel.getViewName();
         viewManagerModel.firePropertyChange();
     }
 

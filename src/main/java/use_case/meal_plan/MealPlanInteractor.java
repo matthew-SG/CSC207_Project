@@ -78,7 +78,7 @@ public class MealPlanInteractor implements MealPlanInputBoundary{
         try {
             Double.parseDouble(str);
             return true;
-        } catch (NumberFormatException _) {
+        } catch (NumberFormatException e) {
             return false;
         }
     }
