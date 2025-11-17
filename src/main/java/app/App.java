@@ -18,6 +18,7 @@ public class App {
                     .buildNavigation()
                     .buildErrorPopUp()
                     .buildApproveRecipeFeature()
+                    .buildRecipeGeneratorFeature()
                     .buildCommunityFeature()
                     .buildAuthFeature()
                     .build();

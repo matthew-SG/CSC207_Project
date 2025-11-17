@@ -7,7 +7,6 @@ import interface_adapter.recipe_generator.RecipeGeneratorState;
 import entities.Cuisine;
 import entities.DietaryRestriction;
 import entities.Intolerance;
-import use_case.recipe_generator.RecipeSummary;
 import javax.swing.*;
 import java.awt.*;
 import java.beans.PropertyChangeEvent;
@@ -152,7 +151,6 @@ public class RecipeGeneratorView extends JPanel implements PropertyChangeListene
         java.util.List<use_case.recipe_generator.RecipeSummary> recipes = state.getRecipes();
         if (recipes != null) {
             for (use_case.recipe_generator.RecipeSummary r : recipes) {
-                // For MVP, just show the recipe name;
                 recipesListModel.addElement(r.getRecipeName());
             }
         }
