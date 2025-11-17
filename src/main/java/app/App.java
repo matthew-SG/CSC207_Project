@@ -17,6 +17,7 @@ public class App {
             new AppBuilder()
                     .buildNavigation()
                     .buildErrorPopUp()
+                    .buildApproveRecipeFeature()
                     .buildCommunityFeature()
                     .buildAuthFeature()
                     .build();

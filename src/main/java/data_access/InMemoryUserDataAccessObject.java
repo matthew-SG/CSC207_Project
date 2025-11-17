@@ -42,4 +42,12 @@ public class InMemoryUserDataAccessObject implements UserDataAccess {
     public String getCurrentUsername() {
         return currentUsername;
     }
+
+    /**
+     * Get the users map for accessing user data.
+     * @return the map of users
+     */
+    public Map<String, User> getUsers() {
+        return users;
+    }
 }
