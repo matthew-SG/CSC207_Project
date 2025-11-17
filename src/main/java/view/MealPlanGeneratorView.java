@@ -78,7 +78,19 @@ public class MealPlanGeneratorView extends JPanel implements PropertyChangeListe
                 }
         );
 
-        addTextFieldListener(mealPlanGeneratorViewModel, targetCaloriesInputField);
+        targetCaloriesInputField.getDocument().addDocumentListener(new DocumentListener() {
+            private void documentListenerHelper() {
+                final MealPlanGeneratorState currentState = mealPlanGeneratorViewModel.getState();
+                currentState.setTargetCalories(targetCaloriesInputField.getText());
+                mealPlanGeneratorViewModel.setState(currentState);
+            }
+
+            @Override public void insertUpdate(DocumentEvent e) { documentListenerHelper(); }
+
+            @Override public void removeUpdate(DocumentEvent e) { documentListenerHelper(); }
+
+            @Override public void changedUpdate(DocumentEvent e) { documentListenerHelper(); }
+        });
 
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         targetCaloriesPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -86,33 +98,10 @@ public class MealPlanGeneratorView extends JPanel implements PropertyChangeListe
         targetCarbsPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
         targetFatsPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        addTextFieldListener(mealPlanGeneratorViewModel, targetProteinInputField);
-
-        addTextFieldListener(mealPlanGeneratorViewModel, targetCarbsInputField);
-
-        addTextFieldListener(mealPlanGeneratorViewModel, targetFatsInputField);
-
-        this.add(title);
-        this.add(targetCaloriesPanel);
-        this.add(targetProteinPanel);
-        this.add(targetCarbsPanel);
-        this.add(targetFatsPanel);
-        this.add(insufficientRecipesErrorField);
-        this.add(inputErrorField);
-        this.add(buttons);
-    }
-
-    /**
-     * Helper method to create a text field listener for a given field
-     * @param mealPlanGeneratorViewModel the View Model
-     * @param field the text field
-     */
-    private static void addTextFieldListener(MealPlanGeneratorViewModel mealPlanGeneratorViewModel, JTextField field) {
-        field.getDocument().addDocumentListener(new DocumentListener() {
-
+        targetProteinInputField.getDocument().addDocumentListener(new DocumentListener() {
             private void documentListenerHelper() {
                 final MealPlanGeneratorState currentState = mealPlanGeneratorViewModel.getState();
-                currentState.setTargetCalories(field.getText());
+                currentState.setTargetProtein(targetProteinInputField.getText());
                 mealPlanGeneratorViewModel.setState(currentState);
             }
 
@@ -125,6 +114,50 @@ public class MealPlanGeneratorView extends JPanel implements PropertyChangeListe
             @Override
             public void changedUpdate(DocumentEvent e) { documentListenerHelper(); }
         });
+
+        targetCarbsInputField.getDocument().addDocumentListener(new DocumentListener() {
+            private void documentListenerHelper() {
+                final MealPlanGeneratorState currentState = mealPlanGeneratorViewModel.getState();
+                currentState.setTargetCarbs(targetCarbsInputField.getText());
+                mealPlanGeneratorViewModel.setState(currentState);
+            }
+
+            @Override
+            public void insertUpdate(DocumentEvent e) { documentListenerHelper(); }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) { documentListenerHelper(); }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) { documentListenerHelper(); }
+        });
+
+        targetFatsInputField.getDocument().addDocumentListener(new DocumentListener() {
+            private void documentListenerHelper() {
+                final MealPlanGeneratorState currentState = mealPlanGeneratorViewModel.getState();
+                currentState.setTargetFats(targetFatsInputField.getText());
+                mealPlanGeneratorViewModel.setState(currentState);
+            }
+
+            @Override
+            public void insertUpdate(DocumentEvent e) { documentListenerHelper(); }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) { documentListenerHelper(); }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) { documentListenerHelper(); }
+        });
+
+
+        this.add(title);
+        this.add(targetCaloriesPanel);
+        this.add(targetProteinPanel);
+        this.add(targetCarbsPanel);
+        this.add(targetFatsPanel);
+        this.add(insufficientRecipesErrorField);
+        this.add(inputErrorField);
+        this.add(buttons);
     }
 
     @Override
