@@ -31,4 +31,8 @@ public class NavbarController {
     public void switchToProfile(){
         this.navbarInteractor.switchToProfile();
     }
+
+    public void switchToMealPlan(){
+        this.navbarInteractor.switchToMealPlan();
+    }
 }

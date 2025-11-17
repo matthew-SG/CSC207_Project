@@ -40,7 +40,7 @@ public class CommunityMarketInteractor implements CommunityInputBoundary {
             return;
         }
 
-        User user = new User(data.getUserName(), "dummy");
+        User user = new User(data.getUserName(), "dummy", null);
         communityPresenter.prepareRecipeSelection(
                 new CommunityLikedRecipesOutputData(
                         communityDAO.getLikedRecipes(user)

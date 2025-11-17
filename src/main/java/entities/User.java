@@ -12,13 +12,15 @@ public class User {
 
     private ArrayList<Recipe> savedRecipes;
     private GroceryList groceryList;
-    //private NutritionGoal nutritionGoal;
+    private NutritionGoal nutritionGoal;
+    private List<MealPlan> mealPlans;
 
     // Constructors
-    public User(String username, String password) {
+    public User(String username, String password, List<MealPlan> mealPlans) {
         this.username = username;
         this.password = password;
         this.savedRecipes = new ArrayList<>();
+        this.mealPlans = mealPlans;
         //this.groceryList = new GroceryList();
         //this.nutritionGoal = new NutritionGoal();
     }
@@ -45,10 +47,11 @@ public class User {
         return this.username;
     }
 
-
     public List<Recipe> getSavedRecipes() {
         return savedRecipes;
     }
+
+    public void saveRecipe(Recipe recipe) { savedRecipes.add(recipe); }
 
     public GroceryList getGroceryList() {
         return groceryList;
@@ -58,6 +61,9 @@ public class User {
     //    return nutritionGoal;
     //}
 
+    public List<MealPlan> getMealPlans() { return mealPlans; }
+
+    public void saveMealPlan(MealPlan mealPlan) { mealPlans.add(mealPlan); }
 
     @Override
     public String toString() {

@@ -1,26 +1,35 @@
 package entities;
 
+import java.util.List;
+
 public class MealPlan {
 
-    final private int targetCalories;
-    final private int targetProtein;
-    final private int targetPrice;
+    private final List<Recipe> recipes;
+    private final double targetCalories;
+    private final double targetProtein;
+    private final double targetCarbs;
+    private final double targetFats;
 
-    public MealPlan(int targetCalories, int targetProtein, int targetPrice) {
+    public MealPlan(List<Recipe> recipes, double targetCalories, double targetProtein, double targetCarbs,
+                    double targetFats) {
+        this.recipes = recipes;
         this.targetCalories = targetCalories;
         this.targetProtein = targetProtein;
-        this.targetPrice = targetPrice;
+        this.targetCarbs = targetCarbs;
+        this.targetFats = targetFats;
     }
 
-    public int getTargetCalories() {
+    public double getTargetCalories() {
         return this.targetCalories;
     }
 
-    public int getTargetProtein() {
+    public double getTargetProtein() {
         return this.targetProtein;
     }
 
-    public int getTargetPrice() {
-        return this.targetPrice;
-    }
+    public double getTargetCarbs() { return this.targetCarbs; }
+
+    public double getTargetFats() { return this.targetFats; }
+
+    public List<Recipe> getRecipes() { return this.recipes; }
 }
