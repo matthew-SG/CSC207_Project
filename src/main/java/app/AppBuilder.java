@@ -61,6 +61,7 @@ import java.awt.*;
 public class AppBuilder {
     // Required components
     private UserFactory userFactory = new UserFactory();
+    // In Memory Data Access Object
     private InMemoryUserDataAccessObject userDataAccessObject = new InMemoryUserDataAccessObject();
     private CommunityDataAccessInterface communityDataAccessObject = new DummyCommunityDataAccessObject();
     private ApproveRecipeDataAccessInterface approveRecipeDataAccessObject;
@@ -130,7 +131,7 @@ public class AppBuilder {
 
         // Initialize approve recipe DAO with API access to real recipes
         approveRecipeDataAccessObject = new SpoonacularApproveRecipeDataAccessObject(
-                ((InMemoryUserDataAccessObject) userDataAccessObject).getUsers()
+                userDataAccessObject.getUsers()
         );
     }
 
@@ -349,7 +350,7 @@ public class AppBuilder {
     private JFrame createAndShowFrame() {
         JFrame frame = new JFrame("Recipe Generator Application");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(600, 400);
+        frame.setSize(1920, 1080);
         frame.setLayout(new BorderLayout());
 
         frame.add(navBarContentPanel, BorderLayout.NORTH);

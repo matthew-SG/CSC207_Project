@@ -51,6 +51,8 @@ public class User {
         return savedRecipes;
     }
 
+    public void saveRecipe(Recipe recipe) { savedRecipes.add(recipe); }
+
     public GroceryList getGroceryList() {
         return groceryList;
     }

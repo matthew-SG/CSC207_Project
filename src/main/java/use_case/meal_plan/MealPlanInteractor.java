@@ -111,7 +111,7 @@ public class MealPlanInteractor implements MealPlanInputBoundary{
      */
     private static List<Recipe> computeBestFittingRecipes(List<Recipe> recipes, double targetCalories,
                                                           double targetProtein, double targetCarbs, double targetFats) {
-        assert recipes.size() > 3;
+        assert recipes.size() >= 3;
 
         List<List<Recipe>> recipeTriplets = createTripletCombinations(recipes);
 
@@ -178,7 +178,7 @@ public class MealPlanInteractor implements MealPlanInputBoundary{
      * @return the unique triplet combinations of recipes
      */
     private static List<List<Recipe>> createTripletCombinations(List<Recipe> recipes) {
-        assert recipes.size() > 3;
+        assert recipes.size() >= 3;
         ArrayList<List<Recipe>> recipeTriplets = new ArrayList<>();
         ArrayList<Recipe> recipeTriplet = new ArrayList<>();
         int n = recipes.size();
@@ -191,7 +191,8 @@ public class MealPlanInteractor implements MealPlanInputBoundary{
 
                 for (int k = j + 1; k < n; k++) {
                     recipeTriplet.add(recipes.get(k));
-                    recipeTriplets.add(recipeTriplet);
+                    List<Recipe> recipeTripletCopy = new ArrayList<>(recipeTriplet);
+                    recipeTriplets.add(recipeTripletCopy);
                     recipeTriplet.remove(2);
                     
                 }

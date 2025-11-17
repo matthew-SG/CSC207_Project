@@ -17,7 +17,7 @@ import java.util.List;
  */
 public class MealPlanGeneratedView extends JPanel implements PropertyChangeListener {
 
-    private static final String VIEW_NAME = "meal plan generated view";
+    private static final String VIEW_NAME = "meal plan generated";
     private final MealPlanGeneratedViewModel mealPlanGeneratedViewModel;
 
     // --- Card Placeholders ---
