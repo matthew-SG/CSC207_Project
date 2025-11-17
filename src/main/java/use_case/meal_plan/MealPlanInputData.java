@@ -5,23 +5,23 @@ package use_case.meal_plan;
  */
 public class MealPlanInputData {
 
-    private final double targetCalories;
-    private final double targetProtein;
-    private final double targetCarbs;
-    private final double targetFats;
+    private final String targetCalories;
+    private final String targetProtein;
+    private final String targetCarbs;
+    private final String targetFats;
 
-    public MealPlanInputData(double targetCalories, double targetProtein, double targetCarbs, double targetFats) {
+    public MealPlanInputData(String targetCalories, String targetProtein, String targetCarbs, String targetFats) {
         this.targetCalories = targetCalories;
         this.targetProtein = targetProtein;
         this.targetCarbs = targetCarbs;
         this.targetFats = targetFats;
     }
 
-    double getTargetCalories() {return  targetCalories;}
+    String getTargetCalories() {return  targetCalories;}
 
-    double getTargetProtein() {return  targetProtein;}
+    String getTargetProtein() {return  targetProtein;}
 
-    double getTargetCarbs() {return  targetCarbs;}
+    String getTargetCarbs() {return  targetCarbs;}
 
-    double getTargetFats() {return  targetFats;}
+    String getTargetFats() {return  targetFats;}
 }
