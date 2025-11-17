@@ -39,4 +39,10 @@ public class Recipe {
     public String getMealType() { return mealType; }
 
     public String getSteps() { return steps; }
+    public void setIngredients(List<Ingredient> ingredients) { this.ingredients = ingredients; }
+    public void setSteps(String steps) { this.steps = steps; }
+    @Override
+    public String toString() {
+        return recipeName;
+    }
 }

@@ -20,9 +20,9 @@ public class User {
         this.username = username;
         this.password = password;
         this.savedRecipes = new ArrayList<>();
-        this.groceryList = new GroceryList();
-        this.nutritionGoal = new NutritionGoal();
         this.mealPlans = mealPlans;
+        //this.groceryList = new GroceryList();
+        //this.nutritionGoal = new NutritionGoal();
     }
 
 
@@ -57,9 +57,9 @@ public class User {
         return groceryList;
     }
 
-    public NutritionGoal getNutritionGoal() {
-        return nutritionGoal;
-    }
+    //public NutritionGoal getNutritionGoal() {
+    //    return nutritionGoal;
+    //}
 
     public List<MealPlan> getMealPlans() { return mealPlans; }
 
