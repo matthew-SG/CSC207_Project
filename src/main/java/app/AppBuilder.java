@@ -1,6 +1,6 @@
 package app;
 
-import data_access.DummyApproveRecipeDataAccessObject;
+import data_access.SpoonacularApproveRecipeDataAccessObject;
 import data_access.DummyCommunityDataAccessObject;
 import data_access.InMemoryCommunityDataAccessObject;
 import data_access.InMemoryUserDataAccessObject;
@@ -117,8 +117,8 @@ public class AppBuilder {
         viewManagerModel = new ViewManagerModel();
         viewManager = new ViewManager(contentPanel, cardLayout, viewManagerModel);
 
-        // Initialize approve recipe DAO with access to user data
-        approveRecipeDataAccessObject = new DummyApproveRecipeDataAccessObject(
+        // Initialize approve recipe DAO with API access to real recipes
+        approveRecipeDataAccessObject = new SpoonacularApproveRecipeDataAccessObject(
                 ((InMemoryUserDataAccessObject) userDataAccessObject).getUsers()
         );
     }

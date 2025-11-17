@@ -12,75 +12,77 @@ import java.util.List;
 public class ApproveRecipeInteractor implements ApproveRecipeInputBoundary {
     private final ApproveRecipeDataAccessInterface dataAccess;
     private final ApproveRecipeOutputBoundary presenter;
+    private List<Recipe> currentRecipes;
+    private int currentIndex;
 
     public ApproveRecipeInteractor(ApproveRecipeDataAccessInterface dataAccess,
                                    ApproveRecipeOutputBoundary presenter) {
         this.dataAccess = dataAccess;
         this.presenter = presenter;
+        this.currentRecipes = new ArrayList<>();
+        this.currentIndex = 0;
     }
 
     @Override
     public void loadRecipes() {
         try {
-            List<Recipe> recipes = dataAccess.getAvailableRecipes();
+            currentRecipes = dataAccess.getAvailableRecipes();
+            currentIndex = 0;
 
-            if (recipes.isEmpty()) {
+            if (currentRecipes.isEmpty()) {
                 presenter.prepareFailView("No recipes available.");
                 return;
             }
 
-            List<Integer> recipeIds = new ArrayList<>();
-            List<String> recipeNames = new ArrayList<>();
-            List<String> recipeImages = new ArrayList<>();
-
-            for (Recipe recipe : recipes) {
-                recipeIds.add(recipe.getRecipeId());
-                recipeNames.add(recipe.getRecipeName());
-                recipeImages.add(recipe.getRecipeImage());
-            }
-
-            ApproveRecipeOutputData outputData = new ApproveRecipeOutputData(
-                    recipeIds, recipeNames, recipeImages, 0, recipes.size() > 1
-            );
-
-            presenter.prepareRecipeView(outputData);
+            showCurrentRecipe();
         } catch (Exception e) {
             presenter.prepareFailView("Error loading recipes: " + e.getMessage());
         }
     }
 
+    private void showCurrentRecipe() {
+        if (currentIndex >= currentRecipes.size()) {
+            // No more recipes
+            presenter.prepareApproveSuccessView(new ApproveRecipeOutputData(
+                    new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), 0, false
+            ));
+            return;
+        }
+
+        List<Integer> recipeIds = new ArrayList<>();
+        List<String> recipeNames = new ArrayList<>();
+        List<String> recipeImages = new ArrayList<>();
+
+        for (int i = currentIndex; i < currentRecipes.size(); i++) {
+            Recipe recipe = currentRecipes.get(i);
+            recipeIds.add(recipe.getRecipeId());
+            recipeNames.add(recipe.getRecipeName());
+            recipeImages.add(recipe.getRecipeImage());
+        }
+
+        ApproveRecipeOutputData outputData = new ApproveRecipeOutputData(
+                recipeIds, recipeNames, recipeImages, 0, currentRecipes.size() - currentIndex > 1
+        );
+
+        presenter.prepareRecipeView(outputData);
+    }
+
     @Override
     public void approveRecipe(ApproveRecipeInputData inputData) {
         try {
-            Recipe recipe = dataAccess.getRecipeById(inputData.getRecipeId());
-
-            if (recipe == null) {
-                presenter.prepareFailView("Recipe not found.");
+            if (currentIndex >= currentRecipes.size()) {
+                presenter.prepareFailView("No recipe to approve.");
                 return;
             }
+
+            Recipe recipe = currentRecipes.get(currentIndex);
 
             // Add recipe to user's saved recipes
             dataAccess.saveRecipeToUser(inputData.getUsername(), recipe);
 
-            // Load remaining recipes
-            List<Recipe> remainingRecipes = dataAccess.getAvailableRecipes();
-            List<Integer> recipeIds = new ArrayList<>();
-            List<String> recipeNames = new ArrayList<>();
-            List<String> recipeImages = new ArrayList<>();
-
-            for (Recipe r : remainingRecipes) {
-                if (r.getRecipeId() != inputData.getRecipeId()) {
-                    recipeIds.add(r.getRecipeId());
-                    recipeNames.add(r.getRecipeName());
-                    recipeImages.add(r.getRecipeImage());
-                }
-            }
-
-            ApproveRecipeOutputData outputData = new ApproveRecipeOutputData(
-                    recipeIds, recipeNames, recipeImages, 0, !recipeIds.isEmpty()
-            );
-
-            presenter.prepareApproveSuccessView(outputData);
+            // Move to next recipe
+            currentIndex++;
+            showCurrentRecipe();
         } catch (Exception e) {
             presenter.prepareFailView("Error approving recipe: " + e.getMessage());
         }
@@ -89,25 +91,14 @@ public class ApproveRecipeInteractor implements ApproveRecipeInputBoundary {
     @Override
     public void declineRecipe(DeclineRecipeInputData inputData) {
         try {
-            // Load remaining recipes (excluding the declined one)
-            List<Recipe> remainingRecipes = dataAccess.getAvailableRecipes();
-            List<Integer> recipeIds = new ArrayList<>();
-            List<String> recipeNames = new ArrayList<>();
-            List<String> recipeImages = new ArrayList<>();
-
-            for (Recipe r : remainingRecipes) {
-                if (r.getRecipeId() != inputData.getRecipeId()) {
-                    recipeIds.add(r.getRecipeId());
-                    recipeNames.add(r.getRecipeName());
-                    recipeImages.add(r.getRecipeImage());
-                }
+            if (currentIndex >= currentRecipes.size()) {
+                presenter.prepareFailView("No recipe to decline.");
+                return;
             }
 
-            ApproveRecipeOutputData outputData = new ApproveRecipeOutputData(
-                    recipeIds, recipeNames, recipeImages, 0, !recipeIds.isEmpty()
-            );
-
-            presenter.prepareDeclineView(outputData);
+            // Move to next recipe
+            currentIndex++;
+            showCurrentRecipe();
         } catch (Exception e) {
             presenter.prepareFailView("Error declining recipe: " + e.getMessage());
         }

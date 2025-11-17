@@ -8,6 +8,7 @@ import interface_adapter.approve_recipe.ApproveRecipeViewModel;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.Image;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
@@ -55,16 +56,18 @@ public class ApproveRecipeView extends JPanel implements PropertyChangeListener 
         centerPanel.add(recipeNameLabel);
         centerPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 
-        // Recipe image placeholder
-        recipeImageLabel = new JLabel("Recipe Image", SwingConstants.CENTER);
+        // Recipe image
+        recipeImageLabel = new JLabel("Loading image...", SwingConstants.CENTER);
         recipeImageLabel.setFont(new Font("Arial", Font.ITALIC, 14));
-        recipeImageLabel.setPreferredSize(new Dimension(300, 300));
-        recipeImageLabel.setMinimumSize(new Dimension(300, 300));
-        recipeImageLabel.setMaximumSize(new Dimension(300, 300));
+        recipeImageLabel.setPreferredSize(new Dimension(400, 300));
+        recipeImageLabel.setMinimumSize(new Dimension(400, 300));
+        recipeImageLabel.setMaximumSize(new Dimension(400, 300));
         recipeImageLabel.setBorder(BorderFactory.createLineBorder(Color.GRAY, 2));
         recipeImageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         recipeImageLabel.setHorizontalAlignment(SwingConstants.CENTER);
         recipeImageLabel.setVerticalAlignment(SwingConstants.CENTER);
+        recipeImageLabel.setBackground(Color.WHITE);
+        recipeImageLabel.setOpaque(true);
         centerPanel.add(recipeImageLabel);
         centerPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 
@@ -80,12 +83,14 @@ public class ApproveRecipeView extends JPanel implements PropertyChangeListener 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
 
         // Dislike button
-        dislikeButton = new JButton("Dislike");
-        dislikeButton.setFont(new Font("Arial", Font.BOLD, 16));
-        dislikeButton.setPreferredSize(new Dimension(120, 50));
+        dislikeButton = new JButton("✗ Dislike");
+        dislikeButton.setFont(new Font("Arial", Font.BOLD, 18));
+        dislikeButton.setPreferredSize(new Dimension(150, 60));
         dislikeButton.setBackground(new Color(220, 53, 69));
         dislikeButton.setForeground(Color.WHITE);
         dislikeButton.setFocusPainted(false);
+        dislikeButton.setBorderPainted(false);
+        dislikeButton.setOpaque(true);
         dislikeButton.addActionListener(e -> {
             if (approveRecipeController != null && currentRecipeId != -1) {
                 String username = viewManagerModel.getState().userName;
@@ -95,12 +100,14 @@ public class ApproveRecipeView extends JPanel implements PropertyChangeListener 
         buttonPanel.add(dislikeButton);
 
         // Like button
-        likeButton = new JButton("Like");
-        likeButton.setFont(new Font("Arial", Font.BOLD, 16));
-        likeButton.setPreferredSize(new Dimension(120, 50));
+        likeButton = new JButton("✓ Like");
+        likeButton.setFont(new Font("Arial", Font.BOLD, 18));
+        likeButton.setPreferredSize(new Dimension(150, 60));
         likeButton.setBackground(new Color(40, 167, 69));
         likeButton.setForeground(Color.WHITE);
         likeButton.setFocusPainted(false);
+        likeButton.setBorderPainted(false);
+        likeButton.setOpaque(true);
         likeButton.addActionListener(e -> {
             if (approveRecipeController != null && currentRecipeId != -1) {
                 String username = viewManagerModel.getState().userName;
@@ -125,6 +132,7 @@ public class ApproveRecipeView extends JPanel implements PropertyChangeListener 
             statusLabel.setForeground(Color.RED);
             recipeNameLabel.setText("No recipes available");
             recipeImageLabel.setText("No image");
+            recipeImageLabel.setIcon(null);
             likeButton.setEnabled(false);
             dislikeButton.setEnabled(false);
             return;
@@ -134,16 +142,21 @@ public class ApproveRecipeView extends JPanel implements PropertyChangeListener 
             int index = state.getCurrentIndex();
             currentRecipeId = state.getRecipeIds().get(index);
             String recipeName = state.getRecipeNames().get(index);
-            String recipeImage = state.getRecipeImages().get(index);
+            String imageUrl = state.getRecipeImages().get(index);
 
             recipeNameLabel.setText(recipeName);
-            recipeImageLabel.setText(recipeImage);
-            statusLabel.setText("");
+            statusLabel.setText("Recipe " + (index + 1) + " of " + state.getRecipeIds().size());
+            statusLabel.setForeground(Color.DARK_GRAY);
+
+            // Load image from URL in background
+            loadImageFromUrl(imageUrl);
+
             likeButton.setEnabled(true);
             dislikeButton.setEnabled(true);
         } else {
             recipeNameLabel.setText("No more recipes!");
             recipeImageLabel.setText("All done!");
+            recipeImageLabel.setIcon(null);
             statusLabel.setText("You've reviewed all available recipes.");
             statusLabel.setForeground(new Color(70, 130, 180));
             likeButton.setEnabled(false);
@@ -152,6 +165,35 @@ public class ApproveRecipeView extends JPanel implements PropertyChangeListener 
 
         this.revalidate();
         this.repaint();
+    }
+
+    private void loadImageFromUrl(String imageUrl) {
+        recipeImageLabel.setText("Loading image...");
+        recipeImageLabel.setIcon(null);
+
+        // Load image in a background thread
+        new Thread(() -> {
+            try {
+                java.net.URL url = new java.net.URL(imageUrl);
+                ImageIcon imageIcon = new ImageIcon(url);
+
+                // Scale image to fit label
+                Image image = imageIcon.getImage();
+                Image scaledImage = image.getScaledInstance(380, 280, Image.SCALE_SMOOTH);
+                ImageIcon scaledIcon = new ImageIcon(scaledImage);
+
+                // Update label on UI thread
+                SwingUtilities.invokeLater(() -> {
+                    recipeImageLabel.setText("");
+                    recipeImageLabel.setIcon(scaledIcon);
+                });
+            } catch (Exception e) {
+                SwingUtilities.invokeLater(() -> {
+                    recipeImageLabel.setText("Image: " + imageUrl);
+                    recipeImageLabel.setIcon(null);
+                });
+            }
+        }).start();
     }
 
     public String getViewName() {
