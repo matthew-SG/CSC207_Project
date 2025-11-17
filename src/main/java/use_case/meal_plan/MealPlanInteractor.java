@@ -150,10 +150,10 @@ public class MealPlanInteractor implements MealPlanInputBoundary{
 
             for (Recipe recipe : recipeTriplet) {
                 Map<String, Double> recipeNutritionalValues = recipe.getNutritionalValues();
-                currentCalories += recipeNutritionalValues.get("calories");
-                currentProtein += recipeNutritionalValues.get("protein");
-                currentCarbs += recipeNutritionalValues.get("carbs");
-                currentFats += recipeNutritionalValues.get("fats");
+                currentCalories += recipeNutritionalValues.get("Calories");
+                currentProtein += recipeNutritionalValues.get("Protein");
+                currentCarbs += recipeNutritionalValues.get("Carbohydrates");
+                currentFats += recipeNutritionalValues.get("Fat");
             }
             currentError = Math.abs(currentCalories - targetCalories) + Math.abs(currentProtein - targetProtein) + (
                     Math.abs(currentCarbs - targetCarbs) + Math.abs(currentFats - targetFats));
