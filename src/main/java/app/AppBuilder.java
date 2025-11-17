@@ -101,6 +101,7 @@ public class AppBuilder {
 
         viewManagerModel = new ViewManagerModel();
         viewManager = new ViewManager(contentPanel, cardLayout, viewManagerModel);
+        communityViewModel = new CommunityViewModel();
     }
 
     public AppBuilder buildErrorPopUp(){
@@ -115,7 +116,6 @@ public class AppBuilder {
      * @return this builder for method chaining
      */
     public AppBuilder buildCommunityFeature() {
-        communityViewModel = new CommunityViewModel();
         communityContentPanel = new JPanel();
         communityCardLayout = new CardLayout();
         communityContentPanel.setLayout(communityCardLayout);
@@ -225,7 +225,7 @@ public class AppBuilder {
 
         NavbarController navbarController = new NavbarController(
                 new NavbarInteractor(
-                        new NavbarPresenter(viewManagerModel)
+                        new NavbarPresenter(viewManagerModel, communityViewModel)
                 )
         );
         navBar.setNavbarController(navbarController);
@@ -273,6 +273,8 @@ public class AppBuilder {
         frame.add(contentPanel, BorderLayout.CENTER);
         navbarManagerViewModel.setState(NavbarManagerViewModel.UNLOGGED_IN);
         navbarManagerViewModel.firePropertyChange();
+        communityViewModel.getState().subviewName = CommunityViewModel.VIEWING;
+        communityViewModel.firePropertyChange();
         viewManagerModel.getState().viewName = LoginViewModel.viewName;
         viewManagerModel.firePropertyChange();
 

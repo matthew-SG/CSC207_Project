@@ -22,7 +22,12 @@ public class CommunityManagerView implements PropertyChangeListener {
     public void propertyChange(PropertyChangeEvent evt) {
         if (evt.getPropertyName().equals("state")) {
             final CommunityState communityState = (CommunityState) evt.getNewValue();
-            cardLayout.show(views, communityState.getSubviewName());
+            if (communityState.subviewName.equals(CommunityViewModel.PUB_SUCC)) {
+                cardLayout.show(views, CommunityViewModel.VIEWING);
+            }
+            else {
+                cardLayout.show(views, communityState.getSubviewName());
+            }
         }
     }
 }

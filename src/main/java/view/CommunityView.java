@@ -210,5 +210,6 @@ public class CommunityView extends JPanel implements PropertyChangeListener {
 
     public void setCommunityController(CommunityController communityController) {
         this.communityController = communityController;
+        this.communityController.viewCommunity();
     }
 }

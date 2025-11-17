@@ -12,7 +12,7 @@ public class CommunityState {
     List<Integer> stars;
     List<String> comments;
     List<String> recipeImages;
-    String prompt;
+    public String prompt;
 
     // used to publish recipe;
     // presented in review writing view;
