@@ -278,7 +278,7 @@ public class AppBuilder {
         navBar = new NavbarUnloggedInView();
         navBarLoggedIn = new NavbarLoggedInView();
 
-        navbarPresenter = new NavbarPresenter(viewManagerModel, communityViewModel)
+        navbarPresenter = new NavbarPresenter(viewManagerModel, communityViewModel);
         NavbarController navbarController = new NavbarController(
                 new NavbarInteractor(navbarPresenter)
         );
