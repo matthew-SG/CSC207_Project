@@ -1,0 +1,32 @@
+package view;
+
+import interface_adapter.ViewManagerModel;
+import interface_adapter.ViewManagerState;
+
+import javax.swing.*;
+import java.awt.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
+/**
+ * The View Manager for the program. It listens for property change events
+ * in the ViewManagerModel and updates which View should be visible.
+ */
+public class ViewManager implements PropertyChangeListener {
+    private final CardLayout cardLayout;
+    private final JPanel views;
+
+    public ViewManager(JPanel views, CardLayout cardLayout, ViewManagerModel viewManagerModel) {
+        this.views = views;
+        this.cardLayout = cardLayout;
+        viewManagerModel.addPropertyChangeListener(this);
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        if (evt.getPropertyName().equals("state")) {
+            final ViewManagerState managerState = (ViewManagerState) evt.getNewValue();
+            cardLayout.show(views, managerState.viewName);
+        }
+    }
+}
