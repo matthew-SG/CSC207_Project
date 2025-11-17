@@ -2,10 +2,10 @@ package entities;
 import java.util.List;
 
 public class InstructionStep {
-    private final int number;
-    private final String step;
-    private final List<Ingredient> ingredients;
-    private final List<Equipment> equipment;
+    private int number;
+    private String step;
+    private List<Ingredient> ingredients;
+    private List<Equipment> equipment;
 
     public InstructionStep(int number, String step,
                            List<Ingredient> ingredients,
@@ -20,4 +20,20 @@ public class InstructionStep {
     public String getStep() { return step; }
     public List<Ingredient> getIngredients() { return ingredients; }
     public List<Equipment> getEquipment() { return equipment; }
+
+    public void setNumber(int number) {
+        this.number = number;
+    }
+
+    public void setStep(String step) {
+        this.step = step;
+    }
+
+    public void setIngredients(List<Ingredient> ingredients) {
+        this.ingredients = ingredients;
+    }
+
+    public void setEquipment(List<Equipment> equipment) {
+        this.equipment = equipment;
+    }
 }
