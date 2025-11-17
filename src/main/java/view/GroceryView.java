@@ -120,7 +120,9 @@ public class GroceryView extends JPanel implements PropertyChangeListener {
         row.add(right, BorderLayout.EAST);
         return row;
     }
-
+    public String getViewName() {
+        return "Grocery_List";
+    }
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         SwingUtilities.invokeLater(this::refresh);

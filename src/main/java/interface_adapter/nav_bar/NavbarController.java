@@ -31,4 +31,7 @@ public class NavbarController {
     public void switchToProfile(){
         this.navbarInteractor.switchToProfile();
     }
+
+    public void switchToGroceryList(){this.navbarInteractor.switchToGroceryList();
+    }
 }

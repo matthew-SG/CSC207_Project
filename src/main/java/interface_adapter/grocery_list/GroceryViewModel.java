@@ -12,7 +12,7 @@ public class GroceryViewModel {
     public void setState(GroceryState newState) {
         GroceryState old = this.state;
         this.state = newState;
-        pcs.firePropertyChange("state", old, newState);
+        pcs.firePropertyChange("Grocery_List", old, newState);
     }
 
     public void addPropertyChangeListener(PropertyChangeListener l) {

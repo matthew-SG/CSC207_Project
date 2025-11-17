@@ -19,6 +19,7 @@ public class App {
                     .buildErrorPopUp()
                     .buildApproveRecipeFeature()
                     .buildCommunityFeature()
+                    .buildGroceryList()
                     .buildAuthFeature()
                     .build();
         });

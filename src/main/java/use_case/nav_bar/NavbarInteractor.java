@@ -36,4 +36,9 @@ public class NavbarInteractor implements NavbarInputBoundary{
     public void switchToProfile(){
         this.navbarPresenter.switchToProfile();
     }
+
+    @Override
+    public void switchToGroceryList(){
+        this.navbarPresenter.switchToGroceryList();
+    }
 }

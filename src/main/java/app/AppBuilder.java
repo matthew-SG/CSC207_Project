@@ -1,10 +1,6 @@
 package app;
 
-import data_access.SpoonacularApproveRecipeDataAccessObject;
-import data_access.DummyCommunityDataAccessObject;
-import data_access.InMemoryCommunityDataAccessObject;
-import data_access.InMemoryUserDataAccessObject;
-import data_access.UserDataAccess;
+import data_access.*;
 import entities.UserFactory;
 import interface_adapter.ViewManagerModel;
 import interface_adapter.approve_recipe.ApproveRecipeController;
@@ -13,6 +9,9 @@ import interface_adapter.approve_recipe.ApproveRecipeViewModel;
 import interface_adapter.community.CommunityController;
 import interface_adapter.community.CommunityPresenter;
 import interface_adapter.community.CommunityViewModel;
+import interface_adapter.grocery_list.GroceryController;
+import interface_adapter.grocery_list.GroceryPresenter;
+import interface_adapter.grocery_list.GroceryViewModel;
 import interface_adapter.logged_in.LoggedInViewModel;
 import interface_adapter.login.LoginController;
 import interface_adapter.login.LoginPresenter;
@@ -33,6 +32,10 @@ import use_case.community.CommunityDataAccessInterface;
 import use_case.community.CommunityInputBoundary;
 import use_case.community.CommunityMarketInteractor;
 import use_case.community.CommunityOutputBoundary;
+import use_case.grocery_list.add.AddInteractor;
+import use_case.grocery_list.delete.DeleteInteractor;
+import use_case.grocery_list.edit.EditInteractor;
+import use_case.grocery_list.load.LoadInteractor;
 import use_case.login.LoginInputBoundary;
 import use_case.login.LoginInteractor;
 import use_case.login.LoginOutputBoundary;
@@ -297,6 +300,25 @@ public class AppBuilder {
 
         return this;
     }
+
+    public AppBuilder buildGroceryList() {
+        String jsonPath = "grocery_list.json";
+        JsonGroceryRepository repo = new JsonGroceryRepository(jsonPath);
+
+        GroceryViewModel vm = new GroceryViewModel();
+        GroceryPresenter presenter = new GroceryPresenter(vm);
+
+        AddInteractor addUC = new AddInteractor(repo, presenter);
+        EditInteractor editUC = new EditInteractor(repo, presenter);
+        DeleteInteractor deleteUC = new DeleteInteractor(repo, presenter);
+        LoadInteractor loadUC = new LoadInteractor(repo, presenter);
+
+        GroceryController controller = new GroceryController(addUC, editUC, deleteUC, loadUC);
+        contentPanel.add(new GroceryView(controller, vm), "Grocery_List");
+        return this;
+    }
+
+
 
     /**
      * Build and display the application window.
