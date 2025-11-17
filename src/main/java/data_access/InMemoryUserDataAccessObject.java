@@ -33,7 +33,8 @@ public class InMemoryUserDataAccessObject implements UserDataAccess, MealPlanUse
         User testUserTwo = new User("test_2", "password", new ArrayList<>());
         User testUserThree = new User("test_3", "password", new ArrayList<>());
 
-        Recipe miniPastaTuna = new Recipe(654959, "Pasta With Tuna", "https://img.spoonacular.com/recipes/654959-312x231.jpg", "Italian");
+        Recipe miniPastaTuna = new Recipe(654959, "Pasta With Tuna",
+                "https://img.spoonacular.com/recipes/654959-312x231.jpg", "Italian");
         Ingredient flour = new Ingredient("flour", 2, "Tbsps");
         Ingredient greenO = new Ingredient("green onions", 100, "g");
         miniPastaTuna.addIngredient(flour); miniPastaTuna.addIngredient(greenO);
@@ -42,14 +43,16 @@ public class InMemoryUserDataAccessObject implements UserDataAccess, MealPlanUse
         miniPastaTuna.addNutritionalValue("Protein", 24);
         miniPastaTuna.addNutritionalValue("Fat", 10);
 
-        Recipe copyOne = new Recipe(654959, "Pasta With Tuna", "https://img.spoonacular.com/recipes/654959-312x231.jpg", "Italian");
+        Recipe copyOne = new Recipe(654959, "Pasta With Tuna",
+                "https://img.spoonacular.com/recipes/654959-312x231.jpg", "Italian");
         copyOne.addIngredient(flour); copyOne.addIngredient(greenO);
         copyOne.addNutritionalValue("Calories", 422);
         copyOne.addNutritionalValue("Carbohydrates", 57);
         copyOne.addNutritionalValue("Protein", 24);
         copyOne.addNutritionalValue("Fat", 10);
 
-        Recipe copyTwo = new Recipe(654959, "Pasta With Tuna", "https://img.spoonacular.com/recipes/654959-312x231.jpg", "Italian");
+        Recipe copyTwo = new Recipe(654959, "Pasta With Tuna",
+                "https://img.spoonacular.com/recipes/654959-312x231.jpg", "Italian");
         copyTwo.addIngredient(flour); copyTwo.addIngredient(greenO);
         copyTwo.addNutritionalValue("Calories", 422);
         copyTwo.addNutritionalValue("Carbohydrates", 57);
