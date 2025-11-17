@@ -20,7 +20,7 @@ public class MealPlanController {
      * @param targetCarbs the target carbs
      * @param targetFats the target fats
      */
-    public void execute(double targetCalories, double targetProtein, double targetCarbs, double targetFats) {
+    public void execute(String targetCalories, String targetProtein, String targetCarbs, String targetFats) {
         final MealPlanInputData mealPlanInputData = new MealPlanInputData(targetCalories, targetProtein, targetCarbs,
                 targetFats);
 

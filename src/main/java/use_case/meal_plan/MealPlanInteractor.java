@@ -23,10 +23,10 @@ public class MealPlanInteractor implements MealPlanInputBoundary{
 
     public void execute(MealPlanInputData mealPlanInputData) {
         final List<Recipe> savedRecipes = userDataAccessObject.getSavedRecipes();
-        final double calories = mealPlanInputData.getTargetCalories();
-        final double protein = mealPlanInputData.getTargetProtein();
-        final double carbs = mealPlanInputData.getTargetCarbs();
-        final double fats = mealPlanInputData.getTargetFats();
+        final String inputCalories = mealPlanInputData.getTargetCalories();
+        final String inputProtein = mealPlanInputData.getTargetProtein();
+        final String inputCarbs = mealPlanInputData.getTargetCarbs();
+        final String inputFats = mealPlanInputData.getTargetFats();
         MealPlan mealPlan;
         String[] recipeNames = new String[3];
         String[] recipeImages = new String[3];
@@ -34,35 +34,52 @@ public class MealPlanInteractor implements MealPlanInputBoundary{
         List<Map<String, Double>> recipeNutritionalValues = new ArrayList<>();
 
         if (savedRecipes.size() < 3) {
-            mealPlanPresenter.prepareFailView("At least 3 saved recipes must be saved for meal plan generation.");
-
-        } else if (calories < 0 || protein < 0 || carbs < 0 || fats < 0) {
-            mealPlanPresenter.prepareFailView("All input values must be positive.");
-
+            mealPlanPresenter.prepareFailView("At least 3 saved recipes must be saved for meal plan generation.",
+                    null);
+        } else if (!isDouble(inputCalories) || !isDouble(inputProtein) || !isDouble(inputCarbs) || !isDouble(inputFats)) {
+            mealPlanPresenter.prepareFailView(null, "All input values must be numerical.");
         } else {
-            if (savedRecipes.size() == 3) {
-                mealPlan = new MealPlan(savedRecipes, calories, protein, carbs, fats);
-
+            double targetCalories = Double.parseDouble(inputCalories);
+            double targetProtein = Double.parseDouble(inputProtein);
+            double targetCarbs = Double.parseDouble(inputCarbs);
+            double targetFats = Double.parseDouble(inputFats);
+            if (targetCalories < 0 || targetProtein < 0 || targetCarbs < 0 || targetFats < 0) {
+                mealPlanPresenter.prepareFailView(null, "All input values must be non-negative.");
             } else {
-                List<Recipe> mealPlanRecipes = computeBestFittingRecipes(savedRecipes, calories, protein, carbs, fats);
-                mealPlan = new MealPlan(mealPlanRecipes, calories, protein, carbs, fats);
+                List<Recipe> mealPlanRecipes = computeBestFittingRecipes(savedRecipes, targetCalories, targetProtein,
+                        targetCarbs, targetFats);
+                mealPlan = new MealPlan(mealPlanRecipes, targetCalories, targetProtein, targetCarbs, targetFats);
 
+                userDataAccessObject.saveMealPlan(mealPlan);
+                int i = 0;
+
+                for (Recipe recipe : savedRecipes) {
+                    recipeNames[i] = recipe.getRecipeName();
+                    recipeImages[i] = recipe.getRecipeImage();
+                    recipeIngredients.add(toOrderedString(recipe.getIngredients()));
+                    recipeNutritionalValues.add(recipe.getNutritionalValues());
+                    i++;
+
+                }
+                MealPlanOutputData mealPlanOutputData = new MealPlanOutputData(recipeNames, recipeImages, recipeIngredients,
+                        recipeNutritionalValues);
+                mealPlanPresenter.prepareSuccessView(mealPlanOutputData);
             }
-            userDataAccessObject.saveMealPlan(mealPlan);
-            int i = 0;
 
-            for (Recipe recipe : savedRecipes) {
-                recipeNames[i] = recipe.getRecipeName();
-                recipeImages[i] = recipe.getRecipeImage();
-                recipeIngredients.add(toOrderedString(recipe.getIngredients()));
-                recipeNutritionalValues.add(recipe.getNutritionalValues());
-                i++;
+        }
+    }
 
-            }
-            MealPlanOutputData mealPlanOutputData = new MealPlanOutputData(recipeNames, recipeImages, recipeIngredients,
-                    recipeNutritionalValues);
-            mealPlanPresenter.prepareSuccessView(mealPlanOutputData);
-
+    /**
+     * Helper function that checks if a String is a double.
+     * @param str the String to be checked
+     * @return whether the String can be represented as a double
+     */
+    private static boolean isDouble(String str) {
+        try {
+            Double.parseDouble(str);
+            return true;
+        } catch (NumberFormatException _) {
+            return false;
         }
     }
 

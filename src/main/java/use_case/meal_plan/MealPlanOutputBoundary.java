@@ -13,16 +13,8 @@ public interface MealPlanOutputBoundary {
 
     /**
      * Prepares the fail view for the Meal Plan Use Case
-     * @param error the error to be displayed
+     * @param listError the error to be displayed due to the saved recipes
+     * @param inputError the error to be displayed due to the input
      */
-    void prepareFailView(String error);
-    
-    /**
-     * Prepares the fail view for the Meal Plan Use Case
-     * @param caloriesError the explanation of the error for the calories input
-     * @param proteinError the explanation of the error for the protein input
-     * @param carbsError the explanation of the error for the carbs input
-     * @param fatsError the explanation of the error for the fats input
-     */
-    void prepareFailView(String caloriesError, String proteinError, String carbsError, String fatsError);
+    void prepareFailView(String listError, String inputError);
 }

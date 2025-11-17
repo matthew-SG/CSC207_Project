@@ -35,12 +35,10 @@ public class MealPlanPresenter implements MealPlanOutputBoundary {
         viewManagerModel.firePropertyChange();
     }
 
-    public void prepareFailView(String caloriesError, String proteinError, String carbsError, String fatsError) {
+    public void prepareFailView(String listError, String inputError) {
         final MealPlanGeneratorState mealPlanGeneratorState = mealPlanGeneratorViewModel.getState();
-        mealPlanGeneratorState.setCaloriesError(caloriesError);
-        mealPlanGeneratorState.setProteinError(proteinError);
-        mealPlanGeneratorState.setCarbsError(carbsError);
-        mealPlanGeneratorState.setFatsError(fatsError);
+        mealPlanGeneratorState.setInsufficientRecipesError(listError);
+        mealPlanGeneratorState.setInputsError(inputError);
         mealPlanGeneratorViewModel.firePropertyChange();
     }
 }
