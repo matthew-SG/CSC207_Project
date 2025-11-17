@@ -1,11 +1,15 @@
 package app;
 
+import data_access.SpoonacularApproveRecipeDataAccessObject;
 import data_access.DummyCommunityDataAccessObject;
 import data_access.InMemoryCommunityDataAccessObject;
 import data_access.InMemoryUserDataAccessObject;
 import data_access.UserDataAccess;
 import entities.UserFactory;
 import interface_adapter.ViewManagerModel;
+import interface_adapter.approve_recipe.ApproveRecipeController;
+import interface_adapter.approve_recipe.ApproveRecipePresenter;
+import interface_adapter.approve_recipe.ApproveRecipeViewModel;
 import interface_adapter.community.CommunityController;
 import interface_adapter.community.CommunityPresenter;
 import interface_adapter.community.CommunityViewModel;
@@ -21,6 +25,10 @@ import interface_adapter.nav_bar.NavbarPresenter;
 import interface_adapter.signup.SignupController;
 import interface_adapter.signup.SignupPresenter;
 import interface_adapter.signup.SignupViewModel;
+import use_case.approve_recipe.ApproveRecipeDataAccessInterface;
+import use_case.approve_recipe.ApproveRecipeInputBoundary;
+import use_case.approve_recipe.ApproveRecipeInteractor;
+import use_case.approve_recipe.ApproveRecipeOutputBoundary;
 import use_case.community.CommunityDataAccessInterface;
 import use_case.community.CommunityInputBoundary;
 import use_case.community.CommunityMarketInteractor;
@@ -50,6 +58,7 @@ public class AppBuilder {
     private UserFactory userFactory = new UserFactory();
     private UserDataAccess userDataAccessObject = new InMemoryUserDataAccessObject();
     private CommunityDataAccessInterface communityDataAccessObject = new DummyCommunityDataAccessObject();
+    private ApproveRecipeDataAccessInterface approveRecipeDataAccessObject;
     private JPanel contentPanel;
     private CardLayout cardLayout;
     private ViewManagerModel viewManagerModel;
@@ -57,6 +66,11 @@ public class AppBuilder {
 
     // Error pop up
     ErrorMessageView errorMessageView;
+
+    // Approve Recipe components
+    private ApproveRecipeViewModel approveRecipeViewModel;
+    private ApproveRecipeView approveRecipeView;
+    private ApproveRecipeController approveRecipeController;
 
     // Community components
     private CommunityViewModel communityViewModel;
@@ -83,6 +97,7 @@ public class AppBuilder {
     private NavbarLoggedInView navBarLoggedIn;
     private JPanel navBarContentPanel;
     private CardLayout navBarCardLayout;
+    private NavbarPresenter navbarPresenter;
 
     /**
      * Initialize the builder with default setup.
@@ -101,6 +116,11 @@ public class AppBuilder {
 
         viewManagerModel = new ViewManagerModel();
         viewManager = new ViewManager(contentPanel, cardLayout, viewManagerModel);
+
+        // Initialize approve recipe DAO with API access to real recipes
+        approveRecipeDataAccessObject = new SpoonacularApproveRecipeDataAccessObject(
+                ((InMemoryUserDataAccessObject) userDataAccessObject).getUsers()
+        );
     }
 
     public AppBuilder buildErrorPopUp(){
@@ -109,9 +129,44 @@ public class AppBuilder {
     }
 
     /**
+     * Build approve recipe feature components.
+     * Sets up view, controller, and use case for approving/declining recipes.
+     *
+     * @return this builder for method chaining
+     */
+    public AppBuilder buildApproveRecipeFeature() {
+        approveRecipeViewModel = new ApproveRecipeViewModel();
+        approveRecipeView = new ApproveRecipeView(approveRecipeViewModel, viewManagerModel);
+
+        // Wire up use case
+        ApproveRecipeOutputBoundary approveRecipePresenter = new ApproveRecipePresenter(
+                viewManagerModel,
+                approveRecipeViewModel
+        );
+        ApproveRecipeInputBoundary approveRecipeInteractor = new ApproveRecipeInteractor(
+                approveRecipeDataAccessObject,
+                approveRecipePresenter
+        );
+        approveRecipeController = new ApproveRecipeController(approveRecipeInteractor);
+
+        // Set controller on view
+        approveRecipeView.setApproveRecipeController(approveRecipeController);
+
+        // Set controller on navbar presenter if it exists
+        if (navbarPresenter != null) {
+            navbarPresenter.setApproveRecipeController(approveRecipeController);
+        }
+
+        // Add to main content panel
+        contentPanel.add(approveRecipeView, approveRecipeViewModel.getViewName());
+
+        return this;
+    }
+
+    /**
      * Build community feature components.
      * Sets up all views, controllers, and use cases related to the community review feature.
-     * 
+     *
      * @return this builder for method chaining
      */
     public AppBuilder buildCommunityFeature() {
@@ -216,17 +271,16 @@ public class AppBuilder {
     /**
      * Build navigation bar.
      * Sets up the navigation bar with its controller and presenter.
-     * 
+     *
      * @return this builder for method chaining
      */
     public AppBuilder buildNavigation() {
         navBar = new NavbarUnloggedInView();
         navBarLoggedIn = new NavbarLoggedInView();
 
+        navbarPresenter = new NavbarPresenter(viewManagerModel);
         NavbarController navbarController = new NavbarController(
-                new NavbarInteractor(
-                        new NavbarPresenter(viewManagerModel)
-                )
+                new NavbarInteractor(navbarPresenter)
         );
         navBar.setNavbarController(navbarController);
         navBarLoggedIn.setNavbarController(navbarController);
@@ -240,8 +294,6 @@ public class AppBuilder {
 
         navbarManagerViewModel = new NavbarManagerViewModel();
         navBarManagerView = new NavBarManagerView(navBarContentPanel, navBarCardLayout,navbarManagerViewModel);
-
-
 
         return this;
     }
