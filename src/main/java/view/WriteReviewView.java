@@ -153,10 +153,16 @@ public class WriteReviewView extends JPanel implements PropertyChangeListener {
             return;
         }
 
+        String recipeName = recipeNameLabel.getText().trim();
+        // TODO: store url in state for grab
+        String recipeImageUrl = "";
+
         // Call controller to publish review
         if (communityController != null && currentRecipeId != -1) {
-            communityController.publish(selectedRating, reviewText, currentRecipeId, currentUsername);
-            
+            communityController.publish(selectedRating,
+                    reviewText, currentRecipeId,
+                    currentUsername, recipeName,
+                    recipeImageUrl);
             // Clear form
             clearForm();
         }

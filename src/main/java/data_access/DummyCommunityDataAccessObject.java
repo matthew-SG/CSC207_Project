@@ -16,10 +16,10 @@ public class DummyCommunityDataAccessObject implements CommunityDataAccessInterf
     ArrayList<Rating> ratings = new ArrayList<>();
 
     public DummyCommunityDataAccessObject() {
-        likedRecipes.put(1, new Recipe(1, "pizza", "", "american"));
-        likedRecipes.put(2, new Recipe(2, "hamburger", "", "american"));
-        ratings.add(new Rating(1, 1, 1, 4, "yummy"));
-        ratings.add(new Rating(2, 2, 2, 4, "good"));
+        likedRecipes.put(1, new Recipe(1, "pizza", "https://www.tasteofhome.com/wp-content/uploads/2018/01/Homemade-Pizza_EXPS_FT23_376_EC_120123_3.jpg", "american"));
+        likedRecipes.put(2, new Recipe(2, "hamburger", "https://en.wikipedia.org/wiki/Cheeseburger#/media/File:Cheeseburger.jpg", "american"));
+        ratings.add(new Rating(1, 1, "test@1.ca", 4, "yummy", "hamburger", "https://en.wikipedia.org/wiki/Cheeseburger#/media/File:Cheeseburger.jpg"));
+        ratings.add(new Rating(2, 2, "test@1.ca", 4, "good","pizza", "https://www.tasteofhome.com/wp-content/uploads/2018/01/Homemade-Pizza_EXPS_FT23_376_EC_120123_3.jpg"));
     }
     @Override
     public List<Recipe> getLikedRecipes(User user) {
@@ -41,9 +41,11 @@ public class DummyCommunityDataAccessObject implements CommunityDataAccessInterf
         ratings.add(new Rating(
                 ratings.size() + 1,
                 data.getRecipeID(),
-                3,
+                "test222@1.ca",
                 data.getRating(),
-                data.getComment()
+                data.getComment(),
+                data.getRecipeName(),
+                data.getRecipeImageURL()
         ));
         return ratings;
     }

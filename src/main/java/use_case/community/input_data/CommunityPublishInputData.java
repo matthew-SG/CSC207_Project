@@ -5,11 +5,16 @@ public class CommunityPublishInputData {
     private final String comment;
     private final int recipeID;
     private final String userName;
-    public CommunityPublishInputData(String userName, int recipeID, int rating, String comment){
+    private final String recipeName;
+    private final String recipeImageURL;
+    public CommunityPublishInputData(String userName, int recipeID, int rating,
+                                     String comment, String recipeName, String recipeImageURL) {
         this.userName = userName;
         this.recipeID = recipeID;
         this.rating = rating;
         this.comment = comment;
+        this.recipeName = recipeName;
+        this.recipeImageURL = recipeImageURL;
     }
 
     public int getRecipeID() {
@@ -26,5 +31,13 @@ public class CommunityPublishInputData {
 
     public String getUserName() {
         return userName;
+    }
+
+    public String getRecipeName() {
+        return recipeName;
+    }
+
+    public String getRecipeImageURL() {
+        return recipeImageURL;
     }
 }

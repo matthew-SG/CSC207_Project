@@ -3,16 +3,19 @@ package entities;
 public class Rating {
     private int ratingId;
     private int recipeId;
-    private int userId;
+    private String userEmail;
     private int stars;
     private String comment;
-
-    public Rating(int ratingId, int recipeId, int userId, int stars, String comment) {
+    private String recipeName;
+    private String recipeImageUrl;
+    public Rating(int ratingId, int recipeId, String userEmail, int stars, String comment, String recipeName, String recipeImageUrl) {
         this.ratingId = ratingId;
         this.recipeId = recipeId;
-        this.userId = userId;
+        this.userEmail = userEmail;
         this.stars = stars;
         this.comment = comment;
+        this.recipeName = recipeName;
+        this.recipeImageUrl = recipeImageUrl;
     }
 
     public String getComment() {
@@ -31,12 +34,6 @@ public class Rating {
         return stars;
     }
 
-    public int getUserId() {
-        return userId;
-    }
-
-    // not final fileds (might be deleted)
-    private String recipeName;
     public String getRecipeName() {
         return recipeName;
     }
