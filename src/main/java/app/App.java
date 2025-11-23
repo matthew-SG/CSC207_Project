@@ -20,6 +20,7 @@ public class App {
                     .buildApproveRecipeFeature()
                     .buildCommunityFeature()
                     .buildAuthFeature()
+                    .buildMealPlan()
                     .build();
         });
     }

@@ -1,44 +1,38 @@
 package view;
 
-
-import interface_adapter.login.LoginController;
-import interface_adapter.login.LoginState;
-import interface_adapter.login.LoginViewModel;
+import entities.InstructionStep;
+import entities.RecipeInstructions;
 import interface_adapter.speech.SpeechService;
-import interface_adapter.step_by_step.StepByStepController;
-import interface_adapter.step_by_step.StepByStepState;
+import interface_adapter.step_by_step.*;
 import interface_adapter.step_by_step.StepByStepViewModel;
+import use_case.step_by_step.StepByStepInteractor;
 
 import javax.swing.*;
 import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
+import java.util.List;
 
-import javax.sound.sampled.Clip;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.AudioInputStream;
-
-
-public class StepByStepView extends JFrame implements PropertyChangeListener{
+public class StepByStepView extends JFrame implements PropertyChangeListener {
 
     private final StepByStepController stepByStepController;
     private final StepByStepViewModel stepByStepViewModel;
     private final SpeechService speechService;
 
+    private ImageIcon scaledIcon;
+    private Image scaled;
+    private Image resized;
+    private JLabel imageLabel;
+    private ImageIcon chefIcon;
     private JLabel stepLabel;
     private JTextArea stepTextArea;
     private JButton prevButton;
     private JButton nextButton;
     private JButton speakButton;
-    private JButton stopButton;
-
-    private Clip audioClip;
 
     public StepByStepView(StepByStepController controller,
-                           StepByStepViewModel viewModel,
-                           SpeechService speechService) {
+                          StepByStepViewModel viewModel,
+                          SpeechService speechService) {
 
         this.stepByStepController = controller;
         this.stepByStepViewModel = viewModel;
@@ -47,9 +41,7 @@ public class StepByStepView extends JFrame implements PropertyChangeListener{
         viewModel.addPropertyChangeListener(this);
 
         setupUI();
-        setVisible(true);
     }
-
 
     private void setupUI() {
         setTitle("Step-by-Step Instructions");
@@ -57,26 +49,48 @@ public class StepByStepView extends JFrame implements PropertyChangeListener{
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        stepLabel = new JLabel("Step 1", SwingConstants.CENTER);
-        stepLabel.setFont(new Font("Arial", Font.BOLD, 18));
-        add(stepLabel, BorderLayout.NORTH);
+        stepLabel = new JLabel("Step 1");
 
         stepTextArea = new JTextArea();
         stepTextArea.setEditable(false);
         stepTextArea.setLineWrap(true);
         stepTextArea.setWrapStyleWord(true);
-        add(new JScrollPane(stepTextArea), BorderLayout.CENTER);
+
+        chefIcon = new ImageIcon("src/main/java/view/chef-cooking-kitchen-while-wearing-professional-attire.jpg");
+        resized = chefIcon.getImage();
+        int newWidth = 200;
+        int newHeight = 140;
+        scaled = resized.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
+        scaledIcon = new ImageIcon(scaled);
+        imageLabel = new JLabel(scaledIcon);
+
+        JPanel stepButtonPanel = new JPanel(new GridBagLayout());
+
+        GridBagConstraints gbc = new GridBagConstraints();
+
+        gbc.gridx = 1;
+        gbc.gridy = 1;
+        gbc.weightx = 0.1;
+        stepButtonPanel.add(imageLabel, gbc);
+
+        gbc.gridx = 2;
+        gbc.gridy = 0;
+        stepButtonPanel.add(stepLabel, gbc);
+
+        gbc.gridx = 2;
+        gbc.gridy = 1;
+        stepButtonPanel.add(stepTextArea, gbc);
+
+        add(stepButtonPanel, BorderLayout.CENTER);
 
         prevButton = new JButton("Previous Step");
         nextButton = new JButton("Next Step");
         speakButton = new JButton("Speak");
-        stopButton = new JButton("Stop");
 
-        JPanel buttonPanel = new JPanel(new GridLayout(1, 4));
+        JPanel buttonPanel = new JPanel(new GridLayout(1, 3));
         buttonPanel.add(prevButton);
         buttonPanel.add(nextButton);
         buttonPanel.add(speakButton);
-        buttonPanel.add(stopButton);
         add(buttonPanel, BorderLayout.SOUTH);
 
         addListeners();
@@ -87,44 +101,21 @@ public class StepByStepView extends JFrame implements PropertyChangeListener{
         nextButton.addActionListener(e -> stepByStepController.nextStep());
 
         speakButton.addActionListener(e -> playSpeech());
-        stopButton.addActionListener(e -> stopAudio());
     }
 
     private void playSpeech() {
         StepByStepState state = stepByStepViewModel.getState();
-        if (state == null || state.getStepText() == null) return;
+        if (state == null || state.getStepText() == null || speechService == null) return;
 
+        // Run TTS in a background thread so UI doesn't freeze
         new Thread(() -> {
             try {
-                byte[] audioBytes = speechService.synthesize(state.getStepText());
-                playAudioBytes(audioBytes);
-            } catch (IOException ex) {
-                JOptionPane.showMessageDialog(this, "Error synthesizing speech");
+                speechService.synthesize(state.getStepText());
+            } catch (Exception e) {
+                System.err.println("TTS error: " + e.getMessage());
+                e.printStackTrace();
             }
         }).start();
-    }
-
-    private void playAudioBytes(byte[] audioData) {
-        try {
-            stopAudio(); // Stop any audio already playing
-
-            // Convert MP3 bytes to audio stream using Java Sound API (MP3 SPI required)
-            AudioInputStream ais = AudioSystem.getAudioInputStream(new ByteArrayInputStream(audioData));
-
-            audioClip = AudioSystem.getClip();
-            audioClip.open(ais);
-            audioClip.start();
-
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Error playing audio (MP3 SPI may be missing)");
-        }
-    }
-
-    private void stopAudio() {
-        if (audioClip != null && audioClip.isOpen()) {
-            audioClip.stop();
-            audioClip.close();
-        }
     }
 
     @Override
@@ -135,5 +126,32 @@ public class StepByStepView extends JFrame implements PropertyChangeListener{
 
         stepLabel.setText("Step " + newState.getStepNumber());
         stepTextArea.setText(newState.getStepText());
+    }
+
+    // Example main method using SystemTTSService
+    public static void main(String[] args) {
+        // Example steps
+        List<InstructionStep> steps = List.of(
+                new InstructionStep(1, "Heat the oven", List.of(), List.of()),
+                new InstructionStep(2, "Make it hotter", List.of(), List.of()),
+                new InstructionStep(3, "MAKE IT EVEN HOTTER", List.of(), List.of()),
+                new InstructionStep(4, "You have been burned :)", List.of(), List.of())
+        );
+
+        RecipeInstructions instructions = new RecipeInstructions(steps);
+
+        StepByStepViewModel viewModel = new StepByStepViewModel();
+        StepByStepPresenter presenter = new StepByStepPresenter(viewModel);
+        StepByStepInteractor interactor = new StepByStepInteractor(presenter);
+        StepByStepController controller = new StepByStepController(interactor, instructions);
+
+        // Use system TTS
+        SpeechService tts = new speechapi.SystemTTS();
+
+        SwingUtilities.invokeLater(() -> {
+            StepByStepView view = new StepByStepView(controller, viewModel, tts);
+            controller.start();
+            view.setVisible(true);
+        });
     }
 }
