@@ -106,7 +106,7 @@ public class InMemoryUserDataAccessObject implements UserDataAccess, MealPlanUse
         if (users.containsKey(email)) {
             return SignupUserDataAccessInterface.USER_EXISTS_ERROR;
         }
-        User user = new User(email, password);
+        User user = new User(email, password, new ArrayList<>());
         currentUsername = email;
         users.put(currentUsername, user);
         return SignupUserDataAccessInterface.SUCCESS;
