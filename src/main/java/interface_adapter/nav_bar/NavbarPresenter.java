@@ -40,7 +40,7 @@ public class NavbarPresenter implements NavbarOutputBoundary {
     @Override
     public void switchToCommunity() {
         if (Objects.equals(communityViewModel.getState().getSubviewName(), CommunityViewModel.PUB_SUCC)) {
-            communityViewModel.getState().prompt = CommunityRatingsOutputData.PROMPT;
+            communityViewModel.getState().setPrompt(CommunityRatingsOutputData.PROMPT);
             communityViewModel.firePropertyChange();
         }
         viewManagerModel.getState().viewName = CommunityViewModel.viewName;

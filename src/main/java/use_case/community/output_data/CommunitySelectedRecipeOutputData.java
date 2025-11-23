@@ -4,8 +4,7 @@ import entities.Recipe;
 
 public class CommunitySelectedRecipeOutputData {
     private final int selectedRecipeId;
-
-
+    
     public CommunitySelectedRecipeOutputData(int selectedRecipeId) {
         this.selectedRecipeId = selectedRecipeId;
     }

@@ -2,7 +2,6 @@ package app;
 
 import data_access.SpoonacularApproveRecipeDataAccessObject;
 import data_access.DummyCommunityDataAccessObject;
-import data_access.InMemoryCommunityDataAccessObject;
 import data_access.InMemoryUserDataAccessObject;
 import data_access.UserDataAccess;
 import entities.UserFactory;
@@ -209,7 +208,7 @@ public class AppBuilder {
         writeReviewView.setCommunityController(communityController);
 
         // Set initial state
-        communityViewModel.getState().subviewName = CommunityViewModel.VIEWING;
+        communityViewModel.getState().setSubviewName(CommunityViewModel.VIEWING);
         communityViewModel.firePropertyChange();
 
         // Add to main content panel
@@ -325,7 +324,7 @@ public class AppBuilder {
         frame.add(contentPanel, BorderLayout.CENTER);
         navbarManagerViewModel.setState(NavbarManagerViewModel.UNLOGGED_IN);
         navbarManagerViewModel.firePropertyChange();
-        communityViewModel.getState().subviewName = CommunityViewModel.VIEWING;
+        communityViewModel.getState().setSubviewName(CommunityViewModel.VIEWING);
         communityViewModel.firePropertyChange();
         viewManagerModel.getState().viewName = LoginViewModel.viewName;
         viewManagerModel.firePropertyChange();
