@@ -2,7 +2,6 @@ package data_access;
 
 import entities.User;
 import use_case.login.LoginUserDataAccessInterface;
-import use_case.logout.LogoutUserDataAccessInterface;
 import use_case.signup.SignupUserDataAccessInterface;
 
 import java.util.HashMap;
@@ -19,28 +18,13 @@ public class InMemoryUserDataAccessObject implements UserDataAccess {
     private String currentUsername;
 
     @Override
-    public boolean existsByName(String identifier) {
-        return users.containsKey(identifier);
-    }
-
-    @Override
-    public void save(User user) {
-        users.put(user.getName(), user);
-    }
-
-    @Override
-    public User get(String username) {
-        return users.get(username);
-    }
-
-    @Override
-    public void setCurrentUsername(String name) {
-        currentUsername = name;
-    }
-
-    @Override
     public String getCurrentUsername() {
         return currentUsername;
+    }
+
+    @Override
+    public void logout() {
+
     }
 
     /**
@@ -49,5 +33,27 @@ public class InMemoryUserDataAccessObject implements UserDataAccess {
      */
     public Map<String, User> getUsers() {
         return users;
+    }
+
+    @Override
+    public String login(String username, String password) {
+        if (!users.containsKey(username)) {
+            return LoginUserDataAccessInterface.USER_DNE_ERROR;
+        } else if (!users.get(username).getPassword().equals(password)) {
+            return LoginUserDataAccessInterface.INCORRECT_PASSWORD_ERROR;
+        }
+        currentUsername = username;
+        return LoginUserDataAccessInterface.SUCCESS;
+    }
+
+    @Override
+    public String signupUser(String email, String password) {
+        if (users.containsKey(email)) {
+            return SignupUserDataAccessInterface.USER_EXISTS_ERROR;
+        }
+        User user = new User(email, password);
+        currentUsername = email;
+        users.put(currentUsername, user);
+        return SignupUserDataAccessInterface.SUCCESS;
     }
 }

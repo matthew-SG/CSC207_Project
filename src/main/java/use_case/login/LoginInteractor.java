@@ -1,6 +1,6 @@
 package use_case.login;
 
-import entities.User;
+import java.util.Objects;
 
 /**
  * The Login Interactor.
@@ -19,23 +19,15 @@ public class LoginInteractor implements LoginInputBoundary {
     public void execute(LoginInputData loginInputData) {
         final String username = loginInputData.getUsername();
         final String password = loginInputData.getPassword();
-        if (!userDataAccessObject.existsByName(username)) {
+        String returnCode = userDataAccessObject.login(username, password);
+        if (Objects.equals(returnCode, LoginUserDataAccessInterface.USER_DNE_ERROR)) {
             loginPresenter.prepareFailView(username + ": Account does not exist.");
+        } else if (Objects.equals(returnCode, LoginUserDataAccessInterface.INCORRECT_PASSWORD_ERROR)) {
+            loginPresenter.prepareFailView("Incorrect password for \"" + username + "\".");
         }
-        else {
-            final String pwd = userDataAccessObject.get(username).getPassword();
-            if (!password.equals(pwd)) {
-                loginPresenter.prepareFailView("Incorrect password for \"" + username + "\".");
-            }
-            else {
-
-                final User user = userDataAccessObject.get(loginInputData.getUsername());
-
-                userDataAccessObject.setCurrentUsername(username);
-
-                final LoginOutputData loginOutputData = new LoginOutputData(user.getName());
-                loginPresenter.prepareSuccessView(loginOutputData);
-            }
+        else if (returnCode.equals(LoginUserDataAccessInterface.SUCCESS)) {
+            final LoginOutputData loginOutputData = new LoginOutputData(userDataAccessObject.getCurrentUsername());
+            loginPresenter.prepareSuccessView(loginOutputData);
         }
     }
 }

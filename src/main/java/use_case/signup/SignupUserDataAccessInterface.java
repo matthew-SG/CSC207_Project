@@ -6,17 +6,18 @@ import entities.User;
  * DAO interface for the Signup Use Case.
  */
 public interface SignupUserDataAccessInterface {
+    String USER_EXISTS_ERROR = "USER_EXISTS_ERROR";
+    String SUCCESS = "SUCCESS";
+    /*
+    * Try to create a user with the credentials, and update DAO's state to store related credentials.
+    * Return SUCCESS if successful
+    * Return defined error messages otherwise
+    * */
+    String signupUser(String email, String password);
 
     /**
-     * Checks if the given username exists.
-     * @param username the username to look for
-     * @return true if a user with the given username exists; false otherwise
+     * Returns the username of the current user of the application.
+     * @return the username of the current user
      */
-    boolean existsByName(String username);
-
-    /**
-     * Saves the user.
-     * @param user the user to save
-     */
-    void save(User user);
+    String getCurrentUsername();
 }
