@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * The View Meal Plans Use Case Interactor
  */
-public class ViewMealPlansInteractor {
+public class ViewMealPlansInteractor implements ViewMealPlansInputBoundary {
     private final ViewMealPlansDataAccessInterface viewMealPlansDataAccessObject;
     private final ViewMealPlansOutputBoundary viewMealPlansPresenter;
 
@@ -21,16 +21,20 @@ public class ViewMealPlansInteractor {
     public void execute() {
         final List<MealPlan> mealPlans = viewMealPlansDataAccessObject.getMealPlans();
 
-        final List<String> firstRecipeNames = getFirstRecipeNames(mealPlans);
-        final List<Double> targetCalories = getTargetCalories(mealPlans);
-        final List<Double> targetProtein = getTargetProtein(mealPlans);
-        final List<Double> targetCarbs = getTargetCarbs(mealPlans);
-        final List<Double> targetFats = getTargetFats(mealPlans);
+        if (mealPlans.isEmpty()) {
+            viewMealPlansPresenter.prepareFailView("You currently have no meal plans saved!");
+        } else {
+            final List<String> firstRecipeNames = getFirstRecipeNames(mealPlans);
+            final List<Double> targetCalories = getTargetCalories(mealPlans);
+            final List<Double> targetProtein = getTargetProtein(mealPlans);
+            final List<Double> targetCarbs = getTargetCarbs(mealPlans);
+            final List<Double> targetFats = getTargetFats(mealPlans);
 
-        ViewMealPlansOutputData viewMealPlansOutputData = new ViewMealPlansOutputData(firstRecipeNames, targetCalories,
-                targetProtein, targetCarbs, targetFats);
+            ViewMealPlansOutputData viewMealPlansOutputData = new ViewMealPlansOutputData(firstRecipeNames,
+                    targetCalories, targetProtein, targetCarbs, targetFats);
 
-        viewMealPlansPresenter.prepareSuccessView(viewMealPlansOutputData);
+            viewMealPlansPresenter.prepareSuccessView(viewMealPlansOutputData);
+        }
     }
 
     /**

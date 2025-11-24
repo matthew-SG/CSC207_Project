@@ -3,6 +3,7 @@ package view;
 import interface_adapter.meal_plan.MealPlanController;
 import interface_adapter.meal_plan.MealPlanGeneratorState;
 import interface_adapter.meal_plan.MealPlanGeneratorViewModel;
+import interface_adapter.view_meal_plans.ViewMealPlansController;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -31,9 +32,12 @@ public class MealPlanGeneratorView extends JPanel implements PropertyChangeListe
 
     private final JLabel insufficientRecipesErrorField = new JLabel();
     private final JLabel inputErrorField = new JLabel();
+    private final JLabel noMealPlansErrorField = new JLabel();
 
+    private final JButton viewMealPlans;
     private final JButton generate;
     private MealPlanController mealPlanController = null;
+    private ViewMealPlansController viewMealPlansController = null;
 
     public MealPlanGeneratorView(MealPlanGeneratorViewModel mealPlanGeneratorViewModel) {
 
@@ -60,6 +64,8 @@ public class MealPlanGeneratorView extends JPanel implements PropertyChangeListe
         targetFatsPanel.add(targetFatsInputField);
 
         final JPanel buttons = new JPanel();
+        viewMealPlans = new JButton("View Saved Meal Plans");
+        buttons.add(viewMealPlans);
         generate = new JButton("Generate");
         buttons.add(generate);
 
@@ -74,6 +80,14 @@ public class MealPlanGeneratorView extends JPanel implements PropertyChangeListe
                                 currentState.getTargetCarbs(),
                                 currentState.getTargetFats()
                         );
+                    }
+                }
+        );
+
+        viewMealPlans.addActionListener(
+                new ActionListener() {
+                    public void actionPerformed(ActionEvent evt) {
+                        viewMealPlansController.execute();
                     }
                 }
         );
@@ -101,6 +115,9 @@ public class MealPlanGeneratorView extends JPanel implements PropertyChangeListe
         targetProteinPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
         targetCarbsPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
         targetFatsPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        insufficientRecipesErrorField.setAlignmentX(Component.CENTER_ALIGNMENT);
+        inputErrorField.setAlignmentX(Component.CENTER_ALIGNMENT);
+        noMealPlansErrorField.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         targetProteinInputField.getDocument().addDocumentListener(new DocumentListener() {
             private void documentListenerHelper() {
@@ -161,9 +178,10 @@ public class MealPlanGeneratorView extends JPanel implements PropertyChangeListe
         formPanel.add(targetProteinPanel);
         formPanel.add(targetCarbsPanel);
         formPanel.add(targetFatsPanel);
+        formPanel.add(buttons);
         formPanel.add(insufficientRecipesErrorField);
         formPanel.add(inputErrorField);
-        formPanel.add(buttons);
+        formPanel.add(noMealPlansErrorField);
 
         this.add(formPanel, gbc);
     }
@@ -174,6 +192,7 @@ public class MealPlanGeneratorView extends JPanel implements PropertyChangeListe
         setFields(state);
         insufficientRecipesErrorField.setText(state.getInsufficientRecipesError());
         inputErrorField.setText(state.getInputsError());
+        noMealPlansErrorField.setText(state.getNoMealPlansError());
     }
 
     private void setFields(MealPlanGeneratorState state) {
@@ -183,9 +202,18 @@ public class MealPlanGeneratorView extends JPanel implements PropertyChangeListe
         targetFatsInputField.setText(state.getTargetFats());
     }
 
+    public void resetView() {
+        this.mealPlanGeneratorViewModel.setState(new MealPlanGeneratorState());
+        this.mealPlanGeneratorViewModel.firePropertyChange();
+    }
+
     public static String getViewName() { return VIEW_NAME; }
 
     public void setMealPlanController(MealPlanController mealPlanController) {
         this.mealPlanController = mealPlanController;
+    }
+
+    public void setViewMealPlansController(ViewMealPlansController viewMealPlansController) {
+        this.viewMealPlansController = viewMealPlansController;
     }
 }
