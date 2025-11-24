@@ -1,4 +1,4 @@
-package use_case.load_meal_plan;
+package use_case.view_meal_plans;
 
 /**
  * The Output Boundary for the View Meal Plans Use Case

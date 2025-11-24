@@ -1,4 +1,4 @@
-package use_case.load_meal_plan;
+package use_case.view_meal_plans;
 
 import entities.MealPlan;
 
@@ -9,14 +9,17 @@ import java.util.List;
  * The View Meal Plans Use Case Interactor
  */
 public class ViewMealPlansInteractor {
+    private final ViewMealPlansDataAccessInterface viewMealPlansDataAccessObject;
     private final ViewMealPlansOutputBoundary viewMealPlansPresenter;
 
-    public ViewMealPlansInteractor(ViewMealPlansOutputBoundary viewMealPlansPresenter) {
+    public ViewMealPlansInteractor(ViewMealPlansDataAccessInterface viewMealPlansDataAccessObject,
+                                   ViewMealPlansOutputBoundary viewMealPlansPresenter) {
         this.viewMealPlansPresenter = viewMealPlansPresenter;
+        this.viewMealPlansDataAccessObject = viewMealPlansDataAccessObject;
     }
 
-    public void execute(ViewMealPlansInputData viewMealPlansInputData) {
-        final List<MealPlan> mealPlans = viewMealPlansInputData.getMealPlans();
+    public void execute() {
+        final List<MealPlan> mealPlans = viewMealPlansDataAccessObject.getMealPlans();
 
         final List<String> firstRecipeNames = getFirstRecipeNames(mealPlans);
         final List<Double> targetCalories = getTargetCalories(mealPlans);
