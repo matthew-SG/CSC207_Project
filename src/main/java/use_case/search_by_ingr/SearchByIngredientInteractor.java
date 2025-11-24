@@ -4,8 +4,7 @@ import API.SearchByIngredientSpoonacular;
 import entities.Ingredient;
 import entities.Recipe;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class SearchByIngredientInteractor implements SearchByIngredientInputBoundary{
     private final SearchByIngredientSpoonacular api;
@@ -17,10 +16,7 @@ public class SearchByIngredientInteractor implements SearchByIngredientInputBoun
     public SearchByIngredientOutputData execute(SearchByIngredientInputData inputData) {
         List<Ingredient> ingredients = inputData.getIngredients();
         if(ingredients.isEmpty()){return new SearchByIngredientOutputData(List.of(),"Enter at least one ingredient");}
-        ArrayList<String> ingrNames = new ArrayList<>();
-        for (Ingredient ingr : ingredients)
-            ingrNames.add(ingr.getName());
-        List<Recipe> recipes = api.searchByIngredientSpoonacular(ingrNames);
+        List<Recipe> recipes = api.searchByIngredientSpoonacular(ingredients);
         String msg;
         if(recipes.isEmpty()) msg="no perfect match found";
         else msg="found";

@@ -16,12 +16,16 @@ public class SearchByIngredientSpoonacular {
         this.apiKey = apiKey;
     }
 
-    public List<Recipe> searchByIngredientSpoonacular(List<String> ingredients) {
+    public List<Recipe> searchByIngredientSpoonacular(List<Ingredient> ingredients) {
         List<Recipe> result = new ArrayList<>();
         if (ingredients.isEmpty()) {
             return result;
         }
-        String ingredientsString = String.join(",", ingredients);
+        List<String> names=new ArrayList<>();
+        for (Ingredient ingredient : ingredients) {
+            names.add(ingredient.getName());
+        }
+        String ingredientsString = String.join(",", names);
         ingredientsString = ingredientsString.replace(" ", "+");
         HttpUrl url = HttpUrl.parse(BYINGREDIENTSURL).newBuilder().
                 addQueryParameter("apiKey", apiKey).
@@ -47,12 +51,29 @@ public class SearchByIngredientSpoonacular {
                 JSONObject object = responseBody.getJSONObject(i);
                 int missedIngredients = object.getInt("missedIngredientCount");
                 if (missedIngredients == 0) {
-                    Recipe recipe = new Recipe(
-                            object.getInt("id"),
-                            object.getString("title"),
-                            object.getString("image"),
-                            "N/A");
-                    result.add(recipe);
+                    JSONArray usedIngredients = object.getJSONArray("usedIngredients");
+                    boolean haveEnough = true;
+                    for (int j = 0; j < usedIngredients.length()&&haveEnough; j++) {
+                        JSONObject usedIngredient = usedIngredients.getJSONObject(j);
+                        double amount = usedIngredient.getDouble("amount");
+                        String name = usedIngredient.getString("name").toLowerCase();
+                        for (Ingredient ingredient : ingredients) {
+                            if (ingredient.getName().toLowerCase().contains(name)) {
+                                if (ingredient.getQuantity() < amount) {
+                                    haveEnough = false;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    if (haveEnough) {
+                        Recipe recipe = new Recipe(
+                                object.getInt("id"),
+                                object.getString("title"),
+                                object.getString("image"),
+                                "N/A");
+                        result.add(recipe);
+                    }
                 }
             }
             return result;
