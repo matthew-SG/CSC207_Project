@@ -12,7 +12,7 @@ import java.awt.*;
 
 public class SearchByIngredientView extends JPanel {
 
-    public static final String VIEWNAME = "search by ingredient";
+    public static final String VIEWNAME = "Search By Ingredient";
 
     private final SearchByIngredientController controller;
     private final SearchByIngredientSpoonacular api;
@@ -192,8 +192,5 @@ public class SearchByIngredientView extends JPanel {
                 selected.getRecipeName(),
                 JOptionPane.INFORMATION_MESSAGE
         );
-    }
-    public String getViewName() {
-        return VIEWNAME;
     }
 }
