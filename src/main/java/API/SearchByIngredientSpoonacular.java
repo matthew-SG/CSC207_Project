@@ -15,11 +15,13 @@ public class SearchByIngredientSpoonacular {
     public SearchByIngredientSpoonacular(String apiKey) {
         this.apiKey = apiKey;
     }
+    public SearchByIngredientSpoonacular() {
+        this.apiKey = "6e0b1d9ab8b94b9dbf723c0203286189";
+    }
 
-    public List<Recipe> searchByIngredientSpoonacular(List<Ingredient> ingredients) {
-        List<Recipe> result = new ArrayList<>();
+    public JSONArray searchByIngredientSpoonacular(List<Ingredient> ingredients) {
         if (ingredients.isEmpty()) {
-            return result;
+            return null;
         }
         List<String> names=new ArrayList<>();
         for (Ingredient ingredient : ingredients) {
@@ -47,36 +49,7 @@ public class SearchByIngredientSpoonacular {
            String rspns = response.body().string();
             final JSONArray responseBody = new JSONArray(rspns);
             if (responseBody.length() == 0) throw new IOException("Empty response");
-            for (int i = 0; i < responseBody.length() && result.size() < 5; i++) {
-                JSONObject object = responseBody.getJSONObject(i);
-                int missedIngredients = object.getInt("missedIngredientCount");
-                if (missedIngredients == 0) {
-                    JSONArray usedIngredients = object.getJSONArray("usedIngredients");
-                    boolean haveEnough = true;
-                    for (int j = 0; j < usedIngredients.length()&&haveEnough; j++) {
-                        JSONObject usedIngredient = usedIngredients.getJSONObject(j);
-                        double amount = usedIngredient.getDouble("amount");
-                        String name = usedIngredient.getString("name").toLowerCase();
-                        for (Ingredient ingredient : ingredients) {
-                            if (ingredient.getName().toLowerCase().contains(name)) {
-                                if (ingredient.getQuantity() < amount) {
-                                    haveEnough = false;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                    if (haveEnough) {
-                        Recipe recipe = new Recipe(
-                                object.getInt("id"),
-                                object.getString("title"),
-                                object.getString("image"),
-                                "N/A");
-                        result.add(recipe);
-                    }
-                }
-            }
-            return result;
+            return responseBody;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
