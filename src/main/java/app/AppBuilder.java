@@ -3,6 +3,7 @@ package app;
 import data_access.SpoonacularApproveRecipeDataAccessObject;
 import data_access.DummyCommunityDataAccessObject;
 import data_access.InMemoryUserDataAccessObject;
+import data_access.UserDataAccess;
 import entities.UserFactory;
 import interface_adapter.ViewManagerModel;
 import interface_adapter.approve_recipe.ApproveRecipeController;
@@ -62,7 +63,7 @@ public class AppBuilder {
     // Required components
     private UserFactory userFactory = new UserFactory();
     // In Memory Data Access Object
-    private InMemoryUserDataAccessObject userDataAccessObject = new InMemoryUserDataAccessObject();
+    private UserDataAccess userDataAccessObject = new InMemoryUserDataAccessObject();
     private CommunityDataAccessInterface communityDataAccessObject = new DummyCommunityDataAccessObject();
     private ApproveRecipeDataAccessInterface approveRecipeDataAccessObject;
     private JPanel contentPanel;

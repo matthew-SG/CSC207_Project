@@ -18,7 +18,7 @@ import java.util.Map;
  * In-memory implementation of the DAO for storing user data. This implementation does
  * NOT persist data between runs of the program.
  */
-public class InMemoryUserDataAccessObject implements UserDataAccess, MealPlanUserDataAccessInterface {
+public class InMemoryUserDataAccessObject implements UserDataAccess {
 
     private final Map<String, User> users = new HashMap<>();
 
