@@ -8,6 +8,8 @@ import interface_adapter.login.LoginViewModel;
 import interface_adapter.signup.SignupViewModel;
 import use_case.community.output_data.CommunityRatingsOutputData;
 import use_case.nav_bar.NavbarOutputBoundary;
+import interface_adapter.recipe_generator.RecipeGeneratorViewModel;
+
 import view.MealPlanGeneratorView;
 
 import java.util.Objects;
@@ -50,7 +52,8 @@ public class NavbarPresenter implements NavbarOutputBoundary {
 
     @Override
     public void switchToGenerateRecipe() {
-        // TODO: implement this
+        viewManagerModel.getState().viewName = RecipeGeneratorViewModel.viewName;
+        viewManagerModel.firePropertyChange();
     }
 
     @Override

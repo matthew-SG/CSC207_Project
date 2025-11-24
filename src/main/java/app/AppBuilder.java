@@ -46,6 +46,16 @@ import use_case.nav_bar.NavbarInteractor;
 import use_case.signup.SignupInputBoundary;
 import use_case.signup.SignupInteractor;
 import use_case.signup.SignupOutputBoundary;
+import data_access.DummyRecipeDataAccessObject;
+import interface_adapter.recipe_generator.RecipeGeneratorController;
+import interface_adapter.recipe_generator.RecipeGeneratorPresenter;
+import interface_adapter.recipe_generator.RecipeGeneratorViewModel;
+import use_case.recipe_generator.RecipeGeneratorInteractor;
+import use_case.recipe_generator.RecipeDataAccessInterface;
+import use_case.recipe_generator.RecipeGeneratorInputBoundary;
+import use_case.recipe_generator.RecipeGeneratorOutputBoundary;
+import view.RecipeGeneratorView;
+
 import view.*;
 
 import javax.swing.*;
@@ -173,6 +183,42 @@ public class AppBuilder {
 
         return this;
     }
+
+    public AppBuilder buildRecipeGeneratorFeature() {
+        RecipeGeneratorViewModel recipeGeneratorViewModel =
+                new RecipeGeneratorViewModel();
+
+        // Presenter
+        RecipeGeneratorOutputBoundary recipeGeneratorPresenter =
+                new RecipeGeneratorPresenter(recipeGeneratorViewModel, viewManagerModel);
+
+        // 3. Data access accessing dummy recipe generator
+        RecipeDataAccessInterface recipeGateway =
+                new DummyRecipeDataAccessObject();
+
+        //interactor
+        RecipeGeneratorInputBoundary recipeGeneratorInteractor =
+                new RecipeGeneratorInteractor(recipeGateway, recipeGeneratorPresenter);
+
+        //Controller
+        RecipeGeneratorController recipeGeneratorController =
+                new RecipeGeneratorController(recipeGeneratorInteractor);
+
+        // View
+        RecipeGeneratorView recipeGeneratorView =
+                new RecipeGeneratorView(
+                        recipeGeneratorViewModel,
+                        recipeGeneratorController,
+                        viewManagerModel
+                );
+
+        // register view with main content panel
+        contentPanel.add(recipeGeneratorView, recipeGeneratorViewModel.getViewName());
+
+        return this;
+    }
+
+
 
     /**
      * Build community feature components.
