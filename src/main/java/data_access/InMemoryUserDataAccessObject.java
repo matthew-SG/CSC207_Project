@@ -5,6 +5,7 @@ import entities.MealPlan;
 import entities.Recipe;
 import entities.User;
 import use_case.login.LoginUserDataAccessInterface;
+import use_case.meal_plan.MealPlanUserDataAccessInterface;
 import use_case.signup.SignupUserDataAccessInterface;
 import use_case.view_meal_plans.ViewMealPlansDataAccessInterface;
 
