@@ -3,6 +3,7 @@ package view;
 import interface_adapter.meal_plan.MealPlanController;
 import interface_adapter.meal_plan.MealPlanGeneratorState;
 import interface_adapter.meal_plan.MealPlanGeneratorViewModel;
+import interface_adapter.view_meal_plans.ViewMealPlansController;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -31,9 +32,12 @@ public class MealPlanGeneratorView extends JPanel implements PropertyChangeListe
 
     private final JLabel insufficientRecipesErrorField = new JLabel();
     private final JLabel inputErrorField = new JLabel();
+    private final JLabel noMealPlansErrorField = new JLabel();
 
+    private final JButton viewMealPlans;
     private final JButton generate;
     private MealPlanController mealPlanController = null;
+    private ViewMealPlansController viewMealPlansController = null;
 
     public MealPlanGeneratorView(MealPlanGeneratorViewModel mealPlanGeneratorViewModel) {
 
@@ -59,9 +63,13 @@ public class MealPlanGeneratorView extends JPanel implements PropertyChangeListe
         targetFatsPanel.add(new JLabel("Input Target Fats (in grams):"));
         targetFatsPanel.add(targetFatsInputField);
 
-        final JPanel buttons = new JPanel();
+        final JPanel viewMealPlansButton = new JPanel();
+        viewMealPlans = new JButton("View Saved Meal Plans");
+        viewMealPlansButton.add(viewMealPlans);
+
+        final JPanel generateButton = new JPanel();
         generate = new JButton("Generate");
-        buttons.add(generate);
+        generateButton.add(generate);
 
         generate.addActionListener(
                 new ActionListener() {
@@ -74,6 +82,15 @@ public class MealPlanGeneratorView extends JPanel implements PropertyChangeListe
                                 currentState.getTargetCarbs(),
                                 currentState.getTargetFats()
                         );
+                    }
+                }
+        );
+
+        viewMealPlans.addActionListener(
+                new ActionListener() {
+                    public void actionPerformed(ActionEvent evt) {
+                        viewMealPlansController.execute();
+
                     }
                 }
         );
@@ -157,7 +174,7 @@ public class MealPlanGeneratorView extends JPanel implements PropertyChangeListe
         this.add(targetFatsPanel);
         this.add(insufficientRecipesErrorField);
         this.add(inputErrorField);
-        this.add(buttons);
+        this.add(generateButton);
     }
 
     @Override

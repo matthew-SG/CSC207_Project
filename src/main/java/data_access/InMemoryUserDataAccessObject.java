@@ -8,6 +8,7 @@ import use_case.login.LoginUserDataAccessInterface;
 import use_case.logout.LogoutUserDataAccessInterface;
 import use_case.meal_plan.MealPlanUserDataAccessInterface;
 import use_case.signup.SignupUserDataAccessInterface;
+import use_case.view_meal_plans.ViewMealPlansDataAccessInterface;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,7 +19,8 @@ import java.util.Map;
  * In-memory implementation of the DAO for storing user data. This implementation does
  * NOT persist data between runs of the program.
  */
-public class InMemoryUserDataAccessObject implements UserDataAccess, MealPlanUserDataAccessInterface {
+public class InMemoryUserDataAccessObject implements UserDataAccess, MealPlanUserDataAccessInterface,
+        ViewMealPlansDataAccessInterface {
 
     private final Map<String, User> users = new HashMap<>();
 
@@ -113,5 +115,10 @@ public class InMemoryUserDataAccessObject implements UserDataAccess, MealPlanUse
     @Override
     public void saveMealPlan(MealPlan mealPlan) {
         users.get(currentUsername).saveMealPlan(mealPlan);
+    }
+
+    @Override
+    public List<MealPlan> getMealPlans() {
+        return users.get(currentUsername).getMealPlans();
     }
 }
