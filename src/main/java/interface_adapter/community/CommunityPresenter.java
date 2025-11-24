@@ -58,6 +58,7 @@ public class CommunityPresenter implements CommunityOutputBoundary {
         communityState.setSubviewName(CommunityViewModel.VIEWING);
         communityState.setRecipeIds(response.getRecipeIds());
         communityState.setRecipeNames(response.getRecipeNames());
+        communityState.setRecipeImages(response.getRecipeImageUrls());
         communityState.setStars(response.getStars());
         communityState.setComments(response.getComments());
         communityState.setPrompt(response.getPrompt());

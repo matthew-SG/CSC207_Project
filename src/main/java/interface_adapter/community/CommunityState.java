@@ -3,6 +3,7 @@ package interface_adapter.community;
 import java.util.List;
 
 public class CommunityState {
+    // TODO: Sync view with state
     private String subviewName;
 
     // presented in ratings and recipe selection view;

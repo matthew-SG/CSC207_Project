@@ -1,9 +1,6 @@
 package app;
 
-import data_access.SpoonacularApproveRecipeDataAccessObject;
-import data_access.DummyCommunityDataAccessObject;
-import data_access.InMemoryUserDataAccessObject;
-import data_access.UserDataAccess;
+import data_access.*;
 import entities.UserFactory;
 import interface_adapter.ViewManagerModel;
 import interface_adapter.approve_recipe.ApproveRecipeController;
@@ -64,7 +61,7 @@ public class AppBuilder {
     private UserFactory userFactory = new UserFactory();
     // In Memory Data Access Object
     private UserDataAccess userDataAccessObject = new InMemoryUserDataAccessObject();
-    private CommunityDataAccessInterface communityDataAccessObject = new DummyCommunityDataAccessObject();
+    private CommunityDataAccessInterface communityDataAccessObject = new DBCommunityDataAccessObject();
     private ApproveRecipeDataAccessInterface approveRecipeDataAccessObject;
     private JPanel contentPanel;
     private CardLayout cardLayout;

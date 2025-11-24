@@ -5,8 +5,6 @@ import entities.MealPlan;
 import entities.Recipe;
 import entities.User;
 import use_case.login.LoginUserDataAccessInterface;
-import use_case.logout.LogoutUserDataAccessInterface;
-import use_case.meal_plan.MealPlanUserDataAccessInterface;
 import use_case.signup.SignupUserDataAccessInterface;
 
 import java.util.ArrayList;
@@ -21,7 +19,7 @@ import java.util.Map;
 public class InMemoryUserDataAccessObject implements UserDataAccess {
 
     private final Map<String, User> users = new HashMap<>();
-
+    
     private String currentUsername;
 
     /**
