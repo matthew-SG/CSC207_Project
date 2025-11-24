@@ -109,7 +109,7 @@ public class SearchByIngredientView extends JPanel {
             return;
         }
 
-        double qty = 0;
+        double qty = 1;
         if (!amountStr.isEmpty()) {
             try {
                 qty = Double.parseDouble(amountStr);
@@ -196,7 +196,7 @@ public class SearchByIngredientView extends JPanel {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
 
-            String apiKey = "";
+            String apiKey = "6e0b1d9ab8b94b9dbf723c0203286189";
             SearchByIngredientSpoonacular api = new SearchByIngredientSpoonacular(apiKey);
             SearchByIngredientInputBoundary interactor = new SearchByIngredientInteractor(api);
             SearchByIngredientController controller = new SearchByIngredientController(interactor);
