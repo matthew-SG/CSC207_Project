@@ -5,13 +5,14 @@ import use_case.login.LoginUserDataAccessInterface;
 import use_case.logout.LogoutUserDataAccessInterface;
 import use_case.meal_plan.MealPlanUserDataAccessInterface;
 import use_case.signup.SignupUserDataAccessInterface;
+import use_case.view_meal_plans.ViewMealPlansDataAccessInterface;
 
 import java.util.Map;
 
 public interface UserDataAccess extends SignupUserDataAccessInterface,
         LoginUserDataAccessInterface,
         LogoutUserDataAccessInterface,
-        MealPlanUserDataAccessInterface {
+        MealPlanUserDataAccessInterface, ViewMealPlansDataAccessInterface {
 
     /**
      * Get the users map for accessing user data.
