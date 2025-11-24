@@ -22,6 +22,7 @@ public class App {
                     .buildRecipeGeneratorFeature()
                     .buildCommunityFeature()
                     .buildAuthFeature()
+                    .buildSearchByIngredient()
                     .build();
         });
     }

@@ -8,4 +8,5 @@ public interface NavbarInputBoundary {
     public void switchToApproveRecipe();
     public void switchToProfile();
     public void switchToMealPlan();
+    public void switchToSearchByIngredients();
 }
