@@ -3,6 +3,7 @@ package view;
 import interface_adapter.community.CommunityController;
 import interface_adapter.community.CommunityState;
 import interface_adapter.community.CommunityViewModel;
+import interface_adapter.logged_in.LoggedInViewModel;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -20,6 +21,7 @@ import java.beans.PropertyChangeListener;
 public class WriteReviewView extends JPanel implements PropertyChangeListener {
     private final String viewName = CommunityViewModel.WRITING_REVIEW;
     private final CommunityViewModel communityViewModel;
+    private final LoggedInViewModel loggedInViewModel;
     private CommunityController communityController;
 
     private final JLabel recipeNameLabel;
@@ -28,13 +30,9 @@ public class WriteReviewView extends JPanel implements PropertyChangeListener {
     private final JRadioButton[] starButtons;
     private final JButton submitButton;
     private final JButton cancelButton;
-
-    private int currentRecipeId = -1;
-    private String currentRecipeName = "";
-    private String currentUsername = "";
-
-    public WriteReviewView(CommunityViewModel communityViewModel) {
+    public WriteReviewView(CommunityViewModel communityViewModel, LoggedInViewModel loggedInViewModel) {
         this.communityViewModel = communityViewModel;
+        this.loggedInViewModel = loggedInViewModel;
         this.communityViewModel.addPropertyChangeListener(this);
 
         this.setLayout(new BorderLayout(10, 10));
@@ -153,10 +151,17 @@ public class WriteReviewView extends JPanel implements PropertyChangeListener {
             return;
         }
 
+        String recipeName = communityViewModel.getState().getSeletedRecipeName();
+        String recipeImageUrl = communityViewModel.getState().getSeletedRecipeImageUrl();
+        int recipeId = communityViewModel.getState().getSeletedRecipe();
+        String username = loggedInViewModel.getState().getUsername();
+
         // Call controller to publish review
-        if (communityController != null && currentRecipeId != -1) {
-            communityController.publish(selectedRating, reviewText, currentRecipeId, currentUsername);
-            
+        if (communityController != null && recipeId != -1) {
+            communityController.publish(selectedRating,
+                    reviewText, recipeId,
+                    username, recipeName,
+                    recipeImageUrl);
             // Clear form
             clearForm();
         }
@@ -199,17 +204,8 @@ public class WriteReviewView extends JPanel implements PropertyChangeListener {
     }
 
     private void updateView(CommunityState state) {
-        currentRecipeId = state.getSeletedRecipe();
-        
-        // Find the recipe name from the recipe ID
-        if (state.getRecipeIds() != null && state.getRecipeNames() != null) {
-            for (int i = 0; i < state.getRecipeIds().size(); i++) {
-                if (state.getRecipeIds().get(i) == currentRecipeId) {
-                    currentRecipeName = state.getRecipeNames().get(i);
-                    break;
-                }
-            }
-        }
+        int currentRecipeId = state.getSeletedRecipe();
+        String currentRecipeName = state.getSeletedRecipeName();
         
         recipeNameLabel.setText("Reviewing: " + currentRecipeName);
         
@@ -223,14 +219,5 @@ public class WriteReviewView extends JPanel implements PropertyChangeListener {
 
     public void setCommunityController(CommunityController communityController) {
         this.communityController = communityController;
-    }
-
-    /**
-     * Sets the current username for submitting reviews.
-     * This should be called when initializing the view or when user logs in.
-     * @param username The username of the current user
-     */
-    public void setCurrentUsername(String username) {
-        this.currentUsername = username;
     }
 }

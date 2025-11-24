@@ -19,8 +19,8 @@ public class App {
                     .buildNavigation()
                     .buildErrorPopUp()
                     .buildApproveRecipeFeature()
-                    .buildCommunityFeature()
                     .buildAuthFeature()
+                    .buildCommunityFeature()
                     .build();
         });
     }

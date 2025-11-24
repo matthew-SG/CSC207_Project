@@ -1,8 +1,6 @@
 package app;
 
-import data_access.SpoonacularApproveRecipeDataAccessObject;
-import data_access.DummyCommunityDataAccessObject;
-import data_access.InMemoryUserDataAccessObject;
+import data_access.*;
 import entities.UserFactory;
 import interface_adapter.ViewManagerModel;
 import interface_adapter.approve_recipe.ApproveRecipeController;
@@ -68,8 +66,8 @@ public class AppBuilder {
     // Required components
     private UserFactory userFactory = new UserFactory();
     // In Memory Data Access Object
-    private InMemoryUserDataAccessObject userDataAccessObject = new InMemoryUserDataAccessObject();
-    private CommunityDataAccessInterface communityDataAccessObject = new DummyCommunityDataAccessObject();
+    private UserDataAccess userDataAccessObject = new InMemoryUserDataAccessObject();
+    private CommunityDataAccessInterface communityDataAccessObject = new DBCommunityDataAccessObject();
     private ApproveRecipeDataAccessInterface approveRecipeDataAccessObject;
     private JPanel contentPanel;
     private CardLayout cardLayout;
@@ -200,7 +198,7 @@ public class AppBuilder {
         // Create community views
         communityView = new CommunityView(communityViewModel, viewManagerModel);
         selectLikedRecipeView = new SelectLikedRecipeView(communityViewModel);
-        writeReviewView = new WriteReviewView(communityViewModel);
+        writeReviewView = new WriteReviewView(communityViewModel, loggedInViewModel);
 
         // Add views to community panel
         communityContentPanel.add(communityView, CommunityViewModel.VIEWING);
@@ -231,7 +229,7 @@ public class AppBuilder {
         writeReviewView.setCommunityController(communityController);
 
         // Set initial state
-        communityViewModel.getState().subviewName = CommunityViewModel.VIEWING;
+        communityViewModel.getState().setSubviewName(CommunityViewModel.VIEWING);
         communityViewModel.firePropertyChange();
 
         // Add to main content panel
@@ -377,7 +375,7 @@ public class AppBuilder {
         frame.add(contentPanel, BorderLayout.CENTER);
         navbarManagerViewModel.setState(NavbarManagerViewModel.UNLOGGED_IN);
         navbarManagerViewModel.firePropertyChange();
-        communityViewModel.getState().subviewName = CommunityViewModel.VIEWING;
+        communityViewModel.getState().setSubviewName(CommunityViewModel.VIEWING);
         communityViewModel.firePropertyChange();
         viewManagerModel.getState().viewName = LoginViewModel.viewName;
         viewManagerModel.firePropertyChange();
