@@ -3,6 +3,7 @@ package use_case.search_by_ingr;
 import API.SearchByIngredientSpoonacular;
 import entities.Ingredient;
 import entities.Recipe;
+import entities.unitConverter;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.*;
@@ -39,15 +40,13 @@ public class SearchByIngredientInteractor implements SearchByIngredientInputBoun
                     unitName[1] = usedIngredient.getString("unitShort");
                     unitName[2] = usedIngredient.getString("unitLong");
                     for (Ingredient ingredient : ingredients) {
-                        if (ingredient.getName().toLowerCase().contains(name)) {
-                            if (ingredient.getQuantity() < amount &&
-                                            (ingredient.getUnit().equals(unitName[0])
-                                            ||ingredient.getUnit().equals(unitName[1])
-                                            ||ingredient.getUnit().equals(unitName[2])) ) {
+                        if (ingredient.getName().toLowerCase().contains(name) && unitConverter.fromTbsp(
+                                    unitConverter.toTbsp(ingredient.getQuantity(),ingredient.getUnit()),unitName[1])
+                                    < amount) {
                                 haveEnough = false;
                                 break;
                             }
-                        }
+
                     }
                 }
                 if (haveEnough) {
