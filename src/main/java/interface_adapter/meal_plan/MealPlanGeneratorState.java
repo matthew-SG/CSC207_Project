@@ -10,6 +10,7 @@ public class MealPlanGeneratorState {
     private String targetFats = "";
     private String insufficientRecipesError;
     private String inputsError;
+    private String noMealPlansError;
 
     public String getTargetCalories() {
         return targetCalories;
@@ -39,5 +40,11 @@ public class MealPlanGeneratorState {
 
     public void setInputsError(String inputsError) {
         this.inputsError = inputsError;
+    }
+
+    public String getNoMealPlansError() { return noMealPlansError; }
+
+    public void setNoMealPlansError(String noMealPlansError) {
+        this.noMealPlansError = noMealPlansError;
     }
 }
