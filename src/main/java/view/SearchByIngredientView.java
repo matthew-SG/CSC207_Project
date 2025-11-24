@@ -193,21 +193,7 @@ public class SearchByIngredientView extends JPanel {
                 JOptionPane.INFORMATION_MESSAGE
         );
     }
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-
-            String apiKey = "6e0b1d9ab8b94b9dbf723c0203286189";
-            SearchByIngredientSpoonacular api = new SearchByIngredientSpoonacular(apiKey);
-            SearchByIngredientInputBoundary interactor = new SearchByIngredientInteractor(api);
-            SearchByIngredientController controller = new SearchByIngredientController(interactor);
-            SearchByIngredientView view = new SearchByIngredientView(controller, api);
-            JFrame frame = new JFrame("Search By Ingredient");
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setSize(800, 600);
-            frame.setLayout(new BorderLayout());
-            frame.add(view, BorderLayout.CENTER);
-            frame.setLocationRelativeTo(null);
-            frame.setVisible(true);
-        });
+    public String getViewName() {
+        return VIEWNAME;
     }
 }

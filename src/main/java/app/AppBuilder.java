@@ -1,6 +1,7 @@
 package app;
 
 import data_access.*;
+import API.SearchByIngredientSpoonacular;
 import entities.UserFactory;
 import interface_adapter.ViewManagerModel;
 import interface_adapter.approve_recipe.ApproveRecipeController;
@@ -25,6 +26,7 @@ import interface_adapter.nav_bar.NavbarPresenter;
 import interface_adapter.signup.SignupController;
 import interface_adapter.signup.SignupPresenter;
 import interface_adapter.signup.SignupViewModel;
+import interface_adapter.search_by_ingr.SearchByIngredientController;
 import use_case.approve_recipe.ApproveRecipeDataAccessInterface;
 import use_case.approve_recipe.ApproveRecipeInputBoundary;
 import use_case.approve_recipe.ApproveRecipeInteractor;
@@ -46,6 +48,8 @@ import use_case.nav_bar.NavbarInteractor;
 import use_case.signup.SignupInputBoundary;
 import use_case.signup.SignupInteractor;
 import use_case.signup.SignupOutputBoundary;
+import use_case.search_by_ingr.SearchByIngredientInputBoundary;
+import use_case.search_by_ingr.SearchByIngredientInteractor;
 import view.*;
 
 import javax.swing.*;
@@ -108,6 +112,12 @@ public class AppBuilder {
     private MealPlanGeneratorViewModel mealPlanGeneratorViewModel;
     private MealPlanGeneratedView mealPlanGeneratedView;
     private MealPlanGeneratedViewModel mealPlanGeneratedViewModel;
+
+    // Search by Ingredient
+    private SearchByIngredientView searchByIngredientView;
+    private SearchByIngredientController searchByIngredientController;
+    private SearchByIngredientSpoonacular searchByIngredientApi;
+
 
     /**
      * Initialize the builder with default setup.
@@ -405,5 +415,13 @@ public class AppBuilder {
 
     public LoginViewModel getLoginViewModel() {
         return loginViewModel;
+    }
+    public AppBuilder buildSearchByIngredient() {
+        searchByIngredientApi = new SearchByIngredientSpoonacular();
+        SearchByIngredientInputBoundary searchByIngredientInteractor = new SearchByIngredientInteractor(searchByIngredientApi);
+        searchByIngredientController = new SearchByIngredientController(searchByIngredientInteractor);
+        searchByIngredientView = new SearchByIngredientView(searchByIngredientController, searchByIngredientApi);
+        contentPanel.add(searchByIngredientView, SearchByIngredientView.VIEWNAME);
+        return this;
     }
 }
