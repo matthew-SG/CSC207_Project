@@ -21,6 +21,7 @@ public class App {
                     .buildCommunityFeature()
                     .buildGroceryList()
                     .buildAuthFeature()
+                    .buildMealPlan()
                     .build();
         });
     }

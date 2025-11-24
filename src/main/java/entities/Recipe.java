@@ -30,9 +30,19 @@ public class Recipe {
 
     public List<Ingredient> getIngredients() { return ingredients; }
 
+    public void addIngredient(Ingredient ingredient) { ingredients.add(ingredient); }
+
     public Map<String, Double> getNutritionalValues() { return nutritionalValues; }
+
+    public void addNutritionalValue(String name, double value) { nutritionalValues.put(name, value); }
 
     public String getMealType() { return mealType; }
 
     public String getSteps() { return steps; }
+    public void setIngredients(List<Ingredient> ingredients) { this.ingredients = ingredients; }
+    public void setSteps(String steps) { this.steps = steps; }
+    @Override
+    public String toString() {
+        return recipeName;
+    }
 }

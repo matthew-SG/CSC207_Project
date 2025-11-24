@@ -8,10 +8,11 @@ import java.util.List;
 public class CommunityRatingsOutputData {
     private final List<Integer> recipeIds;
     private final List<String> recipeNames;
+    private final List<String> recipeImageUrls;
     private final List<Integer> stars;
 
     private final List<String> comments;
-
+    public static String PROMPT = "Welcome to Community!~~ Please view and leave reviews!";
     protected String prompt;
 
     public CommunityRatingsOutputData(List<Rating> currentRatings) {
@@ -19,18 +20,21 @@ public class CommunityRatingsOutputData {
         List<String> recipeNames = new ArrayList<String>();
         List<Integer> stars = new ArrayList<Integer>();
         List<String> comments = new ArrayList<String>();
+        List<String> imageUrls = new ArrayList<>();
 
         for (Rating rating : currentRatings){
             recipeIds.add(rating.getRatingId());
             recipeNames.add(rating.getRecipeName());
             stars.add(rating.getStars());
             comments.add(rating.getComment());
+            imageUrls.add(rating.getRecipeImageUrl());
         }
         this.recipeIds = recipeIds;
         this.recipeNames = recipeNames;
         this.stars = stars;
         this.comments = comments;
-        prompt = "Welcome to Community!~~ Please view and leave reviews!";
+        this.recipeImageUrls = imageUrls;
+        prompt = PROMPT;
 
     }
 
@@ -52,5 +56,9 @@ public class CommunityRatingsOutputData {
 
     public List<String> getRecipeNames() {
         return recipeNames;
+    }
+
+    public List<String> getRecipeImageUrls() {
+        return recipeImageUrls;
     }
 }
