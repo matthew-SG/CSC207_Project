@@ -1,17 +1,20 @@
 package use_case.community;
 
 import entities.Rating;
-import entities.User;
 import entities.Recipe;
+import entities.User;
 import use_case.community.input_data.CommunityPublishInputData;
 
 import java.util.List;
 
+/*
+ * DataAccessInterface for community
+ */
 public interface CommunityDataAccessInterface {
-    public List<Recipe> getLikedRecipes(User user);
-    public Recipe getSelectedRecipe(int recipeID);
+    List<Recipe> getLikedRecipes(User user);
+    Recipe getSelectedRecipe(int recipeID);
 
-    public List<Rating> getCurrentRatings();
+    List<Rating> getCurrentRatings();
 
-    public List<Rating> publishReview(CommunityPublishInputData data);
+    List<Rating> publishReview(CommunityPublishInputData data);
 }

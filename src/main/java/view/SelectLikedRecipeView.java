@@ -97,7 +97,30 @@ public class SelectLikedRecipeView extends JPanel implements PropertyChangeListe
                 new EmptyBorder(15, 15, 15, 15)
         ));
         card.setBackground(Color.WHITE);
-        card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 100));
+        card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 120));
+
+        // Image panel (leftmost)
+        JPanel imagePanel = new JPanel();
+        imagePanel.setLayout(new BorderLayout());
+        imagePanel.setBackground(Color.WHITE);
+        imagePanel.setPreferredSize(new Dimension(100, 100));
+        
+        JLabel imageLabel = new JLabel();
+        imageLabel.setPreferredSize(new Dimension(100, 100));
+        imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        imageLabel.setVerticalAlignment(SwingConstants.CENTER);
+        
+        if (recipeImageUrl != null && !recipeImageUrl.isEmpty()) {
+            // Load image asynchronously
+            loadImageAsync(recipeImageUrl, imageLabel, 100, 100);
+        } else {
+            // Placeholder if no image
+            imageLabel.setText("No Image");
+            imageLabel.setForeground(Color.GRAY);
+        }
+        
+        imagePanel.add(imageLabel, BorderLayout.CENTER);
+        card.add(imagePanel, BorderLayout.WEST);
 
         // Recipe name label
         JLabel nameLabel = new JLabel(recipeName);
@@ -112,7 +135,8 @@ public class SelectLikedRecipeView extends JPanel implements PropertyChangeListe
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (communityController != null) {
-                    communityController.selectRecipe(recipeId);
+                    communityController.selectRecipe(recipeId,
+                            recipeName, recipeImageUrl);
                 }
             }
         });
@@ -147,5 +171,48 @@ public class SelectLikedRecipeView extends JPanel implements PropertyChangeListe
 
     public void setCommunityController(CommunityController communityController) {
         this.communityController = communityController;
+    }
+
+    /**
+     * Loads an image asynchronously from a URL and sets it to the label.
+     * Scales the image to fit within the specified dimensions.
+     */
+    private void loadImageAsync(String imageUrl, JLabel label, int width, int height) {
+        // Use SwingWorker to load image in background
+        SwingWorker<ImageIcon, Void> worker = new SwingWorker<ImageIcon, Void>() {
+            @Override
+            protected ImageIcon doInBackground() {
+                try {
+                    java.net.URL url = new java.net.URL(imageUrl);
+                    ImageIcon icon = new ImageIcon(url);
+                    
+                    // Scale image to fit
+                    Image img = icon.getImage();
+                    Image scaledImg = img.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+                    return new ImageIcon(scaledImg);
+                } catch (Exception e) {
+                    System.err.println("Error loading image: " + imageUrl);
+                    return null;
+                }
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    ImageIcon icon = get();
+                    if (icon != null) {
+                        label.setIcon(icon);
+                        label.setText("");
+                    } else {
+                        label.setText("Image Error");
+                        label.setForeground(Color.RED);
+                    }
+                } catch (Exception e) {
+                    label.setText("Image Error");
+                    label.setForeground(Color.RED);
+                }
+            }
+        };
+        worker.execute();
     }
 }

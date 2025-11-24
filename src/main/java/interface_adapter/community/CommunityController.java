@@ -16,9 +16,10 @@ public class CommunityController {
         this.communityInteractor.viewCommunity();
     }
 
-    public void publish(int rating, String comment, int recipeID, String userName){
+    public void publish(int rating, String comment, int recipeID, String userName,
+                        String recipeName, String recipeImageUrl){
         this.communityInteractor.publish(
-                new CommunityPublishInputData(userName, recipeID, rating, comment)
+                new CommunityPublishInputData(userName, recipeID, rating, comment, recipeName, recipeImageUrl)
         );
     }
 
@@ -31,10 +32,12 @@ public class CommunityController {
         );
     }
 
-    public void selectRecipe(int recipeID){
+    public void selectRecipe(int recipeID, String recipeName, String recipeImageUrl){
         this.communityInteractor.selectRecipe(
                 new CommunityRecipeSelectionInputData(
-                        recipeID
+                        recipeID,
+                        recipeName,
+                        recipeImageUrl
                 )
         );
     }

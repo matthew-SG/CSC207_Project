@@ -31,18 +31,20 @@ public class CommunityPresenter implements CommunityOutputBoundary {
     @Override
     public void prepareRecipeSelection(CommunityLikedRecipesOutputData response) {
         CommunityState communityState = this.communityViewModel.getState();
-        communityState.subviewName = CommunityViewModel.SELECTING_RECIPE;
-        communityState.recipeIds = response.getRecipeIds();
-        communityState.recipeNames = response.getRecipeNames();
-        communityState.recipeImages = response.getRecipeImages();
+        communityState.setSubviewName(CommunityViewModel.SELECTING_RECIPE);
+        communityState.setRecipeIds(response.getRecipeIds());
+        communityState.setRecipeNames(response.getRecipeNames());
+        communityState.setRecipeImages(response.getRecipeImages());
         this.communityViewModel.firePropertyChange();
     }
 
     @Override
     public void prepareCommentWriting(CommunitySelectedRecipeOutputData response) {
         CommunityState communityState = this.communityViewModel.getState();
-        communityState.subviewName = CommunityViewModel.WRITING_REVIEW;
-        communityState.seletedRecipe = response.getSelectedRecipeId();
+        communityState.setSubviewName(CommunityViewModel.WRITING_REVIEW);
+        communityState.setSeletedRecipe(response.getSelectedRecipeId());
+        communityState.setSeletedRecipeName(response.getSelectedRecipeName());
+        communityState.setSeletedRecipeImageUrl(response.getSelectedRecipeImageUrl());
         this.communityViewModel.firePropertyChange();
     }
 
@@ -50,17 +52,18 @@ public class CommunityPresenter implements CommunityOutputBoundary {
     public void preparePublishSucc(CommunityRatingsOutputData response) {
         prepareView(response);
         CommunityState communityState = this.communityViewModel.getState();
-        communityState.subviewName = CommunityViewModel.PUB_SUCC;
+        communityState.setSubviewName(CommunityViewModel.PUB_SUCC);
     }
 
     private void prepareView(CommunityRatingsOutputData response) {
         CommunityState communityState = this.communityViewModel.getState();
-        communityState.subviewName = CommunityViewModel.VIEWING;
-        communityState.recipeIds = response.getRecipeIds();
-        communityState.recipeNames = response.getRecipeNames();
-        communityState.stars = response.getStars();
-        communityState.comments = response.getComments();
-        communityState.prompt = response.getPrompt();
+        communityState.setSubviewName(CommunityViewModel.VIEWING);
+        communityState.setRecipeIds(response.getRecipeIds());
+        communityState.setRecipeNames(response.getRecipeNames());
+        communityState.setRecipeImages(response.getRecipeImageUrls());
+        communityState.setStars(response.getStars());
+        communityState.setComments(response.getComments());
+        communityState.setPrompt(response.getPrompt());
         this.communityViewModel.firePropertyChange();
     }
 }

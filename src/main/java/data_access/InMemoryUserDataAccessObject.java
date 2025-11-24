@@ -5,8 +5,6 @@ import entities.MealPlan;
 import entities.Recipe;
 import entities.User;
 import use_case.login.LoginUserDataAccessInterface;
-import use_case.logout.LogoutUserDataAccessInterface;
-import use_case.meal_plan.MealPlanUserDataAccessInterface;
 import use_case.signup.SignupUserDataAccessInterface;
 
 import java.util.ArrayList;
@@ -18,10 +16,10 @@ import java.util.Map;
  * In-memory implementation of the DAO for storing user data. This implementation does
  * NOT persist data between runs of the program.
  */
-public class InMemoryUserDataAccessObject implements UserDataAccess, MealPlanUserDataAccessInterface {
+public class InMemoryUserDataAccessObject implements UserDataAccess {
 
     private final Map<String, User> users = new HashMap<>();
-
+    
     private String currentUsername;
 
     /**
@@ -73,28 +71,13 @@ public class InMemoryUserDataAccessObject implements UserDataAccess, MealPlanUse
     }
 
     @Override
-    public boolean existsByName(String identifier) {
-        return users.containsKey(identifier);
-    }
-
-    @Override
-    public void save(User user) {
-        users.put(user.getName(), user);
-    }
-
-    @Override
-    public User get(String username) {
-        return users.get(username);
-    }
-
-    @Override
-    public void setCurrentUsername(String name) {
-        currentUsername = name;
-    }
-
-    @Override
     public String getCurrentUsername() {
         return currentUsername;
+    }
+
+    @Override
+    public void logout() {
+
     }
 
     /**
@@ -106,6 +89,27 @@ public class InMemoryUserDataAccessObject implements UserDataAccess, MealPlanUse
     }
 
     @Override
+    public String login(String username, String password) {
+        if (!users.containsKey(username)) {
+            return LoginUserDataAccessInterface.USER_DNE_ERROR;
+        } else if (!users.get(username).getPassword().equals(password)) {
+            return LoginUserDataAccessInterface.INCORRECT_PASSWORD_ERROR;
+        }
+        currentUsername = username;
+        return LoginUserDataAccessInterface.SUCCESS;
+    }
+
+    @Override
+    public String signupUser(String email, String password) {
+        if (users.containsKey(email)) {
+            return SignupUserDataAccessInterface.USER_EXISTS_ERROR;
+        }
+        User user = new User(email, password, new ArrayList<>());
+        currentUsername = email;
+        users.put(currentUsername, user);
+        return SignupUserDataAccessInterface.SUCCESS;
+    }
+    
     public List<Recipe> getSavedRecipes() {
         return users.get(currentUsername).getSavedRecipes();
     }
