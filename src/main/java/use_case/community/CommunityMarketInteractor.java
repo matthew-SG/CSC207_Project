@@ -1,6 +1,5 @@
 package use_case.community;
 
-import entities.Recipe;
 import entities.User;
 import use_case.community.input_data.CommunityPoseSelectionInputData;
 import use_case.community.input_data.CommunityPublishInputData;
@@ -10,25 +9,23 @@ import use_case.community.output_data.CommunityPublishSuccessOutputData;
 import use_case.community.output_data.CommunityRatingsOutputData;
 import use_case.community.output_data.CommunitySelectedRecipeOutputData;
 
-import java.util.List;
-
 public class CommunityMarketInteractor implements CommunityInputBoundary {
-    CommunityDataAccessInterface communityDAO;
-    CommunityOutputBoundary communityPresenter;
+    private CommunityDataAccessInterface communityDAO;
+    private CommunityOutputBoundary communityPresenter;
 
-
-    public CommunityMarketInteractor(CommunityDataAccessInterface communityDAO, CommunityOutputBoundary communityPresenter){
-        this.communityDAO = communityDAO;
-        this.communityPresenter = communityPresenter;
+    public CommunityMarketInteractor(CommunityDataAccessInterface communityDAO,
+                                     CommunityOutputBoundary communityPresenter) {
+        this.setCommunityDAO(communityDAO);
+        this.setCommunityPresenter(communityPresenter);
     }
 
 
 
     @Override
-    public void viewCommunity(){
-        communityPresenter.prepareViewRating(
+    public void viewCommunity() {
+        getCommunityPresenter().prepareViewRating(
                 new CommunityRatingsOutputData(
-                        communityDAO.getCurrentRatings()
+                        getCommunityDAO().getCurrentRatings()
                 )
         );
     }
@@ -36,33 +33,51 @@ public class CommunityMarketInteractor implements CommunityInputBoundary {
     @Override
     public void viewToPost(CommunityPoseSelectionInputData data) {
         if (!data.isLoggedIn()) {
-            communityPresenter.prepareFailView("Log in to write reviews");
+            getCommunityPresenter().prepareFailView("Log in to write reviews");
             return;
         }
 
-        User user = new User(data.getUserName(), "dummy");
+        User user = new User(data.getUserName(), "dummy", null);
         communityPresenter.prepareRecipeSelection(
                 new CommunityLikedRecipesOutputData(
-                        communityDAO.getLikedRecipes(user)
+                        getCommunityDAO().getLikedRecipes(user)
                 )
         );
     }
 
     @Override
     public void selectRecipe(CommunityRecipeSelectionInputData data) {
-        communityPresenter.prepareCommentWriting(
+        getCommunityPresenter().prepareCommentWriting(
                 new CommunitySelectedRecipeOutputData(
-                        communityDAO.getSelectedRecipe(data.getRecipeID()).getRecipeId()
+                        getCommunityDAO().getSelectedRecipe(data.getRecipeID()).getRecipeId(),
+                        data.getRecipeName(),
+                        data.getRecipeImageUrl()
                 )
         );
     }
 
     @Override
     public void publish(CommunityPublishInputData data) {
-        communityPresenter.preparePublishSucc(
+        getCommunityPresenter().preparePublishSucc(
                 new CommunityPublishSuccessOutputData(
-                        communityDAO.publishReview(data)
+                        getCommunityDAO().publishReview(data)
                 )
         );
+    }
+
+    public CommunityDataAccessInterface getCommunityDAO() {
+        return communityDAO;
+    }
+
+    public void setCommunityDAO(CommunityDataAccessInterface communityDAO) {
+        this.communityDAO = communityDAO;
+    }
+
+    public CommunityOutputBoundary getCommunityPresenter() {
+        return communityPresenter;
+    }
+
+    public void setCommunityPresenter(CommunityOutputBoundary communityPresenter) {
+        this.communityPresenter = communityPresenter;
     }
 }

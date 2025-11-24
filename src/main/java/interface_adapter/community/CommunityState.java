@@ -3,27 +3,31 @@ package interface_adapter.community;
 import java.util.List;
 
 public class CommunityState {
-    public String subviewName;
+    // TODO: Sync view with state
+    private String subviewName;
 
     // presented in ratings and recipe selection view;
     // from: requested after user clicks pose
-    List<Integer> recipeIds;
-    List<String> recipeNames;
-    List<Integer> stars;
-    List<String> comments;
-    List<String> recipeImages;
-    String prompt;
+    private List<Integer> recipeIds;
+    private List<String> recipeNames;
+    private List<Integer> stars;
+    private List<String> comments;
+    private List<String> recipeImages;
+    private List<String> usernames;
+    private String prompt;
 
     // used to publish recipe;
     // presented in review writing view;
     // from user recipe selection view
-    int seletedRecipe;
+    private int seletedRecipe;
+    private String seletedRecipeName;
+    private String seletedRecipeImageUrl;
 
     // used to publish recipe;
     // presented in view writing view
     // from view writing view
-    String review;
-    int star;
+    private String review;
+    private int star;
 
     public String getSubviewName() {
         return subviewName;
@@ -49,6 +53,10 @@ public class CommunityState {
         return recipeImages;
     }
 
+    public List<String> getUsernames() {
+        return usernames;
+    }
+
     public String getPrompt() {
         return prompt;
     }
@@ -63,5 +71,65 @@ public class CommunityState {
 
     public int getStar() {
         return star;
+    }
+
+    public void setSubviewName(String subviewName) {
+        this.subviewName = subviewName;
+    }
+
+    public void setRecipeIds(List<Integer> recipeIds) {
+        this.recipeIds = recipeIds;
+    }
+
+    public void setRecipeNames(List<String> recipeNames) {
+        this.recipeNames = recipeNames;
+    }
+
+    public void setStars(List<Integer> stars) {
+        this.stars = stars;
+    }
+
+    public void setComments(List<String> comments) {
+        this.comments = comments;
+    }
+
+    public void setRecipeImages(List<String> recipeImages) {
+        this.recipeImages = recipeImages;
+    }
+
+    public void setUsernames(List<String> usernames) {
+        this.usernames = usernames;
+    }
+
+    public void setPrompt(String prompt) {
+        this.prompt = prompt;
+    }
+
+    public void setSeletedRecipe(int seletedRecipe) {
+        this.seletedRecipe = seletedRecipe;
+    }
+
+    public void setReview(String review) {
+        this.review = review;
+    }
+
+    public void setStar(int star) {
+        this.star = star;
+    }
+
+    public String getSeletedRecipeName() {
+        return seletedRecipeName;
+    }
+
+    public void setSeletedRecipeName(String seletedRecipeName) {
+        this.seletedRecipeName = seletedRecipeName;
+    }
+
+    public String getSeletedRecipeImageUrl() {
+        return seletedRecipeImageUrl;
+    }
+
+    public void setSeletedRecipeImageUrl(String seletedRecipeImageUrl) {
+        this.seletedRecipeImageUrl = seletedRecipeImageUrl;
     }
 }

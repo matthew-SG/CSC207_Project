@@ -21,6 +21,7 @@ public class App {
                     .buildRecipeGeneratorFeature()
                     .buildCommunityFeature()
                     .buildAuthFeature()
+                    .buildMealPlan()
                     .build();
         });
     }

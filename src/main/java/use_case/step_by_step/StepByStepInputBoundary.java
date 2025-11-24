@@ -9,4 +9,8 @@ public interface StepByStepInputBoundary {
      * @param Recipe the input data for this use case
      */
     void execute(StepByStepInputData Recipe);
+
+    void nextStep();
+
+    void previousStep();
 }
