@@ -32,7 +32,7 @@ public class ViewMealPlansPresenter implements ViewMealPlansOutputBoundary {
         viewMealPlansState.setTargetFats(response.getTargetFats());
         viewMealPlansViewModel.firePropertyChange();
 
-        viewManagerModel.getState().viewName =  mealPlanGeneratorViewModel.getViewName();
+        viewManagerModel.getState().viewName =  viewMealPlansViewModel.getViewName();
         viewManagerModel.firePropertyChange();
     }
 

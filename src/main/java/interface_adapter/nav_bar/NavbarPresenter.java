@@ -76,14 +76,7 @@ public class NavbarPresenter implements NavbarOutputBoundary {
 
     @Override
     public void switchToMealPlan() {
-        MealPlanGeneratorState mealPlanGeneratorState = mealPlanGeneratorViewModel.getState();
-        mealPlanGeneratorState.setTargetCalories("");
-        mealPlanGeneratorState.setTargetProtein("");
-        mealPlanGeneratorState.setTargetCarbs("");
-        mealPlanGeneratorState.setTargetFats("");
-        mealPlanGeneratorState.setInsufficientRecipesError(null);
-        mealPlanGeneratorState.setInputsError(null);
-        mealPlanGeneratorState.setNoMealPlansError(null);
+        mealPlanGeneratorViewModel.setState(new MealPlanGeneratorState());
         mealPlanGeneratorViewModel.firePropertyChange();
         viewManagerModel.getState().viewName = MealPlanGeneratorView.getViewName();
         viewManagerModel.firePropertyChange();

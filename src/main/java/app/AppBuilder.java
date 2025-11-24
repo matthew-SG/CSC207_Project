@@ -119,6 +119,7 @@ public class AppBuilder {
 
     // View Meal Plans Use Case
     private ViewMealPlansViewModel viewMealPlansViewModel;
+    private ViewMealPlansView viewMealPlansView;
 
     /**
      * Initialize the builder with default setup.
@@ -325,6 +326,7 @@ public class AppBuilder {
         mealPlanGeneratedViewModel = new MealPlanGeneratedViewModel();
         mealPlanGeneratedView = new MealPlanGeneratedView(mealPlanGeneratedViewModel);
         viewMealPlansViewModel = new ViewMealPlansViewModel();
+        viewMealPlansView = new ViewMealPlansView(viewMealPlansViewModel);
 
 
         final MealPlanOutputBoundary mealPlanPresenter = new MealPlanPresenter(mealPlanGeneratorViewModel,
@@ -343,6 +345,7 @@ public class AppBuilder {
 
         contentPanel.add(mealPlanGeneratorView, mealPlanGeneratorView.getViewName());
         contentPanel.add(mealPlanGeneratedView, mealPlanGeneratedView.getViewName());
+        contentPanel.add(viewMealPlansView, viewMealPlansView.getViewName());
 
         return this;
     }
