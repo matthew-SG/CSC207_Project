@@ -92,7 +92,11 @@ public class MealPlanGeneratorView extends JPanel implements PropertyChangeListe
             @Override public void changedUpdate(DocumentEvent e) { documentListenerHelper(); }
         });
 
-        this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        this.setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.anchor =  GridBagConstraints.CENTER;
         targetCaloriesPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
         targetProteinPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
         targetCarbsPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -150,14 +154,18 @@ public class MealPlanGeneratorView extends JPanel implements PropertyChangeListe
         });
 
 
-        this.add(title);
-        this.add(targetCaloriesPanel);
-        this.add(targetProteinPanel);
-        this.add(targetCarbsPanel);
-        this.add(targetFatsPanel);
-        this.add(insufficientRecipesErrorField);
-        this.add(inputErrorField);
-        this.add(buttons);
+        JPanel formPanel = new JPanel();
+        formPanel.setLayout(new BoxLayout(formPanel, BoxLayout.Y_AXIS));
+        formPanel.add(title);
+        formPanel.add(targetCaloriesPanel);
+        formPanel.add(targetProteinPanel);
+        formPanel.add(targetCarbsPanel);
+        formPanel.add(targetFatsPanel);
+        formPanel.add(insufficientRecipesErrorField);
+        formPanel.add(inputErrorField);
+        formPanel.add(buttons);
+
+        this.add(formPanel, gbc);
     }
 
     @Override
