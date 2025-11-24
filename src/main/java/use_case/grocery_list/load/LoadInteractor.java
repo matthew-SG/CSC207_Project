@@ -1,7 +1,6 @@
 package use_case.grocery_list.load;
 
 import use_case.grocery_list.GroceryRepository;
-import java.util.List;
 
 public class LoadInteractor implements LoadInputBoundary {
 

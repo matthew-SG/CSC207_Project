@@ -1,7 +1,5 @@
 package interface_adapter.grocery_list;
 
-import interface_adapter.grocery_list.GroceryViewModel;
-import interface_adapter.grocery_list.GroceryState;
 
 import use_case.grocery_list.add.AddOutputBoundary;
 import use_case.grocery_list.add.AddOutputData;
