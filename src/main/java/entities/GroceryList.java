@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GroceryList {
-    private List<GroceryItem> items;
+    private List<Ingredient> items;
 
     public GroceryList() {
         this.items = new ArrayList<>();
     }
 
-    public List<GroceryItem> getItems() {
+    public List<Ingredient> getItems() {
         return items;
     }
 }

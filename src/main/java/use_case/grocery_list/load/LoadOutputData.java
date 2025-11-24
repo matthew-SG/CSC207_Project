@@ -1,12 +1,13 @@
 package use_case.grocery_list.load;
 
-import entities.GroceryItem;
+import entities.Ingredient;
+
 import java.util.List;
 
 public class LoadOutputData {
-    public final List<GroceryItem> items;
+    public final List<Ingredient> items;
 
-    public LoadOutputData(List<GroceryItem> items) {
+    public LoadOutputData(List<Ingredient> items) {
         this.items = items;
     }
 }

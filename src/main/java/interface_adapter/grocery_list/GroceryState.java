@@ -1,8 +1,9 @@
 package interface_adapter.grocery_list;
 
-import entities.GroceryItem;
+import entities.Ingredient;
+
 import java.util.List;
 
 public class GroceryState {
-    public List<GroceryItem> items;
+    public List<Ingredient> items;
 }

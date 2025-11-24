@@ -15,7 +15,7 @@ public class DeleteInteractor implements DeleteInputBoundary {
 
     @Override
     public void execute(DeleteInputData input) {
-        List<entities.GroceryItem> items = repo.load();
+        List<entities.Ingredient> items = repo.load();
         if (input.index >= 0 && input.index < items.size()) {
             items.remove(input.index);
             repo.save(items);

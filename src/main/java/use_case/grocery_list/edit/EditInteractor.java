@@ -1,8 +1,8 @@
 package use_case.grocery_list.edit;
 
+import entities.Ingredient;
 import use_case.grocery_list.GroceryRepository;
 import java.util.List;
-import entities.GroceryItem;
 
 public class EditInteractor implements EditInputBoundary {
 
@@ -16,12 +16,12 @@ public class EditInteractor implements EditInputBoundary {
 
     @Override
     public void execute(EditInputData input) {
-        List<GroceryItem> items = repo.load();
+        List<Ingredient> items = repo.load();
         if (input.index >= 0 && input.index < items.size()) {
-            GroceryItem g = items.get(input.index);
-            g.setItem(input.newItem);
-            g.setQty(input.newQty);
-            g.setUnits(input.newUnits);
+            Ingredient g = items.get(input.index);
+            g.setName(input.newItem);
+            g.setQuantity(Double.parseDouble(input.newQty));
+            g.setUnit(input.newUnits);
             repo.save(items);
         }
         presenter.present(new EditOutputData(items));

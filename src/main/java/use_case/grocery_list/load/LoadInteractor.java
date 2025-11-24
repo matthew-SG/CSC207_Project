@@ -15,7 +15,7 @@ public class LoadInteractor implements LoadInputBoundary {
 
     @Override
     public void execute() {
-        java.util.List<entities.GroceryItem> items = repo.load();
+        java.util.List<entities.Ingredient> items = repo.load();
         presenter.present(new LoadOutputData(items));
     }
 }

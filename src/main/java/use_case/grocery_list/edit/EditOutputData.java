@@ -1,12 +1,13 @@
 package use_case.grocery_list.edit;
 
-import entities.GroceryItem;
+import entities.Ingredient;
+
 import java.util.List;
 
 public class EditOutputData {
-    public final List<GroceryItem> items;
+    public final List<Ingredient> items;
 
-    public EditOutputData(List<GroceryItem> items) {
+    public EditOutputData(List<Ingredient> items) {
         this.items = items;
     }
 }

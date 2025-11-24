@@ -27,7 +27,7 @@ public class GroceryPresenter implements
         this.viewModel = viewModel;
     }
 
-    private void updateState(java.util.List<entities.GroceryItem> list) {
+    private void updateState(java.util.List<entities.Ingredient> list) {
         GroceryState s = new GroceryState();
         s.items = list;
         viewModel.setState(s);

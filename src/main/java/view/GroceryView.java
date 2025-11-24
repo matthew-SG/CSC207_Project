@@ -1,9 +1,9 @@
 package view;
 
+import entities.Ingredient;
 import interface_adapter.grocery_list.GroceryController;
 import interface_adapter.grocery_list.GroceryViewModel;
 import interface_adapter.grocery_list.GroceryState;
-import entities.GroceryItem;
 
 import javax.swing.*;
 import java.awt.*;
@@ -75,7 +75,7 @@ public class GroceryView extends JPanel implements PropertyChangeListener {
         GroceryState s = viewModel.getState();
         if (s.items != null) {
             for (int i = 0; i < s.items.size(); i++) {
-                GroceryItem g = s.items.get(i);
+                Ingredient g = s.items.get(i);
                 listPanel.add(buildRow(i, g));
             }
         }
@@ -83,25 +83,25 @@ public class GroceryView extends JPanel implements PropertyChangeListener {
         listPanel.repaint();
     }
 
-    private JPanel buildRow(int index, GroceryItem g) {
+    private JPanel buildRow(int index, Ingredient g) {
         JPanel row = new JPanel(new BorderLayout());
         row.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
 
         JPanel left = new JPanel(new GridLayout(1,3,6,0));
-        left.add(new JLabel(g.getItem()));
-        left.add(new JLabel(g.getQty()));
-        left.add(new JLabel(g.getUnits()));
+        left.add(new JLabel(g.getName()));
+        left.add(new JLabel(String.valueOf(g.getQuantity())));
+        left.add(new JLabel(g.getUnit()));
 
         JPanel right = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JButton editBtn = new JButton("Edit");
         JButton delBtn = new JButton("Delete");
 
         editBtn.addActionListener(e -> {
-            String newName = JOptionPane.showInputDialog(this, "Edit name", g.getItem());
+            String newName = JOptionPane.showInputDialog(this, "Edit name", g.getName());
             if (newName == null) return;
-            String newQty = JOptionPane.showInputDialog(this, "Edit qty", g.getQty());
+            String newQty = JOptionPane.showInputDialog(this, "Edit qty", String.valueOf(g.getQuantity()));
             if (newQty == null) return;
-            String newUnits = JOptionPane.showInputDialog(this, "Edit units", g.getUnits());
+            String newUnits = JOptionPane.showInputDialog(this, "Edit units", g.getUnit());
             if (newUnits == null) return;
             controller.edit(index, newName, newQty, newUnits);
         });

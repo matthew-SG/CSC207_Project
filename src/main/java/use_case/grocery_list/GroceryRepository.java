@@ -1,9 +1,9 @@
 package use_case.grocery_list;
 
-import entities.GroceryItem;
+import entities.Ingredient;
 import java.util.List;
 
 public interface GroceryRepository {
-    List<GroceryItem> load();
-    void save(List<GroceryItem> list);
+    List<Ingredient> load();
+    void save(List<Ingredient> list);
 }

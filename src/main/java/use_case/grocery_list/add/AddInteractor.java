@@ -1,7 +1,8 @@
 package use_case.grocery_list.add;
 
+import entities.Ingredient;
 import use_case.grocery_list.GroceryRepository;
-import entities.GroceryItem;
+
 import java.util.List;
 
 public class AddInteractor implements AddInputBoundary {
@@ -16,8 +17,8 @@ public class AddInteractor implements AddInputBoundary {
 
     @Override
     public void execute(AddInputData input) {
-        List<GroceryItem> items = repo.load();
-        GroceryItem g = new GroceryItem(input.item, input.qty, input.units);
+        List<Ingredient> items = repo.load();
+        Ingredient g = new Ingredient(input.item, Double.parseDouble(input.qty), input.units);
         items.add(g);
         repo.save(items);
         presenter.present(new AddOutputData(items));
