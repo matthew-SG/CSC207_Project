@@ -13,12 +13,15 @@ public class CommunityState {
     private List<Integer> stars;
     private List<String> comments;
     private List<String> recipeImages;
+    private List<String> usernames;
     private String prompt;
 
     // used to publish recipe;
     // presented in review writing view;
     // from user recipe selection view
     private int seletedRecipe;
+    private String seletedRecipeName;
+    private String seletedRecipeImageUrl;
 
     // used to publish recipe;
     // presented in view writing view
@@ -48,6 +51,10 @@ public class CommunityState {
 
     public List<String> getRecipeImages() {
         return recipeImages;
+    }
+
+    public List<String> getUsernames() {
+        return usernames;
     }
 
     public String getPrompt() {
@@ -90,6 +97,10 @@ public class CommunityState {
         this.recipeImages = recipeImages;
     }
 
+    public void setUsernames(List<String> usernames) {
+        this.usernames = usernames;
+    }
+
     public void setPrompt(String prompt) {
         this.prompt = prompt;
     }
@@ -104,5 +115,21 @@ public class CommunityState {
 
     public void setStar(int star) {
         this.star = star;
+    }
+
+    public String getSeletedRecipeName() {
+        return seletedRecipeName;
+    }
+
+    public void setSeletedRecipeName(String seletedRecipeName) {
+        this.seletedRecipeName = seletedRecipeName;
+    }
+
+    public String getSeletedRecipeImageUrl() {
+        return seletedRecipeImageUrl;
+    }
+
+    public void setSeletedRecipeImageUrl(String seletedRecipeImageUrl) {
+        this.seletedRecipeImageUrl = seletedRecipeImageUrl;
     }
 }

@@ -90,7 +90,7 @@ public class CommunityView extends JPanel implements PropertyChangeListener {
         reviewListPanel.repaint();
     }
 
-    private void displayReviews(List<String> recipeNames, List<Integer> stars, List<String> comments) {
+    private void displayReviews(List<String> recipeNames, List<Integer> stars, List<String> comments, List<String> recipeImages, List<String> usernames) {
         reviewListPanel.removeAll();
 
         if (recipeNames == null || recipeNames.isEmpty()) {
@@ -102,8 +102,10 @@ public class CommunityView extends JPanel implements PropertyChangeListener {
             String recipeName = recipeNames.get(i);
             int starRating = (stars != null && i < stars.size()) ? stars.get(i) : 0;
             String comment = (comments != null && i < comments.size()) ? comments.get(i) : "";
+            String recipeImageUrl = (recipeImages != null && i < recipeImages.size()) ? recipeImages.get(i) : null;
+            String username = (usernames != null && i < usernames.size()) ? usernames.get(i) : null;
 
-            JPanel reviewCard = createReviewCard(recipeName, starRating, comment);
+            JPanel reviewCard = createReviewCard(recipeName, starRating, comment, recipeImageUrl, username);
             reviewListPanel.add(reviewCard);
             reviewListPanel.add(Box.createRigidArea(new Dimension(0, 10))); // Spacing between cards
         }
@@ -112,7 +114,7 @@ public class CommunityView extends JPanel implements PropertyChangeListener {
         reviewListPanel.repaint();
     }
 
-    private JPanel createReviewCard(String recipeName, int starRating, String comment) {
+    private JPanel createReviewCard(String recipeName, int starRating, String comment, String recipeImageUrl, String username) {
         JPanel card = new JPanel();
         card.setLayout(new BorderLayout(10, 10));
         card.setBorder(BorderFactory.createCompoundBorder(
@@ -122,10 +124,33 @@ public class CommunityView extends JPanel implements PropertyChangeListener {
         card.setBackground(Color.WHITE);
         card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 150));
 
-        // Left panel: Recipe name and stars
-        JPanel leftPanel = new JPanel();
-        leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
-        leftPanel.setBackground(Color.WHITE);
+        // Image panel (leftmost)
+        JPanel imagePanel = new JPanel();
+        imagePanel.setLayout(new BorderLayout());
+        imagePanel.setBackground(Color.WHITE);
+        imagePanel.setPreferredSize(new Dimension(120, 120));
+        
+        JLabel imageLabel = new JLabel();
+        imageLabel.setPreferredSize(new Dimension(120, 120));
+        imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        imageLabel.setVerticalAlignment(SwingConstants.CENTER);
+        
+        if (recipeImageUrl != null && !recipeImageUrl.isEmpty()) {
+            // Load image asynchronously
+            loadImageAsync(recipeImageUrl, imageLabel, 120, 120);
+        } else {
+            // Placeholder if no image
+            imageLabel.setText("No Image");
+            imageLabel.setForeground(Color.GRAY);
+        }
+        
+        imagePanel.add(imageLabel, BorderLayout.CENTER);
+        card.add(imagePanel, BorderLayout.WEST);
+
+        // Middle panel: Recipe name, stars, and username
+        JPanel middlePanel = new JPanel();
+        middlePanel.setLayout(new BoxLayout(middlePanel, BoxLayout.Y_AXIS));
+        middlePanel.setBackground(Color.WHITE);
 
         JLabel recipeLabel = new JLabel(recipeName);
         recipeLabel.setFont(new Font("Arial", Font.BOLD, 16));
@@ -136,9 +161,18 @@ public class CommunityView extends JPanel implements PropertyChangeListener {
         starsLabel.setForeground(new Color(255, 165, 0)); // Orange color for stars
         starsLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        leftPanel.add(recipeLabel);
-        leftPanel.add(Box.createRigidArea(new Dimension(0, 5)));
-        leftPanel.add(starsLabel);
+        // Username label with fallback
+        String displayUsername = (username != null && !username.trim().isEmpty()) ? username : "Anonymous";
+        JLabel usernameLabel = new JLabel("by " + displayUsername);
+        usernameLabel.setFont(new Font("Arial", Font.ITALIC, 12));
+        usernameLabel.setForeground(new Color(100, 100, 100)); // Gray color for username
+        usernameLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        middlePanel.add(recipeLabel);
+        middlePanel.add(Box.createRigidArea(new Dimension(0, 5)));
+        middlePanel.add(starsLabel);
+        middlePanel.add(Box.createRigidArea(new Dimension(0, 3)));
+        middlePanel.add(usernameLabel);
 
         // Right panel: Comment
         JTextArea commentArea = new JTextArea(comment);
@@ -154,8 +188,13 @@ public class CommunityView extends JPanel implements PropertyChangeListener {
         commentScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         commentScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
-        card.add(leftPanel, BorderLayout.WEST);
-        card.add(commentScroll, BorderLayout.CENTER);
+        // Create a panel to hold middle and right sections
+        JPanel contentPanel = new JPanel(new BorderLayout(10, 10));
+        contentPanel.setBackground(Color.WHITE);
+        contentPanel.add(middlePanel, BorderLayout.WEST);
+        contentPanel.add(commentScroll, BorderLayout.CENTER);
+        
+        card.add(contentPanel, BorderLayout.CENTER);
 
         return card;
     }
@@ -193,8 +232,10 @@ public class CommunityView extends JPanel implements PropertyChangeListener {
         List<String> recipeNames = state.getRecipeNames();
         List<Integer> stars = state.getStars();
         List<String> comments = state.getComments();
+        List<String> recipeImages = state.getRecipeImages();
+        List<String> usernames = state.getUsernames();
         
-        displayReviews(recipeNames, stars, comments);
+        displayReviews(recipeNames, stars, comments, recipeImages, usernames);
         
         // Update title if there's a prompt
         if (state.getPrompt() != null && !state.getPrompt().isEmpty()) {
@@ -202,6 +243,49 @@ public class CommunityView extends JPanel implements PropertyChangeListener {
         } else {
             titleLabel.setText("Community Reviews");
         }
+    }
+
+    /**
+     * Loads an image asynchronously from a URL and sets it to the label.
+     * Scales the image to fit within the specified dimensions.
+     */
+    private void loadImageAsync(String imageUrl, JLabel label, int width, int height) {
+        // Use SwingWorker to load image in background
+        SwingWorker<ImageIcon, Void> worker = new SwingWorker<ImageIcon, Void>() {
+            @Override
+            protected ImageIcon doInBackground() {
+                try {
+                    java.net.URL url = new java.net.URL(imageUrl);
+                    ImageIcon icon = new ImageIcon(url);
+                    
+                    // Scale image to fit
+                    Image img = icon.getImage();
+                    Image scaledImg = img.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+                    return new ImageIcon(scaledImg);
+                } catch (Exception e) {
+                    System.err.println("Error loading image: " + imageUrl);
+                    return null;
+                }
+            }
+
+            @Override
+            protected void done() {
+                try {
+                    ImageIcon icon = get();
+                    if (icon != null) {
+                        label.setIcon(icon);
+                        label.setText("");
+                    } else {
+                        label.setText("Image Error");
+                        label.setForeground(Color.RED);
+                    }
+                } catch (Exception e) {
+                    label.setText("Image Error");
+                    label.setForeground(Color.RED);
+                }
+            }
+        };
+        worker.execute();
     }
 
     public String getViewName() {

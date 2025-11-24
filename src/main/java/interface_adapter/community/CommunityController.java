@@ -32,10 +32,12 @@ public class CommunityController {
         );
     }
 
-    public void selectRecipe(int recipeID){
+    public void selectRecipe(int recipeID, String recipeName, String recipeImageUrl){
         this.communityInteractor.selectRecipe(
                 new CommunityRecipeSelectionInputData(
-                        recipeID
+                        recipeID,
+                        recipeName,
+                        recipeImageUrl
                 )
         );
     }

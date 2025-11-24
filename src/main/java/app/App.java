@@ -18,8 +18,8 @@ public class App {
                     .buildNavigation()
                     .buildErrorPopUp()
                     .buildApproveRecipeFeature()
-                    .buildCommunityFeature()
                     .buildAuthFeature()
+                    .buildCommunityFeature()
                     .buildMealPlan()
                     .build();
         });

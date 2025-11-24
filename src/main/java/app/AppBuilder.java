@@ -188,7 +188,7 @@ public class AppBuilder {
         // Create community views
         communityView = new CommunityView(communityViewModel, viewManagerModel);
         selectLikedRecipeView = new SelectLikedRecipeView(communityViewModel);
-        writeReviewView = new WriteReviewView(communityViewModel);
+        writeReviewView = new WriteReviewView(communityViewModel, loggedInViewModel);
 
         // Add views to community panel
         communityContentPanel.add(communityView, CommunityViewModel.VIEWING);

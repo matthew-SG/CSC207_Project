@@ -38,6 +38,10 @@ public class Rating {
         return recipeName;
     }
 
+    public String getUsername() {
+        return username;
+    }
+
     public String getRecipeImageUrl() {
         return recipeImageUrl;
     }

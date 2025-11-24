@@ -49,7 +49,9 @@ public class CommunityMarketInteractor implements CommunityInputBoundary {
     public void selectRecipe(CommunityRecipeSelectionInputData data) {
         getCommunityPresenter().prepareCommentWriting(
                 new CommunitySelectedRecipeOutputData(
-                        getCommunityDAO().getSelectedRecipe(data.getRecipeID()).getRecipeId()
+                        getCommunityDAO().getSelectedRecipe(data.getRecipeID()).getRecipeId(),
+                        data.getRecipeName(),
+                        data.getRecipeImageUrl()
                 )
         );
     }
