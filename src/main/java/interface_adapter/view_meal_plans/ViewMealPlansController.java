@@ -12,6 +12,9 @@ public class ViewMealPlansController {
         this.viewMealPlansInteractor = viewMealPlansInteractor;
     }
 
+    /**
+     * Executes the View Meal Plans Use Case
+     */
     public void execute() {
         viewMealPlansInteractor.execute();
     }
