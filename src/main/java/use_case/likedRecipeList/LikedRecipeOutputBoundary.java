@@ -1,8 +1,8 @@
 package use_case.likedRecipeList;
 
-import entities.Recipe;
+import use_case.step_by_step.StepByStepInputData;
 
 public interface LikedRecipeOutputBoundary {
-    void prepareLikedRecipeView(Recipe recipe);
-    void prepareHandsfree(Recipe recipe);
+    void prepareLikedRecipeView(LikedRecipeOutputData likedRecipeOutputData);
+    void prepareHandsfree(StepByStepInputData stepByStepInputData);
 }
