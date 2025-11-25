@@ -49,6 +49,13 @@ public class NavbarLoggedInView extends JPanel {
             }
         });
 
+        generateRecipe.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                navbarController.switchToGenerateRecipe();
+            }
+        });
+
         mealPlanButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) { navbarController.switchToMealPlan();}

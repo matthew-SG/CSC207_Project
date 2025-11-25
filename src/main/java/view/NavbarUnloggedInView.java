@@ -46,6 +46,12 @@ public class NavbarUnloggedInView extends JPanel {
                 navbarController.switchToCommunity();
             }
         });
+
+        generateRecipe.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {navbarController.switchToGenerateRecipe(); }
+        });
+
     }
 
     public void setNavbarController(NavbarController navbarController) {
