@@ -1,12 +1,12 @@
-package use_case.likedRecipeList;
+package use_case.liked_recipe_list;
 
 public class HandsFreeRecipeInputData {
-    private final String RecipeId;
+    private final String recipeId;
 
     public HandsFreeRecipeInputData(String recipeId) {
-        this.RecipeId = recipeId;
+        this.recipeId = recipeId;
     }
     public String getRecipeId() {
-        return RecipeId;
+        return recipeId;
     }
 }

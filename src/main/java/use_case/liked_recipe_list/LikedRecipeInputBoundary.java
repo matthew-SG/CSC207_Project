@@ -1,6 +1,4 @@
-package use_case.likedRecipeList;
-
-import entities.Recipe;
+package use_case.liked_recipe_list;
 
 public interface LikedRecipeInputBoundary {
 
