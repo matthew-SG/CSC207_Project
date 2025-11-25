@@ -1,9 +1,7 @@
 package use_case.likedRecipeList;
-
-import entities.Recipe;
-import java.util.ArrayList;
+git
 import java.util.List;
-import java.util.Map;
+
 
 public class LikedRecipeOutputData {
     private final String[] recipeNames;
