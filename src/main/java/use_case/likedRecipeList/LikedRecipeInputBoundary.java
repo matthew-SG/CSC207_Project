@@ -8,5 +8,5 @@ public interface LikedRecipeInputBoundary {
 
     void executeDeleteLikedRecipe(DeleteLikedRecipeInputData deleteLikedRecipeInputData);
 
-    void executeHandsfree(HandsFreeInputData handsFreeInputData);
+    void executeHandsfree(HandsFreeRecipeInputData handsFreeRecipeInputData);
 }
