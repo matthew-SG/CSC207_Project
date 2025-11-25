@@ -1,4 +1,4 @@
-package use_case.likedRecipeList;
+package use_case.liked_recipe_list;
 
 import entities.Recipe;
 

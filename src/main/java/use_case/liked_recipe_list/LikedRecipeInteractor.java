@@ -1,4 +1,4 @@
-package use_case.likedRecipeList;
+package use_case.liked_recipe_list;
 
 // TODO Implement the interactor for the Liked Recipe List Use Case
 
