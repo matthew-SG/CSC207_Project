@@ -4,9 +4,9 @@ import entities.Recipe;
 
 public interface LikedRecipeInputBoundary {
 
-    void executeAddLikedRecipe(addLikedRecipeInputData addLikedRecipeInputData);
+    void executeAddLikedRecipe(AddLikedRecipeInputData addLikedRecipeInputData);
 
-    void executeDeleteLikedRecipe();
+    void executeDeleteLikedRecipe(DeleteLikedRecipeInputData deleteLikedRecipeInputData);
 
     void executeHandsfree(HandsFreeInputData handsFreeInputData);
 }
