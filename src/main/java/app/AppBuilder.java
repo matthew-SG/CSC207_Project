@@ -1,7 +1,7 @@
 package app;
 
 import data_access.*;
-import API.SearchByIngredientSpoonacular;
+import data_access.SearchByIngredientSpoonacular;
 import entities.UserFactory;
 import interface_adapter.ViewManagerModel;
 import interface_adapter.approve_recipe.ApproveRecipeController;

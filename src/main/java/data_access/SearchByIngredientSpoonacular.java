@@ -1,4 +1,4 @@
-package API;
+package data_access;
 
 import entities.Recipe;
 import entities.Ingredient;
@@ -19,6 +19,7 @@ public class SearchByIngredientSpoonacular {
         this.apiKey = "6e0b1d9ab8b94b9dbf723c0203286189";
     }
 
+
     public JSONArray searchByIngredientSpoonacular(List<Ingredient> ingredients) {
         if (ingredients.isEmpty()) {
             return null;
@@ -33,9 +34,9 @@ public class SearchByIngredientSpoonacular {
                 addQueryParameter("apiKey", apiKey).
                 addQueryParameter("ingredients", ingredientsString).
                 //returns 15 results
-                addQueryParameter("number", "15").
+                        addQueryParameter("number", "15").
                 //"minimize missing ingredients"
-                addQueryParameter("ranking", "2").
+                        addQueryParameter("ranking", "2").
                 addQueryParameter("ignorePantry", "true").
                 build();
         Request request = new Request.Builder()
@@ -46,7 +47,7 @@ public class SearchByIngredientSpoonacular {
                 .build();
         try {
             Response response = client.newCall(request).execute();
-           String rspns = response.body().string();
+            String rspns = response.body().string();
             final JSONArray responseBody = new JSONArray(rspns);
             if (responseBody.length() == 0) throw new IOException("Empty response");
             return responseBody;
@@ -59,7 +60,7 @@ public class SearchByIngredientSpoonacular {
         if (recipe.getIngredients() != null && !recipe.getIngredients().isEmpty()
                 && recipe.getSteps() != null && !recipe.getSteps().isEmpty()) {
             return;
-    }
+        }
         String recipeInfoUrl = RECIPEINFOURL+recipe.getRecipeId()+"/information";
         HttpUrl url = HttpUrl.parse(recipeInfoUrl).newBuilder().addQueryParameter("apiKey", apiKey).build();
         final OkHttpClient client = new OkHttpClient.Builder().build();
