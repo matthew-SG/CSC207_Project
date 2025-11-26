@@ -1,15 +1,15 @@
 package interface_adapter.load_meal_plan;
 
+import use_case.load_meal_plan.LoadMealPlanInputBoundary;
 import use_case.load_meal_plan.LoadMealPlanInputData;
-import use_case.load_meal_plan.LoadMealPlanInteractor;
 
 /**
  * Controller for the Load Meal Plan Use Case
  */
 public class LoadMealPlanController {
-    private final LoadMealPlanInteractor loadMealPlanIntereactor;
+    private final LoadMealPlanInputBoundary loadMealPlanIntereactor;
 
-    public LoadMealPlanController(LoadMealPlanInteractor loadMealPlanInteractor) {
+    public LoadMealPlanController(LoadMealPlanInputBoundary loadMealPlanInteractor) {
         this.loadMealPlanIntereactor = loadMealPlanInteractor;
     }
 

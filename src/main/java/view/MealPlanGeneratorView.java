@@ -9,8 +9,6 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
@@ -70,26 +68,20 @@ public class MealPlanGeneratorView extends JPanel implements PropertyChangeListe
         buttons.add(generate);
 
         generate.addActionListener(
-                new ActionListener() {
-                    public void actionPerformed(ActionEvent evt) {
-                        final MealPlanGeneratorState currentState = mealPlanGeneratorViewModel.getState();
+                evt -> {
+                    final MealPlanGeneratorState currentState = mealPlanGeneratorViewModel.getState();
 
-                        mealPlanController.execute(
-                                currentState.getTargetCalories(),
-                                currentState.getTargetProtein(),
-                                currentState.getTargetCarbs(),
-                                currentState.getTargetFats()
-                        );
-                    }
+                    mealPlanController.execute(
+                            currentState.getTargetCalories(),
+                            currentState.getTargetProtein(),
+                            currentState.getTargetCarbs(),
+                            currentState.getTargetFats()
+                    );
                 }
         );
 
         viewMealPlans.addActionListener(
-                new ActionListener() {
-                    public void actionPerformed(ActionEvent evt) {
-                        viewMealPlansController.execute();
-                    }
-                }
+                evt -> viewMealPlansController.execute()
         );
 
         targetCaloriesInputField.getDocument().addDocumentListener(new DocumentListener() {
