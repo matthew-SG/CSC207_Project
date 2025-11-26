@@ -9,6 +9,8 @@ import interface_adapter.approve_recipe.ApproveRecipeViewModel;
 import interface_adapter.community.CommunityController;
 import interface_adapter.community.CommunityPresenter;
 import interface_adapter.community.CommunityViewModel;
+import interface_adapter.load_meal_plan.LoadMealPlanController;
+import interface_adapter.load_meal_plan.LoadMealPlanPresenter;
 import interface_adapter.logged_in.LoggedInViewModel;
 import interface_adapter.login.LoginController;
 import interface_adapter.login.LoginPresenter;
@@ -25,6 +27,9 @@ import interface_adapter.nav_bar.NavbarPresenter;
 import interface_adapter.signup.SignupController;
 import interface_adapter.signup.SignupPresenter;
 import interface_adapter.signup.SignupViewModel;
+import interface_adapter.view_meal_plans.ViewMealPlansController;
+import interface_adapter.view_meal_plans.ViewMealPlansPresenter;
+import interface_adapter.view_meal_plans.ViewMealPlansViewModel;
 import use_case.approve_recipe.ApproveRecipeDataAccessInterface;
 import use_case.approve_recipe.ApproveRecipeInputBoundary;
 import use_case.approve_recipe.ApproveRecipeInteractor;
@@ -33,6 +38,9 @@ import use_case.community.CommunityDataAccessInterface;
 import use_case.community.CommunityInputBoundary;
 import use_case.community.CommunityMarketInteractor;
 import use_case.community.CommunityOutputBoundary;
+import use_case.load_meal_plan.LoadMealPlanInputBoundary;
+import use_case.load_meal_plan.LoadMealPlanInteractor;
+import use_case.load_meal_plan.LoadMealPlanOutputBoundary;
 import use_case.login.LoginInputBoundary;
 import use_case.login.LoginInteractor;
 import use_case.login.LoginOutputBoundary;
@@ -46,6 +54,19 @@ import use_case.nav_bar.NavbarInteractor;
 import use_case.signup.SignupInputBoundary;
 import use_case.signup.SignupInteractor;
 import use_case.signup.SignupOutputBoundary;
+import use_case.view_meal_plans.ViewMealPlansInputBoundary;
+import use_case.view_meal_plans.ViewMealPlansInteractor;
+import use_case.view_meal_plans.ViewMealPlansOutputBoundary;
+import data_access.DummyRecipeDataAccessObject;
+import interface_adapter.recipe_generator.RecipeGeneratorController;
+import interface_adapter.recipe_generator.RecipeGeneratorPresenter;
+import interface_adapter.recipe_generator.RecipeGeneratorViewModel;
+import use_case.recipe_generator.RecipeGeneratorInteractor;
+import use_case.recipe_generator.RecipeDataAccessInterface;
+import use_case.recipe_generator.RecipeGeneratorInputBoundary;
+import use_case.recipe_generator.RecipeGeneratorOutputBoundary;
+import view.RecipeGeneratorView;
+
 import view.*;
 
 import javax.swing.*;
@@ -108,6 +129,10 @@ public class AppBuilder {
     private MealPlanGeneratorViewModel mealPlanGeneratorViewModel;
     private MealPlanGeneratedView mealPlanGeneratedView;
     private MealPlanGeneratedViewModel mealPlanGeneratedViewModel;
+
+    // View Meal Plans Use Case
+    private ViewMealPlansViewModel viewMealPlansViewModel;
+    private ViewMealPlansView viewMealPlansView;
 
     /**
      * Initialize the builder with default setup.
@@ -173,6 +198,42 @@ public class AppBuilder {
 
         return this;
     }
+
+    public AppBuilder buildRecipeGeneratorFeature() {
+        RecipeGeneratorViewModel recipeGeneratorViewModel =
+                new RecipeGeneratorViewModel();
+
+        // Presenter
+        RecipeGeneratorOutputBoundary recipeGeneratorPresenter =
+                new RecipeGeneratorPresenter(recipeGeneratorViewModel, viewManagerModel);
+
+        // 3. Data access accessing dummy recipe generator
+        RecipeDataAccessInterface recipeGateway =
+                new DummyRecipeDataAccessObject();
+
+        //interactor
+        RecipeGeneratorInputBoundary recipeGeneratorInteractor =
+                new RecipeGeneratorInteractor(recipeGateway, recipeGeneratorPresenter);
+
+        //Controller
+        RecipeGeneratorController recipeGeneratorController =
+                new RecipeGeneratorController(recipeGeneratorInteractor);
+
+        // View
+        RecipeGeneratorView recipeGeneratorView =
+                new RecipeGeneratorView(
+                        recipeGeneratorViewModel,
+                        recipeGeneratorController,
+                        viewManagerModel
+                );
+
+        // register view with main content panel
+        contentPanel.add(recipeGeneratorView, recipeGeneratorViewModel.getViewName());
+
+        return this;
+    }
+
+
 
     /**
      * Build community feature components.
@@ -288,7 +349,7 @@ public class AppBuilder {
         navBar = new NavbarUnloggedInView();
         navBarLoggedIn = new NavbarLoggedInView();
 
-        navbarPresenter = new NavbarPresenter(viewManagerModel, communityViewModel);
+        navbarPresenter = new NavbarPresenter(viewManagerModel, communityViewModel, mealPlanGeneratorViewModel);
         NavbarController navbarController = new NavbarController(
                 new NavbarInteractor(navbarPresenter)
         );
@@ -313,17 +374,33 @@ public class AppBuilder {
         mealPlanGeneratorView = new MealPlanGeneratorView(mealPlanGeneratorViewModel);
         mealPlanGeneratedViewModel = new MealPlanGeneratedViewModel();
         mealPlanGeneratedView = new MealPlanGeneratedView(mealPlanGeneratedViewModel);
+        viewMealPlansViewModel = new ViewMealPlansViewModel();
+        viewMealPlansView = new ViewMealPlansView(viewMealPlansViewModel);
+
 
         final MealPlanOutputBoundary mealPlanPresenter = new MealPlanPresenter(mealPlanGeneratorViewModel,
                 mealPlanGeneratedViewModel, viewManagerModel);
         final MealPlanInputBoundary mealPlanInteractor = new MealPlanInteractor(userDataAccessObject,
                 mealPlanPresenter);
+        final ViewMealPlansOutputBoundary viewMealPlansPresenter = new ViewMealPlansPresenter(
+                mealPlanGeneratorViewModel, viewMealPlansViewModel, viewManagerModel);
+        final ViewMealPlansInputBoundary viewMealPlansInteractor = new ViewMealPlansInteractor(userDataAccessObject,
+                viewMealPlansPresenter);
+        final LoadMealPlanOutputBoundary loadMealPlanPresenter = new LoadMealPlanPresenter(mealPlanGeneratedViewModel,
+                viewManagerModel);
+        final LoadMealPlanInputBoundary loadMealPlanInteractor = new LoadMealPlanInteractor(userDataAccessObject,
+                loadMealPlanPresenter);
 
         MealPlanController mealPlanController = new MealPlanController(mealPlanInteractor);
         mealPlanGeneratorView.setMealPlanController(mealPlanController);
+        ViewMealPlansController viewMealPlansController = new ViewMealPlansController(viewMealPlansInteractor);
+        mealPlanGeneratorView.setViewMealPlansController(viewMealPlansController);
+        LoadMealPlanController loadMealPlanController = new LoadMealPlanController(loadMealPlanInteractor);
+        viewMealPlansView.setLoadMealPlanController(loadMealPlanController);
 
         contentPanel.add(mealPlanGeneratorView, mealPlanGeneratorView.getViewName());
         contentPanel.add(mealPlanGeneratedView, mealPlanGeneratedView.getViewName());
+        contentPanel.add(viewMealPlansView, viewMealPlansView.getViewName());
 
         return this;
     }

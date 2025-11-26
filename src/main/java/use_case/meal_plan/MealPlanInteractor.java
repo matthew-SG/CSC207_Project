@@ -53,7 +53,7 @@ public class MealPlanInteractor implements MealPlanInputBoundary{
                 userDataAccessObject.saveMealPlan(mealPlan);
                 int i = 0;
 
-                for (Recipe recipe : savedRecipes) {
+                for (Recipe recipe : mealPlan.getRecipes()) {
                     recipeNames[i] = recipe.getRecipeName();
                     recipeImages[i] = recipe.getRecipeImage();
                     recipeIngredients.add(toOrderedString(recipe.getIngredients()));
@@ -89,15 +89,15 @@ public class MealPlanInteractor implements MealPlanInputBoundary{
      * @return the list string array representation of the ingredients
      */
     private static List<String[]> toOrderedString(List<Ingredient> ingredients) {
-        List<String[]> list = new ArrayList<>();
+        List<String[]> result = new ArrayList<>();
         for (Ingredient ingredient : ingredients) {
             String[] ingredientEntry = new String[3];
             ingredientEntry[0] = ingredient.getName();
             ingredientEntry[1] = ingredient.getQuantity() + "";
             ingredientEntry[2] = ingredient.getUnit();
-            list.add(ingredientEntry);
+            result.add(ingredientEntry);
         }
-        return list;
+        return result;
     }
 
     /**
@@ -139,7 +139,7 @@ public class MealPlanInteractor implements MealPlanInputBoundary{
         double currentFats;
         double currentError;
         double lowestError = -1;
-        List<Recipe> bestFittingTriplet = new ArrayList<>();
+        List<Recipe> result = new ArrayList<>();
 
         for (List<Recipe> recipeTriplet : recipeTriplets) {
             assert recipeTriplet.size() == 3;
@@ -162,12 +162,12 @@ public class MealPlanInteractor implements MealPlanInputBoundary{
 
             } else if (lowestError == -1 || currentError < lowestError) {
                 lowestError = currentError;
-                bestFittingTriplet = recipeTriplet;
+                result = recipeTriplet;
 
             }
 
         }
-        return bestFittingTriplet;
+        return result;
 
     }
 
@@ -179,7 +179,7 @@ public class MealPlanInteractor implements MealPlanInputBoundary{
      */
     private static List<List<Recipe>> createTripletCombinations(List<Recipe> recipes) {
         assert recipes.size() >= 3;
-        ArrayList<List<Recipe>> recipeTriplets = new ArrayList<>();
+        ArrayList<List<Recipe>> result = new ArrayList<>();
         ArrayList<Recipe> recipeTriplet = new ArrayList<>();
         int n = recipes.size();
 
@@ -192,7 +192,7 @@ public class MealPlanInteractor implements MealPlanInputBoundary{
                 for (int k = j + 1; k < n; k++) {
                     recipeTriplet.add(recipes.get(k));
                     List<Recipe> recipeTripletCopy = new ArrayList<>(recipeTriplet);
-                    recipeTriplets.add(recipeTripletCopy);
+                    result.add(recipeTripletCopy);
                     recipeTriplet.remove(2);
                     
                 }
@@ -200,7 +200,7 @@ public class MealPlanInteractor implements MealPlanInputBoundary{
             }
             recipeTriplet.remove(0);
         }
-        return recipeTriplets;
+        return result;
     }
 
 }
