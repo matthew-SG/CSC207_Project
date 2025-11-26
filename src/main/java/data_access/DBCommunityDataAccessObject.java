@@ -43,7 +43,7 @@ public class DBCommunityDataAccessObject implements CommunityDataAccessInterface
         ratings.add(new Rating(2, 2, "test@1.ca", 4, "good","pizza", "https://www.tasteofhome.com/wp-content/uploads/2018/01/Homemade-Pizza_EXPS_FT23_376_EC_120123_3.jpg"));
 
 
-        this.webapiKey = Constants.WEBAPI_KEY;
+        this.webapiKey = "5b07df6820b74cf1b2eae9c1b440f014";
         this.ratingsEndpoint = BASE_URL + "/ratings";
         this.client = new OkHttpClient();
         
