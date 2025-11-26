@@ -1,12 +1,11 @@
 package use_case.search_by_ingr;
 
-import API.SearchByIngredientSpoonacular;
+import data_access.SearchByIngredientSpoonacular;
 import entities.Ingredient;
 import entities.Recipe;
 import entities.unitConverter;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.json.*;
 
 import java.util.*;
 

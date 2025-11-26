@@ -1,6 +1,6 @@
 package view;
 
-import API.SearchByIngredientSpoonacular;
+import data_access.SearchByIngredientSpoonacular;
 import entities.*;
 import interface_adapter.search_by_ingr.*;
 import use_case.search_by_ingr.*;
