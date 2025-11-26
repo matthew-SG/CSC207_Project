@@ -158,7 +158,7 @@ public class SearchByIngredientView extends JPanel {
             statusLabel.setText("Select a recipe first.");
             return;
         }
-        api.populateRecipeDetails(selected);
+        if (selected.getIngredients() == null || selected.getIngredients().isEmpty()) api.populateRecipeDetails(selected);
         StringBuilder ingText = new StringBuilder();
         for (Ingredient ing : selected.getIngredients()) {
             ingText.append("- ")

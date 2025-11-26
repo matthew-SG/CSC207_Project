@@ -22,18 +22,19 @@ public class SearchByIngredientInteractor implements SearchByIngredientInputBoun
         JSONArray results= api.searchByIngredientSpoonacular(ingredients);
         ArrayList<Recipe> recipes=new ArrayList<>();
 
-        System.out.println(results.toString());
+        //System.out.println(results.toString());
 
-        for (int i = 0; i < results.length() && recipes.size() < 5; i++) {
+        for (int i = 0; i < results.length() && recipes.size() < 10; i++) {
             JSONObject object = results.getJSONObject(i);
             int missedIngredients = object.getInt("missedIngredientCount");
-            if (missedIngredients == 0) {
+            if (missedIngredients < 3) {
                 JSONArray usedIngredients = object.getJSONArray("usedIngredients");
                 boolean haveEnough = true;
                 for (int j = 0; j < usedIngredients.length()&&haveEnough; j++) {
                     JSONObject usedIngredient = usedIngredients.getJSONObject(j);
                     double amount = usedIngredient.getDouble("amount");
                     String name = usedIngredient.getString("name").toLowerCase();
+                    if(name.charAt(name.length()-1) == 's') name = name.substring(0, name.length()-1);
                     String[] unitName = new String[3];
                     unitName[0] = usedIngredient.getString("unit");
                     unitName[1] = usedIngredient.getString("unitShort");
