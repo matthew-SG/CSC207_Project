@@ -21,10 +21,7 @@ public class SignupInteractor implements SignupInputBoundary {
 
     @Override
     public void execute(SignupInputData signupInputData) {
-        if (userDataAccessObject.existsByName(signupInputData.getUsername())) {
-            userPresenter.prepareFailView("User already exists.");
-        }
-        else if (!signupInputData.getPassword().equals(signupInputData.getRepeatPassword())) {
+        if (!signupInputData.getPassword().equals(signupInputData.getRepeatPassword())) {
             userPresenter.prepareFailView("Passwords don't match.");
         }
         else if ("".equals(signupInputData.getPassword())) {
@@ -34,11 +31,15 @@ public class SignupInteractor implements SignupInputBoundary {
             userPresenter.prepareFailView("Username cannot be empty");
         }
         else {
-            final User user = userFactory.create(signupInputData.getUsername(), signupInputData.getPassword());
-            userDataAccessObject.save(user);
-
-            final SignupOutputData signupOutputData = new SignupOutputData(user.getName());
-            userPresenter.prepareSuccessView(signupOutputData);
+            String returnCode = userDataAccessObject.signupUser(signupInputData.getUsername(),
+                    signupInputData.getPassword());
+            if (returnCode.equals(SignupUserDataAccessInterface.USER_EXISTS_ERROR)) {
+                userPresenter.prepareFailView("Username already exists");
+            }
+            else if (returnCode.equals(SignupUserDataAccessInterface.SUCCESS)) {
+                final SignupOutputData signupOutputData = new SignupOutputData(userDataAccessObject.getCurrentUsername());
+                userPresenter.prepareSuccessView(signupOutputData);
+            }
         }
     }
 

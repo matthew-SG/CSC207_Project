@@ -34,4 +34,8 @@ public class NavbarController {
 
     public void switchToGroceryList(){this.navbarInteractor.switchToGroceryList();
     }
+
+    public void switchToMealPlan(){
+        this.navbarInteractor.switchToMealPlan();
+    }
 }
