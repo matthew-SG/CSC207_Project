@@ -1,5 +1,6 @@
 package view;
 
+import interface_adapter.load_meal_plan.LoadMealPlanController;
 import interface_adapter.view_meal_plans.ViewMealPlansState;
 import interface_adapter.view_meal_plans.ViewMealPlansViewModel;
 
@@ -20,6 +21,8 @@ public class ViewMealPlansView extends JPanel implements PropertyChangeListener 
     private static final int CARD_DIMENSIONS = 10;
     private static final int CARD_LABEL_SPACING = 5;
     private static final int CARD_SPACING = 10;
+
+    private LoadMealPlanController loadMealPlanController = null;
 
     private JPanel listPanel;
 
@@ -66,8 +69,7 @@ public class ViewMealPlansView extends JPanel implements PropertyChangeListener 
 
             JButton viewButton = new JButton("View Meal Plan");
             int index = i;
-            // TODO Implement the action listener to view the selected meal plan once the LoadMealPlan Use Case is
-            //  implemented
+            viewButton.addActionListener(e -> loadMealPlanController.execute(index));
 
             card.add(nameLabel);
             card.add(Box.createVerticalStrut(CARD_LABEL_SPACING));
@@ -85,5 +87,9 @@ public class ViewMealPlansView extends JPanel implements PropertyChangeListener 
 
     public String getViewName() {
         return VIEW_NAME;
+    }
+
+    public void setLoadMealPlanController(LoadMealPlanController loadMealPlanController) {
+        this.loadMealPlanController = loadMealPlanController;
     }
 }
