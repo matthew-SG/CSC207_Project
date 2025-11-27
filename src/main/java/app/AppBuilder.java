@@ -46,7 +46,7 @@ import use_case.nav_bar.NavbarInteractor;
 import use_case.signup.SignupInputBoundary;
 import use_case.signup.SignupInteractor;
 import use_case.signup.SignupOutputBoundary;
-import data_access.DummyRecipeDataAccessObject;
+import data_access.RecipeDataAccessObject;
 import interface_adapter.recipe_generator.RecipeGeneratorController;
 import interface_adapter.recipe_generator.RecipeGeneratorPresenter;
 import interface_adapter.recipe_generator.RecipeGeneratorViewModel;
@@ -194,7 +194,7 @@ public class AppBuilder {
 
         // 3. Data access accessing dummy recipe generator
         RecipeDataAccessInterface recipeGateway =
-                new DummyRecipeDataAccessObject();
+                new RecipeDataAccessObject();
 
         //interactor
         RecipeGeneratorInputBoundary recipeGeneratorInteractor =

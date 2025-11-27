@@ -25,8 +25,10 @@ public class RecipeGeneratorView extends JPanel implements PropertyChangeListene
     private JComboBox<DietaryRestriction> dietaryRestrictionBox;
     private JList<Intolerance> intolerancesList;
     private JComboBox<Cuisine> cuisineBox;
+    private JTextField minCaloriesField;
     private JTextField maxCaloriesField;
     private JTextField minProteinField;
+    private JTextField maxProteinField;
     private JButton generateButton;
     private DefaultListModel<String> recipesListModel;
     private JList<String> recipesList;
@@ -75,13 +77,19 @@ public class RecipeGeneratorView extends JPanel implements PropertyChangeListene
         JPanel numbersAndButtonPanel = new JPanel();
         numbersAndButtonPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
 
+        minCaloriesField = new JTextField(6);
         maxCaloriesField = new JTextField(6);
         minProteinField = new JTextField(6);
+        maxProteinField = new JTextField(6);
 
+        numbersAndButtonPanel.add(new JLabel("Min Calories:"));
+        numbersAndButtonPanel.add(minCaloriesField);
         numbersAndButtonPanel.add(new JLabel("Max calories:"));
         numbersAndButtonPanel.add(maxCaloriesField);
         numbersAndButtonPanel.add(new JLabel("Min protein:"));
         numbersAndButtonPanel.add(minProteinField);
+        numbersAndButtonPanel.add(new JLabel("Max protein:"));
+        numbersAndButtonPanel.add(maxProteinField);
 
         generateButton = new JButton("Generate recipes");
         numbersAndButtonPanel.add(generateButton);
@@ -114,16 +122,20 @@ public class RecipeGeneratorView extends JPanel implements PropertyChangeListene
             List<Intolerance> intolerances =
                     intolerancesList.getSelectedValuesList();
 
+            String minCaloriesText = minCaloriesField.getText();
             String maxCaloriesText = maxCaloriesField.getText();
             String minProteinText = minProteinField.getText();
+            String maxProteinText = maxProteinField.getText();
 
             // call the use case
             controller.generateRecipe(
                     dr,
                     intolerances,
                     cu,
+                    minCaloriesText,
                     maxCaloriesText,
-                    minProteinText
+                    minProteinText,
+                    maxProteinText
             );
         });
 

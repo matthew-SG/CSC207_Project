@@ -6,22 +6,45 @@ import entities.Intolerance;
 import entities.Recipe;
 import use_case.recipe_generator.RecipeDataAccessInterface;
 import entities.Ingredient;
-
-
 import java.util.ArrayList;
 import java.util.List;
 
-public class DummyRecipeDataAccessObject implements RecipeDataAccessInterface {
-    public DummyRecipeDataAccessObject() {
-        //TODO:
+//TODO: Build spoonacular URL based on the different recipe filters (dietary restriction, intolerances etc)
+//TODO: Make URL Request
+//TODO: pasrse json into List<Recipe> instead of dummy list
+
+public class RecipeDataAccessObject implements RecipeDataAccessInterface {
+    private static final String API_KEY = "5b07df6820b74cf1b2eae9c1b440f014";
+    private static final String API_BASE_URL = "https://api.spoonacular.com/recipes";
+
+    public RecipeDataAccessObject() {
+        // TODO:
+
+    }
+
+    private String mapDiet(DietaryRestriction dietaryRestriction) {
+        // TODO:
+        return " ";
+    }
+
+    private String mapCuisine(Cuisine cuisine) {
+        // TODO:
+        return " ";
+    }
+
+    private String mapIntolerances(List<Intolerance> intolerances) {
+        // TODO:
+        return " ";
     }
 
     @Override
     public List<Recipe> getRecipes(DietaryRestriction dietaryRestriction,
                                    List<Intolerance> intolerances,
                                    Cuisine cuisine,
+                                   Integer minCalories,
                                    Integer maxCalories,
-                                   Integer minProtein) {
+                                   Integer minProtein,
+                                   Integer maxProtein) {
 
         List<Recipe> recipes = new ArrayList<>();
 
@@ -79,15 +102,26 @@ public class DummyRecipeDataAccessObject implements RecipeDataAccessInterface {
         for (Recipe recipe : recipes) {
             boolean matches = true;
 
-            // calories filter: keep <= maxCalories
             Double cals = recipe.getNutritionalValues().get("calories");
+            Double prot = recipe.getNutritionalValues().get("protein");
+
+            // calories lower bound: keep >= minCalories
+            if (minCalories != null && cals != null && cals < minCalories) {
+                matches = false;
+            }
+
+            // calories upper bound: keep <= maxCalories
             if (maxCalories != null && cals != null && cals > maxCalories) {
                 matches = false;
             }
 
-            // protein filter: keep >= minProtein
-            Double prot = recipe.getNutritionalValues().get("protein");
+            // protein lower bound: keep >= minProtein
             if (minProtein != null && prot != null && prot < minProtein) {
+                matches = false;
+            }
+
+            // protein upper bound: keep <= maxProtein
+            if (maxProtein != null && prot != null && prot > maxProtein) {
                 matches = false;
             }
 
@@ -95,6 +129,7 @@ public class DummyRecipeDataAccessObject implements RecipeDataAccessInterface {
                 filtered.add(recipe);
             }
         }
+
 
         return filtered;
     }

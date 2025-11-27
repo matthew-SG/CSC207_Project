@@ -14,23 +14,31 @@ public class RecipeGeneratorController {
         this.recipeUseCaseInteractor = recipeUseCaseInteractor;
     }
     public void generateRecipe(
-        DietaryRestriction dietaryRestriction, List<Intolerance> intolerances, Cuisine cuisine, String maxCaloriesText, String minProteinText) {
+        DietaryRestriction dietaryRestriction, List<Intolerance> intolerances, Cuisine cuisine, String minCaloriesText, String maxCaloriesText, String minProteinText, String maxProteinText) {
+        Integer minCalories = null;
         Integer maxCalories = null;
         Integer minProtein = null;
+        Integer maxProtein = null;
         /**
          * catch handles if user inputs alphabetical values into the calories or protein field
          */
         try {
+            if (minCaloriesText != null && !minCaloriesText.isEmpty()) {
+                minCalories = Integer.parseInt(minCaloriesText);
+            }
             if (maxCaloriesText != null && !maxCaloriesText.isEmpty()) {
                 maxCalories = Integer.parseInt(maxCaloriesText);
             }
             if (minProteinText != null && !minProteinText.isEmpty()) {
                 minProtein = Integer.parseInt(minProteinText);
             }
+            if (maxProteinText != null && !maxProteinText.isEmpty()) {
+                maxProtein = Integer.parseInt(maxProteinText);
+            }
         } catch (NumberFormatException e) {
             return;
         }
-        GenerateRecipeInputData inputData = new GenerateRecipeInputData(dietaryRestriction, intolerances, cuisine, maxCalories, minProtein);
+        GenerateRecipeInputData inputData = new GenerateRecipeInputData(dietaryRestriction, intolerances, cuisine, minCalories, maxCalories, minProtein,  maxProtein);
         recipeUseCaseInteractor.generateRecipes(inputData);
 
     }
