@@ -122,6 +122,11 @@ public class RecipeGeneratorView extends JPanel implements PropertyChangeListene
             List<Intolerance> intolerances =
                     intolerancesList.getSelectedValuesList();
 
+            intolerancesList.setSelectionMode(
+                    ListSelectionModel.MULTIPLE_INTERVAL_SELECTION
+            );
+
+
             String minCaloriesText = minCaloriesField.getText();
             String maxCaloriesText = maxCaloriesField.getText();
             String minProteinText = minProteinField.getText();

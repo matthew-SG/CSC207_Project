@@ -4,38 +4,21 @@ import entities.Cuisine;
 import entities.DietaryRestriction;
 import entities.Intolerance;
 import entities.Recipe;
-import use_case.recipe_generator.RecipeDataAccessInterface;
 import entities.Ingredient;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import use_case.recipe_generator.RecipeDataAccessInterface;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-//TODO: Build spoonacular URL based on the different recipe filters (dietary restriction, intolerances etc)
-//TODO: Make URL Request
-//TODO: pasrse json into List<Recipe> instead of dummy list
-
 public class RecipeDataAccessObject implements RecipeDataAccessInterface {
-    private static final String API_KEY = "5b07df6820b74cf1b2eae9c1b440f014";
-    private static final String API_BASE_URL = "https://api.spoonacular.com/recipes";
-
-    public RecipeDataAccessObject() {
-        // TODO:
-
-    }
-
-    private String mapDiet(DietaryRestriction dietaryRestriction) {
-        // TODO:
-        return " ";
-    }
-
-    private String mapCuisine(Cuisine cuisine) {
-        // TODO:
-        return " ";
-    }
-
-    private String mapIntolerances(List<Intolerance> intolerances) {
-        // TODO:
-        return " ";
-    }
+    private static final String API_KEY = "75b07df6820b74cf1b2eae9c1b440f014";
+    private static final String API_BASE_URL = "https://api.spoonacular.com/recipes/complexSearch";
 
     @Override
     public List<Recipe> getRecipes(DietaryRestriction dietaryRestriction,
@@ -46,94 +29,258 @@ public class RecipeDataAccessObject implements RecipeDataAccessInterface {
                                    Integer minProtein,
                                    Integer maxProtein) {
 
+        // first we have to build the api url with all the filters
+        String apiUrl = buildApiUrl(dietaryRestriction, intolerances, cuisine,
+                minCalories, maxCalories, minProtein, maxProtein);
+
+        // this block is to log all the details in console it can be removed if needed
+        System.out.println("[RECIPE-GEN DAO] diet = " + dietaryRestriction);
+        System.out.println("[RECIPE-GEN DAO] intolerances = " + intolerances);
+        System.out.println("[RECIPE-GEN DAO] cuisine = " + cuisine);
+        System.out.println("[RECIPE-GEN DAO] Spoonacular request URL: " + apiUrl);
+
+
+        // get the recipes from API
+        String jsonResponse = callSpoonacular(apiUrl);
+
+        // then Parse JSON into Recipe objects
+        List<Recipe> recipes = (jsonResponse != null)
+                ? parseRecipesFromJson(jsonResponse)
+                : getDefaultRecipes();
+
+        // Filter by calorie and protein min / max
+        return filterRecipesByNutrition(recipes, minCalories, maxCalories, minProtein, maxProtein);
+    }
+
+    /**
+     * Builds the complete Spoonacular API URL with all query parameters
+     */
+    private String buildApiUrl(DietaryRestriction dietaryRestriction, List<Intolerance> intolerances,
+                               Cuisine cuisine, Integer minCalories, Integer maxCalories,
+                               Integer minProtein, Integer maxProtein) {
+
+        StringBuilder url = new StringBuilder(API_BASE_URL);
+        url.append("?apiKey=").append(API_KEY);
+        url.append("&number=10");
+        url.append("&addRecipeNutrition=true");
+
+        // Add dietary filters
+        String dietParam = mapDiet(dietaryRestriction);
+        if (!dietParam.isEmpty()) {
+            url.append("&diet=").append(dietParam);
+        }
+
+        String intolerancesParam = mapIntolerances(intolerances);
+        if (!intolerancesParam.isEmpty()) {
+            url.append("&intolerances=").append(intolerancesParam);
+        }
+
+        String cuisineParam = mapCuisine(cuisine);
+        if (!cuisineParam.isEmpty()) {
+            url.append("&cuisine=").append(cuisineParam);
+        }
+
+        // Add nutrition bounds for protein and calories
+        if (minCalories != null) url.append("&minCalories=").append(minCalories);
+        if (maxCalories != null) url.append("&maxCalories=").append(maxCalories);
+        if (minProtein != null) url.append("&minProtein=").append(minProtein);
+        if (maxProtein != null) url.append("&maxProtein=").append(maxProtein);
+
+        return url.toString();
+    }
+
+    /**
+     * Makes HTTP request to Spoonacular API
+     */
+    private String callSpoonacular(String urlString) {
+        HttpURLConnection connection = null;
+        BufferedReader reader = null;
+
+        try {
+            URL url = new URL(urlString);
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.setConnectTimeout(5000);
+            connection.setReadTimeout(5000);
+
+            int status = connection.getResponseCode();
+
+            reader = new BufferedReader(new InputStreamReader(
+                    (status >= 200 && status < 300)
+                            ? connection.getInputStream()
+                            : connection.getErrorStream()
+            ));
+
+            StringBuilder response = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                response.append(line);
+            }
+
+            return response.toString();
+
+        } catch (Exception e) {
+            System.err.println("Error calling Spoonacular API: " + e.getMessage());
+            return null;
+        } finally {
+            try {
+                if (reader != null) reader.close();
+                if (connection != null) connection.disconnect();
+            } catch (Exception ignored) {}
+        }
+    }
+
+    /**
+     * Converts the JSON response into Recipe objects
+     */
+    private List<Recipe> parseRecipesFromJson(String json) {
         List<Recipe> recipes = new ArrayList<>();
 
-        // --- Recipe 1: Veggie Tacos ---
-        Recipe veggieTacos = new Recipe(
-                1,
-                "Veggie Tacos",
-                "https://example.com/tacos.jpg",
-                "DINNER"
-        );
+        try {
+            JSONArray results = new JSONObject(json).getJSONArray("results");
+
+            for (int i = 0; i < results.length(); i++) {
+                Recipe recipe = parseRecipeFromJson(results.getJSONObject(i));
+                if (recipe != null) recipes.add(recipe);
+            }
+        } catch (Exception e) {
+            System.err.println("Error parsing JSON: " + e.getMessage());
+        }
+
+        return recipes;
+    }
+
+    /**
+     * Parses a single recipe object from JSON
+     */
+    private Recipe parseRecipeFromJson(JSONObject json) {
+        try {
+            int id = json.getInt("id");
+            String title = json.getString("title");
+            String image = json.optString("image", "");
+
+            Recipe recipe = new Recipe(id, title, image, "UNKNOWN");
+
+            // Extract calories and protein
+            if (json.has("nutrition")) {
+                JSONArray nutrients = json.getJSONObject("nutrition").getJSONArray("nutrients");
+                for (int i = 0; i < nutrients.length(); i++) {
+                    JSONObject nutrient = nutrients.getJSONObject(i);
+                    String name = nutrient.getString("name");
+                    double amount = nutrient.getDouble("amount");
+
+                    if (name.equalsIgnoreCase("Calories")) {
+                        recipe.getNutritionalValues().put("calories", amount);
+                    } else if (name.equalsIgnoreCase("Protein")) {
+                        recipe.getNutritionalValues().put("protein", amount);
+                    }
+                }
+            }
+
+            return recipe;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /**
+     * Returns default dummy recipe (fallback if API fails)
+     */
+    private List<Recipe> getDefaultRecipes() {
+        List<Recipe> recipes = new ArrayList<>();
+
+        Recipe veggieTacos = new Recipe(1, "Veggie Tacos", "https://example.com/tacos.jpg", "DINNER");
         veggieTacos.getIngredients().add(new Ingredient("Tortilla", 2, "pieces"));
         veggieTacos.getIngredients().add(new Ingredient("Black beans", 100, "g"));
         veggieTacos.getIngredients().add(new Ingredient("Cheddar cheese", 30, "g"));
-
         veggieTacos.getNutritionalValues().put("calories", 450.0);
         veggieTacos.getNutritionalValues().put("protein", 18.0);
 
         recipes.add(veggieTacos);
+        return recipes;
+    }
 
-        // --- Recipe 2: Chicken Stir Fry ---
-        Recipe chickenStirFry = new Recipe(
-                2,
-                "Chicken Stir Fry",
-                "https://example.com/stirfry.jpg",
-                "DINNER"
-        );
-        chickenStirFry.getIngredients().add(new Ingredient("Chicken breast", 150, "g"));
-        chickenStirFry.getIngredients().add(new Ingredient("Mixed vegetables", 120, "g"));
-        chickenStirFry.getIngredients().add(new Ingredient("Soy sauce", 2, "tbsp"));
-
-        chickenStirFry.getNutritionalValues().put("calories", 520.0);
-        chickenStirFry.getNutritionalValues().put("protein", 35.0);
-
-        recipes.add(chickenStirFry);
-
-        // --- Recipe 3: Oatmeal Bowl ---
-        Recipe oatmealBowl = new Recipe(
-                3,
-                "Oatmeal Breakfast Bowl",
-                "https://example.com/oatmeal.jpg",
-                "BREAKFAST"
-        );
-        oatmealBowl.getIngredients().add(new Ingredient("Oats", 60, "g"));
-        oatmealBowl.getIngredients().add(new Ingredient("Milk", 200, "ml"));
-        oatmealBowl.getIngredients().add(new Ingredient("Banana", 1, "piece"));
-
-        oatmealBowl.getNutritionalValues().put("calories", 380.0);
-        oatmealBowl.getNutritionalValues().put("protein", 15.0);
-
-        recipes.add(oatmealBowl);
-
-        // ---------- FILTERING BY CALORIES + PROTEIN ----------
+    /**
+     * Filters recipes by calorie and protein bounds
+     */
+    private List<Recipe> filterRecipesByNutrition(List<Recipe> recipes,
+                                                  Integer minCalories, Integer maxCalories,
+                                                  Integer minProtein, Integer maxProtein) {
         List<Recipe> filtered = new ArrayList<>();
 
         for (Recipe recipe : recipes) {
-            boolean matches = true;
-
-            Double cals = recipe.getNutritionalValues().get("calories");
-            Double prot = recipe.getNutritionalValues().get("protein");
-
-            // calories lower bound: keep >= minCalories
-            if (minCalories != null && cals != null && cals < minCalories) {
-                matches = false;
-            }
-
-            // calories upper bound: keep <= maxCalories
-            if (maxCalories != null && cals != null && cals > maxCalories) {
-                matches = false;
-            }
-
-            // protein lower bound: keep >= minProtein
-            if (minProtein != null && prot != null && prot < minProtein) {
-                matches = false;
-            }
-
-            // protein upper bound: keep <= maxProtein
-            if (maxProtein != null && prot != null && prot > maxProtein) {
-                matches = false;
-            }
-
-            if (matches) {
+            if (meetsNutritionRequirements(recipe, minCalories, maxCalories, minProtein, maxProtein)) {
                 filtered.add(recipe);
             }
         }
 
-
         return filtered;
     }
+
+    /**
+     * Checks if a recipe meets all nutrition requirements
+     */
+    private boolean meetsNutritionRequirements(Recipe recipe,
+                                               Integer minCalories, Integer maxCalories,
+                                               Integer minProtein, Integer maxProtein) {
+        Double calories = recipe.getNutritionalValues().get("calories");
+        Double protein = recipe.getNutritionalValues().get("protein");
+
+        if (minCalories != null && calories != null && calories < minCalories) return false;
+        if (maxCalories != null && calories != null && calories > maxCalories) return false;
+        if (minProtein != null && protein != null && protein < minProtein) return false;
+        if (maxProtein != null && protein != null && protein > maxProtein) return false;
+
+        return true;
+    }
+
+    private String mapDiet(DietaryRestriction dietaryRestriction) {
+        if (dietaryRestriction == null || dietaryRestriction == DietaryRestriction.NONE) return "";
+
+        return switch (dietaryRestriction) {
+            case VEGAN -> "vegan";
+            case VEGETARIAN -> "vegetarian";
+            case KOSHER -> "kosher";
+            case HALAL -> "halal";
+            case PESCATARIAN -> "pescatarian";
+            default -> "";
+        };
+    }
+
+    private String mapCuisine(Cuisine cuisine) {
+        if (cuisine == null || cuisine == Cuisine.ANY) return "";
+
+        return switch (cuisine) {
+            case MEXICAN -> "mexican";
+            case JAPANESE -> "japanese";
+            case INDIAN -> "indian";
+            case CHINESE -> "chinese";
+            default -> "";
+        };
+    }
+
+    private String mapIntolerances(List<Intolerance> intolerances) {
+        if (intolerances == null || intolerances.isEmpty()) return "";
+
+        List<String> tokens = new ArrayList<>();
+
+        for (Intolerance intolerance : intolerances) {
+            if (intolerance == null || intolerance == Intolerance.NONE) continue;
+
+            String token = switch (intolerance) {
+                case DAIRY -> "dairy";
+                case NUTS -> "tree_nut";
+                case SHELLFISH -> "shellfish";
+                case GLUTEN -> "gluten";
+                case SOY -> "soy";
+                case SEAFOOD -> "seafood";
+                case SESAME -> "sesame";
+                default -> null;
+            };
+
+            if (token != null) tokens.add(token);
+        }
+
+        return String.join(",", tokens);
+    }
 }
-
-
-
