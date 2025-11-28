@@ -15,7 +15,7 @@ import java.util.*;
  */
 public class FileDataAccessObject implements UserDataAccess {
 
-    // Constants for key values in the various arrays (also header for the users csv)
+    // Constants
     private static final String HEADER = "username,password";
     public static final String RECIPE_ID = "recipeId";
     public static final String RECIPE_NAME = "recipeName";
@@ -31,7 +31,9 @@ public class FileDataAccessObject implements UserDataAccess {
     public static final String TARGET_PROTEIN = "targetProtein";
     public static final String TARGET_CARBS = "targetCarbs";
     public static final String TARGET_FATS = "targetFats";
-
+    public static final String USER_MEAL_PLANS_PATH = "data\\%s\\meal_plans.json";
+    public static final String USER_LIKED_RECIPES_PATH = "data\\%s\\liked_recipes.json";
+    public static final String USER_GROCERY_LIST_PATH = "data\\%s\\grocery_list.json";
 
     private final File usersCsv;
     private final Map<String, Integer> headers = new LinkedHashMap<>();
@@ -39,6 +41,12 @@ public class FileDataAccessObject implements UserDataAccess {
 
     private String currentUsername;
 
+    /**
+     * Construct this DAO for saving to and reading from local files
+     * @param csvPath the path of the file to save users to
+     * @param userFactory factory for creating user objects
+     * @throws RuntimeException if there is an IOException when accessing the file
+     */
     public FileDataAccessObject(String csvPath, UserFactory userFactory) {
 
         usersCsv = new File(csvPath);
@@ -75,6 +83,14 @@ public class FileDataAccessObject implements UserDataAccess {
 
     }
 
+    /**
+     * Saves all changes made to any persistent data, which includes:
+     *      New users
+     *      New recipes in user's saved recipes
+     *      New Meal Plans in user's saved meal plans
+     *      Changes to a user's grocery list
+     * @throws RuntimeException if there is an IOException when writing to the files
+     */
     private void save() {
         final BufferedWriter writer;
         try {
@@ -83,9 +99,9 @@ public class FileDataAccessObject implements UserDataAccess {
             writer.newLine();
 
             for (User user : users.values()) {
-                final String likedRecipesPath = String.format("data\\%s\\liked_recipes.json", user.getUsername());
-                final String mealPlansPath = String.format("data\\%s\\meal_plans.json", user.getUsername());
-                final String groceryListPath = String.format("data\\%s\\grocery_list.json", user.getUsername());
+                final String likedRecipesPath = String.format(USER_LIKED_RECIPES_PATH, user.getUsername());
+                final String mealPlansPath = String.format(USER_MEAL_PLANS_PATH, user.getUsername());
+                final String groceryListPath = String.format(USER_GROCERY_LIST_PATH, user.getUsername());
 
                 final String line = String.format("%s,%s", user.getUsername(), user.getPassword());
                 writer.write(line);
@@ -103,6 +119,13 @@ public class FileDataAccessObject implements UserDataAccess {
 
     }
 
+    /**
+     * Helper method that saves a user's liked recipes to a local persistent file. Creates a new file for the user,
+     *      and the parent directory for the file if they do not already exist i.e. the user is a new user
+     * @param user the user to save the liked recipes for
+     * @param jsonPath the path to their liked recipes JSON
+     * @throws RuntimeException if there is an IOException when writing to the file
+     */
     private static void saveLikedRecipes(User user, String jsonPath) {
         File file = new File(jsonPath);
         ensureDirectoryExists(file);
@@ -117,6 +140,11 @@ public class FileDataAccessObject implements UserDataAccess {
         }
     }
 
+    /**
+     * Helper method that converts a list of recipes into the required JSONArray format
+     * @param likedRecipes the list of recipes to be converted
+     * @return the JSONArray representation of the recipes
+     */
     @NotNull
     private static JSONArray recipesToJson(List<Recipe> likedRecipes) {
         JSONArray result = new JSONArray();
@@ -153,6 +181,11 @@ public class FileDataAccessObject implements UserDataAccess {
         return result;
     }
 
+    /**
+     * Helper method that saves changes of a user's meal plan to their associated local file
+     * @param user the user to save changes to
+     * @param jsonPath the path to their associated meal plan persistent file
+     */
     private static void saveMealPlans(User user, String jsonPath) {
         File file = new File(jsonPath);
 
@@ -180,6 +213,11 @@ public class FileDataAccessObject implements UserDataAccess {
         }
     }
 
+    /**
+     * Helper method that saves changes to their grocery list
+     * @param user the user to save the changes to
+     * @param jsonPath the path to their associated grocery list persistent file
+     */
     private static void saveGroceryList(User user, String jsonPath) {
         File file = new File(jsonPath);
         GroceryList groceryList = user.getGroceryList();
@@ -200,8 +238,13 @@ public class FileDataAccessObject implements UserDataAccess {
         }
     }
 
+    /**
+     * Helper method that loads the liked recipes of a given user
+     * @param username the username of the user
+     * @return the list of their liked recipes
+     */
     private static List<Recipe> loadLikedRecipes(String username) {
-        String filePath = String.format("data\\%s\\liked_recipes.json", username);
+        String filePath = String.format(USER_LIKED_RECIPES_PATH, username);
         File file = new File(filePath);
 
         if (!file.exists() || file.length() == 0) {
@@ -219,6 +262,11 @@ public class FileDataAccessObject implements UserDataAccess {
         }
     }
 
+    /**
+     * Helper method that converts a JSONArray that represents a list of recipes into a list of recipes
+     * @param recipeArray the JSONArray to be converted
+     * @return the List<Recipe> representation of the JSONArray
+     */
     private static List<Recipe> jsonToRecipes(JSONArray recipeArray) {
         List<Recipe> result = new ArrayList<>();
 
@@ -267,9 +315,14 @@ public class FileDataAccessObject implements UserDataAccess {
         return result;
     }
 
+    /**
+     * Helper method that loads the grocery list of a given user from their associated grocery list JSON
+     * @param username the username of the user to load for
+     * @return the user's grocery list
+     */
     private static GroceryList loadGroceryList(String username) {
         List<Ingredient> items = new ArrayList<>();
-        String filePath = String.format("data\\%s\\grocery_list.json", username);
+        String filePath = String.format(USER_GROCERY_LIST_PATH, username);
         File file = new File(filePath);
 
         if (!file.exists() || file.length() == 0) {
@@ -302,9 +355,14 @@ public class FileDataAccessObject implements UserDataAccess {
         }
     }
 
+    /**
+     * Helper method that loads the meal plans of a user from their associated JSON file
+     * @param username the username of the user to load from
+     * @return the user's list of meal plans
+     */
     private static List<MealPlan> loadMealPlans(String username) {
         List<MealPlan> result = new ArrayList<>();
-        String filePath = String.format("data\\%s\\meal_plans.json", username);
+        String filePath = String.format(USER_MEAL_PLANS_PATH, username);
         File file = new File(filePath);
 
         if (!file.exists() || file.length() == 0) {
@@ -336,6 +394,11 @@ public class FileDataAccessObject implements UserDataAccess {
         }
     }
 
+    /**
+     * Helper method that ensures that the parent directory of a user's persistent data file exists
+     * @param file the file to check the parent directory for
+     * @return whether the parent directory previously existed
+     */
     private static boolean ensureDirectoryExists(File file) {
         File directory = file.getParentFile();
         if (!directory.exists()) {
@@ -374,7 +437,8 @@ public class FileDataAccessObject implements UserDataAccess {
     @Override
     public void saveMealPlan(MealPlan mealPlan) {
         users.get(currentUsername).saveMealPlan(mealPlan);
-        save();
+        String mealPlanPath = String.format(USER_MEAL_PLANS_PATH, currentUsername);
+        saveMealPlans(users.get(currentUsername), mealPlanPath);
     }
 
     @Override
