@@ -1,6 +1,9 @@
 package use_case.likedRecipeList;
 
+import entities.InstructionStep;
 import entities.Recipe;
+
+import java.util.List;
 
 public interface LikedRecipeInputBoundary {
 
@@ -8,5 +11,5 @@ public interface LikedRecipeInputBoundary {
 
     void deleteLikedRecipe(Recipe recipe);
 
-    void handsfree(Recipe recipe);
+    public List<InstructionStep> handsfree(Recipe recipe);
 }
