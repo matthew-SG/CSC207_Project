@@ -53,7 +53,7 @@ public class MealPlanInteractor implements MealPlanInputBoundary{
                 userDataAccessObject.saveMealPlan(mealPlan);
                 int i = 0;
 
-                for (Recipe recipe : savedRecipes) {
+                for (Recipe recipe : mealPlan.getRecipes()) {
                     recipeNames[i] = recipe.getRecipeName();
                     recipeImages[i] = recipe.getRecipeImage();
                     recipeIngredients.add(toOrderedString(recipe.getIngredients()));

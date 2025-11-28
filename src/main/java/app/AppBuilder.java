@@ -9,6 +9,11 @@ import interface_adapter.approve_recipe.ApproveRecipeViewModel;
 import interface_adapter.community.CommunityController;
 import interface_adapter.community.CommunityPresenter;
 import interface_adapter.community.CommunityViewModel;
+import interface_adapter.grocery_list.GroceryController;
+import interface_adapter.grocery_list.GroceryPresenter;
+import interface_adapter.grocery_list.GroceryViewModel;
+import interface_adapter.load_meal_plan.LoadMealPlanController;
+import interface_adapter.load_meal_plan.LoadMealPlanPresenter;
 import interface_adapter.logged_in.LoggedInViewModel;
 import interface_adapter.login.LoginController;
 import interface_adapter.login.LoginPresenter;
@@ -36,6 +41,13 @@ import use_case.community.CommunityDataAccessInterface;
 import use_case.community.CommunityInputBoundary;
 import use_case.community.CommunityMarketInteractor;
 import use_case.community.CommunityOutputBoundary;
+import use_case.grocery_list.add.AddInteractor;
+import use_case.grocery_list.delete.DeleteInteractor;
+import use_case.grocery_list.edit.EditInteractor;
+import use_case.grocery_list.load.LoadInteractor;
+import use_case.load_meal_plan.LoadMealPlanInputBoundary;
+import use_case.load_meal_plan.LoadMealPlanInteractor;
+import use_case.load_meal_plan.LoadMealPlanOutputBoundary;
 import use_case.login.LoginInputBoundary;
 import use_case.login.LoginInteractor;
 import use_case.login.LoginOutputBoundary;
@@ -366,6 +378,25 @@ public class AppBuilder {
         return this;
     }
 
+    public AppBuilder buildGroceryList() {
+        String jsonPath = "grocery_list.json";
+        JsonGroceryRepository repo = new JsonGroceryRepository(jsonPath);
+
+        GroceryViewModel vm = new GroceryViewModel();
+        GroceryPresenter presenter = new GroceryPresenter(vm);
+
+        AddInteractor addUC = new AddInteractor(repo, presenter);
+        EditInteractor editUC = new EditInteractor(repo, presenter);
+        DeleteInteractor deleteUC = new DeleteInteractor(repo, presenter);
+        LoadInteractor loadUC = new LoadInteractor(repo, presenter);
+
+        GroceryController controller = new GroceryController(addUC, editUC, deleteUC, loadUC);
+        contentPanel.add(new GroceryView(controller, vm), "Grocery_List");
+        return this;
+    }
+
+
+
     public AppBuilder buildMealPlan() {
         mealPlanGeneratorViewModel = new MealPlanGeneratorViewModel();
         mealPlanGeneratorView = new MealPlanGeneratorView(mealPlanGeneratorViewModel);
@@ -383,11 +414,17 @@ public class AppBuilder {
                 mealPlanGeneratorViewModel, viewMealPlansViewModel, viewManagerModel);
         final ViewMealPlansInputBoundary viewMealPlansInteractor = new ViewMealPlansInteractor(userDataAccessObject,
                 viewMealPlansPresenter);
+        final LoadMealPlanOutputBoundary loadMealPlanPresenter = new LoadMealPlanPresenter(mealPlanGeneratedViewModel,
+                viewManagerModel);
+        final LoadMealPlanInputBoundary loadMealPlanInteractor = new LoadMealPlanInteractor(userDataAccessObject,
+                loadMealPlanPresenter);
 
         MealPlanController mealPlanController = new MealPlanController(mealPlanInteractor);
         mealPlanGeneratorView.setMealPlanController(mealPlanController);
         ViewMealPlansController viewMealPlansController = new ViewMealPlansController(viewMealPlansInteractor);
         mealPlanGeneratorView.setViewMealPlansController(viewMealPlansController);
+        LoadMealPlanController loadMealPlanController = new LoadMealPlanController(loadMealPlanInteractor);
+        viewMealPlansView.setLoadMealPlanController(loadMealPlanController);
 
         contentPanel.add(mealPlanGeneratorView, mealPlanGeneratorView.getViewName());
         contentPanel.add(mealPlanGeneratedView, mealPlanGeneratedView.getViewName());

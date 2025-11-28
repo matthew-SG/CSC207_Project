@@ -9,4 +9,5 @@ jobs:
       - uses: dbelyaev/action-checkstyle@v3
         with:
           reporter: github-pr-review
-          level: warning
+          level: error
+          checkstyle_config: mystyle.xml
