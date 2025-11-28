@@ -10,4 +10,4 @@ jobs:
         with:
           reporter: github-pr-review
           level: error
-          checkstyle_config: mystyle.xml
+          checkstyle_config: ./mystyle.xml
