@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -100,7 +101,8 @@ public class SpoonacularApproveRecipeDataAccessObject implements ApproveRecipeDa
                 }
 
                 if (id != -1 && !title.isEmpty()) {
-                    Recipe recipe = new Recipe(id, title, image, "main course");
+                    Recipe recipe = new Recipe(id, title, image, new ArrayList<>(),"main course",
+                            new HashMap<>());
                     recipes.add(recipe);
                 }
             }
@@ -147,11 +149,14 @@ public class SpoonacularApproveRecipeDataAccessObject implements ApproveRecipeDa
         // Fallback dummy recipes if API fails
         List<Recipe> recipes = new ArrayList<>();
         recipes.add(new Recipe(1, "Spaghetti Carbonara",
-                "https://via.placeholder.com/300x300?text=Spaghetti+Carbonara", "Dinner"));
+                "https://via.placeholder.com/300x300?text=Spaghetti+Carbonara", new ArrayList<>(),
+                "Dinner", new HashMap<>()));
         recipes.add(new Recipe(2, "Chicken Stir Fry",
-                "https://via.placeholder.com/300x300?text=Chicken+Stir+Fry", "Lunch"));
+                "https://via.placeholder.com/300x300?text=Chicken+Stir+Fry", new ArrayList<>(),
+                "Lunch", new HashMap<>()));
         recipes.add(new Recipe(3, "Caesar Salad",
-                "https://via.placeholder.com/300x300?text=Caesar+Salad", "Lunch"));
+                "https://via.placeholder.com/300x300?text=Caesar+Salad", new ArrayList<>(),"Lunch",
+                new HashMap<>()));
         return recipes;
     }
 

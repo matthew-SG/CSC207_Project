@@ -51,7 +51,9 @@ public class SearchByIngredientSpoonacular {
                             object.getInt("id"),
                             object.getString("title"),
                             object.getString("image"),
-                            "N/A");
+                            new ArrayList<>(),
+                            "N/A",
+                            new HashMap<>());
                     result.add(recipe);
                 }
             }

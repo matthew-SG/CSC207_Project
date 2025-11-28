@@ -38,16 +38,17 @@ public class InMemoryUserDataAccessObject implements UserDataAccess, MealPlanUse
      */
     public InMemoryUserDataAccessObject() {
         User testUserOne = new User("test_1", PASSWORD, new ArrayList<>(), new ArrayList<>(),
-                new GroceryList());
+                new GroceryList(new ArrayList<>()));
         User testUserTwo = new User("test_2", PASSWORD, new ArrayList<>(), new ArrayList<>(),
-                new GroceryList());
+                new GroceryList(new ArrayList<>()));
         User testUserThree = new User("test_3", PASSWORD, new ArrayList<>(), new ArrayList<>(),
-                new GroceryList());
+                new GroceryList(new ArrayList<>()));
 
-        Recipe miniPastaTuna = new Recipe(654959, RECIPE_NAME,
-                RECIPE_IMAGE, RECIPE_CUISINE);
         Ingredient flour = new Ingredient("flour", 2, "Tbsps");
         Ingredient greenO = new Ingredient("green onions", 100, "g");
+
+        Recipe miniPastaTuna = new Recipe(654959, RECIPE_NAME,
+                RECIPE_IMAGE, new ArrayList<>(), RECIPE_CUISINE, new HashMap<>());
         miniPastaTuna.addIngredient(flour); miniPastaTuna.addIngredient(greenO);
         miniPastaTuna.addNutritionalValue(CALORIES, 422);
         miniPastaTuna.addNutritionalValue(CARBOHYDRATES, 57);
@@ -55,7 +56,7 @@ public class InMemoryUserDataAccessObject implements UserDataAccess, MealPlanUse
         miniPastaTuna.addNutritionalValue(FAT, 10);
 
         Recipe copyOne = new Recipe(654959, RECIPE_NAME,
-                RECIPE_IMAGE, RECIPE_CUISINE);
+                RECIPE_IMAGE, new ArrayList<>(), RECIPE_CUISINE, new HashMap<>());
         copyOne.addIngredient(flour); copyOne.addIngredient(greenO);
         copyOne.addNutritionalValue(CALORIES, 422);
         copyOne.addNutritionalValue(CARBOHYDRATES, 57);
@@ -63,7 +64,7 @@ public class InMemoryUserDataAccessObject implements UserDataAccess, MealPlanUse
         copyOne.addNutritionalValue(FAT, 10);
 
         Recipe copyTwo = new Recipe(654959, RECIPE_NAME,
-                RECIPE_IMAGE, RECIPE_CUISINE);
+                RECIPE_IMAGE, new ArrayList<>(), RECIPE_CUISINE, new HashMap<>());
         copyTwo.addIngredient(flour); copyTwo.addIngredient(greenO);
         copyTwo.addNutritionalValue(CALORIES, 422);
         copyTwo.addNutritionalValue(CARBOHYDRATES, 57);
@@ -117,7 +118,7 @@ public class InMemoryUserDataAccessObject implements UserDataAccess, MealPlanUse
         if (users.containsKey(username)) {
             return SignupUserDataAccessInterface.USER_EXISTS_ERROR;
         }
-        User user = new User(username, password, new ArrayList<>(), new ArrayList<>(), new GroceryList());
+        User user = new User(username, password, new ArrayList<>(), new ArrayList<>(), new GroceryList(new ArrayList<>()));
         currentUsername = username;
         users.put(currentUsername, user);
         return SignupUserDataAccessInterface.SUCCESS;
