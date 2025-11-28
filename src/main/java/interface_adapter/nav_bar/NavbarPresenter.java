@@ -92,4 +92,10 @@ public class NavbarPresenter implements NavbarOutputBoundary {
         viewManagerModel.getState().viewName = SearchByIngredientViewModel.viewName;
         viewManagerModel.firePropertyChange();
     }
+  
+    @Override
+    public void switchToGroceryList() {
+        viewManagerModel.getState().viewName = "Grocery_List";
+        viewManagerModel.firePropertyChange();
+    }
 }

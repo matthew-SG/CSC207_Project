@@ -38,6 +38,11 @@ public class NavbarInteractor implements NavbarInputBoundary{
     }
 
     @Override
+    public void switchToGroceryList(){
+        this.navbarPresenter.switchToGroceryList();
+    }
+
+    @Override
     public void switchToMealPlan(){
         this.navbarPresenter.switchToMealPlan();
     }

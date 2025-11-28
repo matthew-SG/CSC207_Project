@@ -21,6 +21,7 @@ public class App {
                     .buildApproveRecipeFeature()
                     .buildRecipeGeneratorFeature()
                     .buildCommunityFeature()
+                    .buildGroceryList()
                     .buildAuthFeature()
                     .buildSearchByIngredient()
                     .build();

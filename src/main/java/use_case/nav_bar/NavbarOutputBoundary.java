@@ -7,6 +7,8 @@ public interface NavbarOutputBoundary {
     public void switchToGenerateRecipe();
     public void switchToApproveRecipe();
     public void switchToProfile();
+
+    public void switchToGroceryList();
     public void switchToMealPlan();
     public void switchToSearchByIngredients();
 }
