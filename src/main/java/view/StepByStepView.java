@@ -132,10 +132,10 @@ public class StepByStepView extends JFrame implements PropertyChangeListener {
     public static void main(String[] args) {
         // Example steps
         List<InstructionStep> steps = List.of(
-                new InstructionStep(1, "Heat the oven", List.of(), List.of()),
-                new InstructionStep(2, "Make it hotter", List.of(), List.of()),
-                new InstructionStep(3, "MAKE IT EVEN HOTTER", List.of(), List.of()),
-                new InstructionStep(4, "You have been burned :)", List.of(), List.of())
+                new InstructionStep(1, "Heat the oven"),
+                new InstructionStep(2, "Make it hotter"),
+                new InstructionStep(3, "MAKE IT EVEN HOTTER"),
+                new InstructionStep(4, "You have been burned :)")
         );
 
         RecipeInstructions instructions = new RecipeInstructions(steps);
