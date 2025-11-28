@@ -15,13 +15,14 @@ public class App {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             new AppBuilder()
+                    .buildMealPlan()
                     .buildNavigation()
                     .buildErrorPopUp()
                     .buildApproveRecipeFeature()
                     .buildRecipeGeneratorFeature()
                     .buildCommunityFeature()
+                    .buildGroceryList()
                     .buildAuthFeature()
-                    .buildMealPlan()
                     .build();
         });
     }

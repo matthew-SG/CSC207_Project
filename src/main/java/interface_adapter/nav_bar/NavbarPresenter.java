@@ -5,6 +5,8 @@ import interface_adapter.approve_recipe.ApproveRecipeViewModel;
 import interface_adapter.community.CommunityViewModel;
 import interface_adapter.logged_in.LoggedInViewModel;
 import interface_adapter.login.LoginViewModel;
+import interface_adapter.meal_plan.MealPlanGeneratorState;
+import interface_adapter.meal_plan.MealPlanGeneratorViewModel;
 import interface_adapter.signup.SignupViewModel;
 import use_case.community.output_data.CommunityRatingsOutputData;
 import use_case.nav_bar.NavbarOutputBoundary;
@@ -18,10 +20,13 @@ public class NavbarPresenter implements NavbarOutputBoundary {
     ViewManagerModel viewManagerModel;
     private interface_adapter.approve_recipe.ApproveRecipeController approveRecipeController;
     CommunityViewModel communityViewModel;
+    MealPlanGeneratorViewModel mealPlanGeneratorViewModel;
 
-    public NavbarPresenter(ViewManagerModel viewManagerModel, CommunityViewModel communityViewModel) {
+    public NavbarPresenter(ViewManagerModel viewManagerModel, CommunityViewModel communityViewModel,
+                           MealPlanGeneratorViewModel mealPlanGeneratorViewModel) {
         this.viewManagerModel = viewManagerModel;
         this.communityViewModel = communityViewModel;
+        this.mealPlanGeneratorViewModel = mealPlanGeneratorViewModel;
     }
 
     public void setApproveRecipeController(interface_adapter.approve_recipe.ApproveRecipeController controller) {
@@ -74,7 +79,15 @@ public class NavbarPresenter implements NavbarOutputBoundary {
 
     @Override
     public void switchToMealPlan() {
+        mealPlanGeneratorViewModel.setState(new MealPlanGeneratorState());
+        mealPlanGeneratorViewModel.firePropertyChange();
         viewManagerModel.getState().viewName = MealPlanGeneratorView.getViewName();
+        viewManagerModel.firePropertyChange();
+    }
+
+    @Override
+    public void switchToGroceryList() {
+        viewManagerModel.getState().viewName = "Grocery_List";
         viewManagerModel.firePropertyChange();
     }
 }

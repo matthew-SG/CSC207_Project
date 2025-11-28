@@ -13,6 +13,7 @@ public class NavbarLoggedInView extends JPanel {
     private JButton approveRecipeButton;
     private JButton userProfileButton;
     private JButton mealPlanButton;
+    private JButton groceryButton;
     private NavbarController navbarController = null;
 
     public NavbarLoggedInView(){
@@ -21,11 +22,13 @@ public class NavbarLoggedInView extends JPanel {
         generateRecipe = new JButton("generate recipe");
         approveRecipeButton = new JButton("approve recipes");
         userProfileButton = new JButton("user profile");
+        groceryButton = new JButton("grocery list");
         mealPlanButton = new JButton("Meal Plan Generator");
         add(communityButton);
         add(generateRecipe);
         add(approveRecipeButton);
         add(userProfileButton);
+        add(groceryButton);
         add(mealPlanButton);
 
         communityButton.addActionListener(new ActionListener() {
@@ -51,10 +54,21 @@ public class NavbarLoggedInView extends JPanel {
 
         generateRecipe.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent actionEvent) {navbarController.switchToGenerateRecipe(); }
+            public void actionPerformed(ActionEvent actionEvent) {
+                navbarController.switchToGenerateRecipe();
+            }
+        });
+
         mealPlanButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) { navbarController.switchToMealPlan();}
+        });
+
+        groceryButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                navbarController.switchToGroceryList();
+            }
         });
     }
 

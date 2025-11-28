@@ -118,4 +118,9 @@ public class InMemoryUserDataAccessObject implements UserDataAccess {
     public void saveMealPlan(MealPlan mealPlan) {
         users.get(currentUsername).saveMealPlan(mealPlan);
     }
+
+    @Override
+    public List<MealPlan> getMealPlans() {
+        return users.get(currentUsername).getMealPlans();
+    }
 }
