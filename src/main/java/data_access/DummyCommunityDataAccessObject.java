@@ -36,12 +36,25 @@ public class DummyCommunityDataAccessObject implements CommunityDataAccessInterf
         return ratings;
     }
 
+    private int getNextRatingId() {
+        List<Rating> currentRatings = getCurrentRatings();
+        int maxId = 0;
+
+        for (Rating rating : currentRatings) {
+            if (rating.getRatingId() > maxId) {
+                maxId = rating.getRatingId();
+            }
+        }
+
+        return maxId + 1;
+    }
+
     @Override
     public List<Rating> publishReview(CommunityPublishInputData data) {
         ratings.add(new Rating(
-                ratings.size() + 1,
+                getNextRatingId(),
                 data.getRecipeID(),
-                "test222@1.ca",
+                data.getUserName(),
                 data.getRating(),
                 data.getComment(),
                 data.getRecipeName(),
