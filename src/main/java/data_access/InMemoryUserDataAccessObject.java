@@ -123,7 +123,8 @@ public class InMemoryUserDataAccessObject implements UserDataAccess, MealPlanUse
         users.put(currentUsername, user);
         return SignupUserDataAccessInterface.SUCCESS;
     }
-    
+
+    @Override
     public List<Recipe> getSavedRecipes() {
         return users.get(currentUsername).getSavedRecipes();
     }

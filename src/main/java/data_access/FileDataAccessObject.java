@@ -4,6 +4,8 @@ import entities.*;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import use_case.login.LoginUserDataAccessInterface;
+import use_case.signup.SignupUserDataAccessInterface;
 
 import java.io.*;
 import java.util.*;
@@ -11,7 +13,7 @@ import java.util.*;
 /**
  * DAO for all data, mainly user data, using a File to persist the data
  */
-public class FileDataAccessObject {
+public class FileDataAccessObject implements UserDataAccess {
 
     // Constants for key values in the various arrays (also header for the users csv)
     private static final String HEADER = "username,password";
@@ -103,6 +105,7 @@ public class FileDataAccessObject {
 
     private static void saveLikedRecipes(User user, String jsonPath) {
         File file = new File(jsonPath);
+        ensureDirectoryExists(file);
 
         final List<Recipe> likedRecipes = user.getSavedRecipes();
         JSONArray recipesArray = recipesToJson(likedRecipes);
@@ -155,6 +158,7 @@ public class FileDataAccessObject {
 
         final List<MealPlan> mealPlans = user.getMealPlans();
         JSONArray mealPlansArray = new JSONArray();
+        ensureDirectoryExists(file);
 
         for (MealPlan mealPlan : mealPlans) {
             JSONObject mealPlanObject = new JSONObject();
@@ -179,6 +183,7 @@ public class FileDataAccessObject {
     private static void saveGroceryList(User user, String jsonPath) {
         File file = new File(jsonPath);
         GroceryList groceryList = user.getGroceryList();
+        ensureDirectoryExists(file);
 
         JSONArray groceryListArray = new JSONArray();
         for (Ingredient ingredient : groceryList.getItems()) {
@@ -198,6 +203,10 @@ public class FileDataAccessObject {
     private static List<Recipe> loadLikedRecipes(String username) {
         String filePath = String.format("data\\%s\\liked_recipes.json", username);
         File file = new File(filePath);
+
+        if (!file.exists() || file.length() == 0) {
+            return new ArrayList<>();
+        }
 
         try (final BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String likedRecipesJson = reader.readAllAsString();
@@ -263,6 +272,10 @@ public class FileDataAccessObject {
         String filePath = String.format("data\\%s\\grocery_list.json", username);
         File file = new File(filePath);
 
+        if (!file.exists() || file.length() == 0) {
+            return new GroceryList(new ArrayList<>());
+        }
+
         // Parameters for each ingredient
         String name;
         double quantity;
@@ -291,8 +304,12 @@ public class FileDataAccessObject {
 
     private static List<MealPlan> loadMealPlans(String username) {
         List<MealPlan> result = new ArrayList<>();
-        String filePath = String.format("data\\%s\\meal_plan.json", username);
+        String filePath = String.format("data\\%s\\meal_plans.json", username);
         File file = new File(filePath);
+
+        if (!file.exists() || file.length() == 0) {
+            return result;
+        }
 
         try (final BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String mealPlanJson = reader.readAllAsString();
@@ -317,5 +334,68 @@ public class FileDataAccessObject {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private static boolean ensureDirectoryExists(File file) {
+        File directory = file.getParentFile();
+        if (!directory.exists()) {
+            return !directory.mkdirs();
+        }
+
+        return true;
+    }
+
+    @Override
+    public Map<String, User> getUsers() {
+        return users;
+    }
+
+    @Override
+    public String login(String username, String password) {
+        if (!users.containsKey(username)) {
+            return LoginUserDataAccessInterface.USER_DNE_ERROR;
+        } else if (!users.get(username).getPassword().equals(password)) {
+            return LoginUserDataAccessInterface.INCORRECT_PASSWORD_ERROR;
+        }
+        currentUsername = username;
+        return LoginUserDataAccessInterface.SUCCESS;
+    }
+
+    @Override
+    public void logout() {
+
+    }
+
+    @Override
+    public List<Recipe> getSavedRecipes() {
+        return users.get(currentUsername).getSavedRecipes();
+    }
+
+    @Override
+    public void saveMealPlan(MealPlan mealPlan) {
+        users.get(currentUsername).saveMealPlan(mealPlan);
+        save();
+    }
+
+    @Override
+    public String signupUser(String username, String password) {
+        if (users.containsKey(username)) {
+            return SignupUserDataAccessInterface.USER_EXISTS_ERROR;
+        }
+        User user = new User(username, password, new ArrayList<>(), new ArrayList<>(), new GroceryList(new ArrayList<>()));
+        currentUsername = username;
+        users.put(currentUsername, user);
+        save();
+        return SignupUserDataAccessInterface.SUCCESS;
+    }
+
+    @Override
+    public String getCurrentUsername() {
+        return currentUsername;
+    }
+
+    @Override
+    public List<MealPlan> getMealPlans() {
+        return users.get(currentUsername).getMealPlans();
     }
 }
