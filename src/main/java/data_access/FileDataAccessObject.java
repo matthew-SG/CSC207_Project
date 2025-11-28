@@ -53,6 +53,8 @@ public class FileDataAccessObject implements UserDataAccess {
         headers.put("username", 0);
         headers.put("password", 1);
 
+        ensureDirectoryExists(usersCsv);
+
         if (usersCsv.length() == 0) {
             save();
         } else {
