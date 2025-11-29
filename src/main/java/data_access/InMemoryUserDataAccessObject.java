@@ -2,9 +2,7 @@ package data_access;
 
 import entities.*;
 import use_case.login.LoginUserDataAccessInterface;
-import use_case.meal_plan.MealPlanUserDataAccessInterface;
 import use_case.signup.SignupUserDataAccessInterface;
-import use_case.view_meal_plans.ViewMealPlansDataAccessInterface;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,8 +13,7 @@ import java.util.Map;
  * In-memory implementation of the DAO for storing user data. This implementation does
  * NOT persist data between runs of the program.
  */
-public class InMemoryUserDataAccessObject implements UserDataAccess, MealPlanUserDataAccessInterface,
-        ViewMealPlansDataAccessInterface {
+public class InMemoryUserDataAccessObject implements UserDataAccess {
 
     // Constants for testing Meal Plan Use Case
     private static final String PASSWORD = "password";
