@@ -1,0 +1,83 @@
+[
+    {
+        "recipeName": "Veggie Tacos",
+        "recipeImage": "https://example.com/tacos.jpg",
+        "mealType": "DINNER",
+        "ingredients": [
+            {
+                "unit": "pieces",
+                "quantity": 2,
+                "name": "Tortilla"
+            },
+            {
+                "unit": "g",
+                "quantity": 100,
+                "name": "Black beans"
+            },
+            {
+                "unit": "g",
+                "quantity": 30,
+                "name": "Cheddar cheese"
+            }
+        ],
+        "nutritionalValues": {
+            "protein": 18,
+            "calories": 450
+        },
+        "recipeId": 1
+    },
+    {
+        "recipeName": "Chicken Stir Fry",
+        "recipeImage": "https://example.com/stirfry.jpg",
+        "mealType": "DINNER",
+        "ingredients": [
+            {
+                "unit": "g",
+                "quantity": 150,
+                "name": "Chicken breast"
+            },
+            {
+                "unit": "g",
+                "quantity": 120,
+                "name": "Mixed vegetables"
+            },
+            {
+                "unit": "tbsp",
+                "quantity": 2,
+                "name": "Soy sauce"
+            }
+        ],
+        "nutritionalValues": {
+            "protein": 35,
+            "calories": 520
+        },
+        "recipeId": 2
+    },
+    {
+        "recipeName": "Oatmeal Breakfast Bowl",
+        "recipeImage": "https://example.com/oatmeal.jpg",
+        "mealType": "BREAKFAST",
+        "ingredients": [
+            {
+                "unit": "g",
+                "quantity": 60,
+                "name": "Oats"
+            },
+            {
+                "unit": "ml",
+                "quantity": 200,
+                "name": "Milk"
+            },
+            {
+                "unit": "piece",
+                "quantity": 1,
+                "name": "Banana"
+            }
+        ],
+        "nutritionalValues": {
+            "protein": 15,
+            "calories": 380
+        },
+        "recipeId": 3
+    }
+]

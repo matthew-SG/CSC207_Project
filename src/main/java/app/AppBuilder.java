@@ -168,10 +168,14 @@ public class AppBuilder {
         viewManagerModel = new ViewManagerModel();
         viewManager = new ViewManager(contentPanel, cardLayout, viewManagerModel);
 
-        // Initialize approve recipe DAO with API access to real recipes
-        approveRecipeDataAccessObject = new SpoonacularApproveRecipeDataAccessObject(
-                userDataAccessObject.getUsers()
-        );
+        // Initialize approve recipe DAO with FileDataAccessObject (which implements ApproveRecipeDataAccessInterface)
+        if (userDataAccessObject instanceof ApproveRecipeDataAccessInterface) {
+            approveRecipeDataAccessObject = (ApproveRecipeDataAccessInterface) userDataAccessObject;
+        } else {
+            // Fallback or error handling if userDAO does not implement interface
+            throw new RuntimeException("UserDataAccessObject must implement ApproveRecipeDataAccessInterface");
+        }
+
         communityViewModel = new CommunityViewModel();
     }
 
@@ -229,7 +233,7 @@ public class AppBuilder {
 
         //interactor
         RecipeGeneratorInputBoundary recipeGeneratorInteractor =
-                new RecipeGeneratorInteractor(recipeGateway, recipeGeneratorPresenter);
+                new RecipeGeneratorInteractor(recipeGateway, recipeGeneratorPresenter, approveRecipeDataAccessObject);
 
         //Controller
         RecipeGeneratorController recipeGeneratorController =

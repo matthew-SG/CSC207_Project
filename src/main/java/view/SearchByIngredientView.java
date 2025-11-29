@@ -198,7 +198,8 @@ public class SearchByIngredientView extends JPanel {
 
             String apiKey = "";
             SearchByIngredientSpoonacular api = new SearchByIngredientSpoonacular(apiKey);
-            SearchByIngredientInputBoundary interactor = new SearchByIngredientInteractor(api);
+            // Passing null for DAO as this is just a view test
+            SearchByIngredientInputBoundary interactor = new SearchByIngredientInteractor(api, null);
             SearchByIngredientController controller = new SearchByIngredientController(interactor);
             SearchByIngredientView view = new SearchByIngredientView(controller, api);
             JFrame frame = new JFrame("Search By Ingredient");

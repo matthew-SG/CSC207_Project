@@ -12,15 +12,17 @@ import org.json.JSONObject;
 import entities.*;
 import use_case.login.LoginUserDataAccessInterface;
 import use_case.signup.SignupUserDataAccessInterface;
+import use_case.approve_recipe.ApproveRecipeDataAccessInterface;
 
 /**
  * DAO for all data, mainly user data, using a File to persist the data
  */
-public class FileDataAccessObject implements UserDataAccess {
+public class FileDataAccessObject implements UserDataAccess, ApproveRecipeDataAccessInterface {
 
     private final File usersCsv;
     private final Map<String, Integer> headers = new LinkedHashMap<>();
     private final Map<String, User> users = new HashMap<>();
+    private List<Recipe> currentRecipes = new ArrayList<>();
 
     private String currentUsername;
 
@@ -451,5 +453,51 @@ public class FileDataAccessObject implements UserDataAccess {
     @Override
     public List<MealPlan> getMealPlans() {
         return users.get(currentUsername).getMealPlans();
+    }
+
+    // Approve Recipe Data Access Implementation
+
+    @Override
+    public List<Recipe> getAvailableRecipes() {
+        return currentRecipes;
+    }
+
+    public void setAvailableRecipes(List<Recipe> recipes) {
+        this.currentRecipes = recipes;
+    }
+
+    @Override
+    public Recipe getRecipeById(int recipeId) {
+        for (Recipe r : currentRecipes) {
+            if (r.getRecipeId() == recipeId) {
+                return r;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public User getUser(String username) {
+        return users.get(username);
+    }
+
+    @Override
+    public void saveRecipeToUser(String username, Recipe recipe) {
+        User user = users.get(username);
+        if (user != null) {
+            // Check if recipe is already in saved recipes
+            boolean alreadySaved = false;
+            for (Recipe r : user.getSavedRecipes()) {
+                if (r.getRecipeId() == recipe.getRecipeId()) {
+                    alreadySaved = true;
+                    break;
+                }
+            }
+
+            if (!alreadySaved) {
+                user.getSavedRecipes().add(recipe);
+                save();
+            }
+        }
     }
 }

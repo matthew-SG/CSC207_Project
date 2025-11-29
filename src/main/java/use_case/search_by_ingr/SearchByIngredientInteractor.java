@@ -7,10 +7,16 @@ import entities.Recipe;
 import java.util.ArrayList;
 import java.util.List;
 
+import use_case.approve_recipe.ApproveRecipeDataAccessInterface;
+
 public class SearchByIngredientInteractor implements SearchByIngredientInputBoundary{
     private final SearchByIngredientSpoonacular api;
-    public SearchByIngredientInteractor(SearchByIngredientSpoonacular api) {
+    private final ApproveRecipeDataAccessInterface approveRecipeDataAccessObject;
+
+    public SearchByIngredientInteractor(SearchByIngredientSpoonacular api, 
+                                        ApproveRecipeDataAccessInterface approveRecipeDataAccessObject) {
         this.api = api;
+        this.approveRecipeDataAccessObject = approveRecipeDataAccessObject;
     }
 
     @Override
@@ -21,6 +27,12 @@ public class SearchByIngredientInteractor implements SearchByIngredientInputBoun
         for (Ingredient ingr : ingredients)
             ingrNames.add(ingr.getName());
         List<Recipe> recipes = api.searchByIngredientSpoonacular(ingrNames);
+        
+        // Save recipes to the shared DAO for approval
+        if (approveRecipeDataAccessObject instanceof data_access.FileDataAccessObject) {
+            ((data_access.FileDataAccessObject) approveRecipeDataAccessObject).setAvailableRecipes(recipes);
+        }
+
         String msg;
         if(recipes.isEmpty()) msg="no perfect match found";
         else msg="found";
