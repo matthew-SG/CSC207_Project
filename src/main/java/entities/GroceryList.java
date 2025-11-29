@@ -1,16 +1,16 @@
 package entities;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class GroceryList {
-    private List<Ingredient> items;
+public final class GroceryList {
+    private final List<Ingredient> items;
 
-    public GroceryList() {
-        this.items = new ArrayList<>();
+    public GroceryList(List<Ingredient> items) {
+        this.items = items;
     }
 
     public List<Ingredient> getItems() {
         return items;
     }
+
 }
