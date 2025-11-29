@@ -9,6 +9,7 @@ import java.util.List;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
+import java.net.URL;
 
 public class SearchByIngredientView extends JPanel {
 
@@ -18,7 +19,8 @@ public class SearchByIngredientView extends JPanel {
     private final SearchByIngredientSpoonacular api;
     private final JTextField nameField = new JTextField();
     private final JTextField amountField = new JTextField();
-    private final JTextField unitField = new JTextField();
+    private final JSpinner maxMissingSpinner =
+            new JSpinner(new SpinnerNumberModel(0, 0, 10, 1));
 
     private final DefaultListModel<Ingredient> ingredientModel = new DefaultListModel<>();
     private final JList<Ingredient> ingredientList = new JList<>(ingredientModel);
@@ -34,14 +36,18 @@ public class SearchByIngredientView extends JPanel {
         this.api = api;
 
         setLayout(new BorderLayout(10, 10));
-        JPanel inputRow = new JPanel(new GridLayout(2, 4, 5, 5));
+        JPanel inputRow = new JPanel(new GridLayout(2, 5, 5, 5));
         inputRow.add(new JLabel("Name:"));
         inputRow.add(new JLabel("Amount:"));
         inputRow.add(new JLabel("Unit:"));
+        inputRow.add(new JLabel("Up to missing:"));
         inputRow.add(new JLabel(""));
+
         inputRow.add(nameField);
         inputRow.add(amountField);
+        JTextField unitField = new JTextField();
         inputRow.add(unitField);
+        inputRow.add(maxMissingSpinner);
         JButton addIngredientBtn = new JButton("Add ingredient");
         inputRow.add(addIngredientBtn);
         add(inputRow, BorderLayout.NORTH);
@@ -75,63 +81,87 @@ public class SearchByIngredientView extends JPanel {
                         isSelected, cellHasFocus);
             }
         });
+
         JPanel leftPanel = new JPanel(new BorderLayout());
         leftPanel.setBorder(new TitledBorder("Your ingredients"));
         leftPanel.add(new JScrollPane(ingredientList), BorderLayout.CENTER);
         JButton clearBtn = new JButton("Clear");
         leftPanel.add(clearBtn, BorderLayout.SOUTH);
+
         JPanel rightPanel = new JPanel(new BorderLayout());
         rightPanel.setBorder(new TitledBorder("Matching recipes"));
         rightPanel.add(new JScrollPane(recipeList), BorderLayout.CENTER);
+
         JButton searchBtn = new JButton("Search recipes");
-        rightPanel.add(searchBtn, BorderLayout.SOUTH);
+        JButton addLikedBtn = new JButton("Add to liked list");
+        JButton detailsBtn = new JButton("Show details");
+        JPanel recipeButtonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 5));
+        recipeButtonPanel.add(addLikedBtn);
+        recipeButtonPanel.add(detailsBtn);
+        JPanel rightBottom = new JPanel(new BorderLayout());
+        rightBottom.add(searchBtn, BorderLayout.NORTH);
+        rightBottom.add(recipeButtonPanel, BorderLayout.SOUTH);
+        rightPanel.add(rightBottom, BorderLayout.SOUTH);
+
         JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftPanel, rightPanel);
         split.setResizeWeight(0.4);
         add(split, BorderLayout.CENTER);
+
         JPanel bottom = new JPanel(new BorderLayout());
         statusLabel.setHorizontalAlignment(SwingConstants.LEFT);
         bottom.add(statusLabel, BorderLayout.WEST);
-        JButton detailsBtn = new JButton("View details");
-        bottom.add(detailsBtn, BorderLayout.EAST);
         add(bottom, BorderLayout.SOUTH);
-        addIngredientBtn.addActionListener(e -> addIngredient());
-        clearBtn.addActionListener(e -> clearIngredients());
-        searchBtn.addActionListener(e -> performSearch());
-        detailsBtn.addActionListener(e -> viewDetails());
-    }
-    private void addIngredient() {
-        String name = nameField.getText().trim();
-        String amountStr = amountField.getText().trim();
-        String unit = unitField.getText().trim();
 
-        if (name.isEmpty()) {
-            statusLabel.setText("Ingredient name is required.");
-            return;
-        }
+        addIngredientBtn.addActionListener(e -> {
+            String name = nameField.getText().trim();
+            String amountStr = amountField.getText().trim();
+            String unit = unitField.getText().trim();
 
-        double qty = 1;
-        if (!amountStr.isEmpty()) {
-            try {
-                qty = Double.parseDouble(amountStr);
-            } catch (NumberFormatException e) {
-                statusLabel.setText("Amount must be a number.");
+            if (name.isEmpty()) {
+                statusLabel.setText("Ingredient name is required.");
                 return;
             }
-        }
 
-        Ingredient ing = new Ingredient(name, qty, unit);
-        ingredientModel.addElement(ing);
+            double qty = 1;
+            if (!amountStr.isEmpty()) {
+                try {
+                    qty = Double.parseDouble(amountStr);
+                    if (qty <= 0) {
+                        statusLabel.setText("Amount must be a positive number.");
+                        return;
+                    }
+                } catch (NumberFormatException ex) {
+                    statusLabel.setText("Amount must be a number.");
+                    return;
+                }
+            }
 
-        nameField.setText("");
-        amountField.setText("");
-        unitField.setText("");
+            Ingredient ing = new Ingredient(name, qty, unit);
+            ingredientModel.addElement(ing);
 
-        statusLabel.setText("Ingredient added.");
-    }
+            nameField.setText("");
+            amountField.setText("");
+            unitField.setText("");
 
-    private void clearIngredients() {
-        ingredientModel.clear();
-        statusLabel.setText("Ingredients cleared.");
+            statusLabel.setText("Ingredient added.");
+        });
+
+        clearBtn.addActionListener(e -> {
+            ingredientModel.clear();
+            statusLabel.setText("Ingredients cleared.");
+        });
+
+        searchBtn.addActionListener(e -> performSearch());
+
+        addLikedBtn.addActionListener(e -> {
+            Recipe selected = recipeList.getSelectedValue();
+            if (selected == null) {
+                statusLabel.setText("Select a recipe first.");
+                return;
+            }
+            statusLabel.setText("Added to liked list (not implemented yet).");
+        });
+        detailsBtn.addActionListener(e -> viewDetails());
     }
 
     private void performSearch() {
@@ -144,7 +174,10 @@ public class SearchByIngredientView extends JPanel {
         for (int i = 0; i < ingredientModel.size(); i++) {
             list.add(ingredientModel.get(i));
         }
-        SearchByIngredientOutputData out = controller.search(list);
+
+        int maxMissing = (Integer) maxMissingSpinner.getValue();
+
+        SearchByIngredientOutputData out = controller.search(list, maxMissing);
         recipeModel.clear();
         for (Recipe r : out.getRecipes()) {
             recipeModel.addElement(r);
@@ -158,7 +191,9 @@ public class SearchByIngredientView extends JPanel {
             statusLabel.setText("Select a recipe first.");
             return;
         }
-        if (selected.getIngredients() == null || selected.getIngredients().isEmpty()) api.populateRecipeDetails(selected);
+
+        api.populateRecipeDetails(selected);
+
         StringBuilder ingText = new StringBuilder();
         for (Ingredient ing : selected.getIngredients()) {
             ingText.append("- ")
@@ -169,28 +204,55 @@ public class SearchByIngredientView extends JPanel {
                     .append(ing.getName())
                     .append("\n");
         }
+
         JTextArea ingArea = new JTextArea(ingText.toString());
         ingArea.setEditable(false);
         ingArea.setLineWrap(true);
         ingArea.setWrapStyleWord(true);
+
         JTextArea stepsArea = new JTextArea(selected.getSteps());
         stepsArea.setEditable(false);
         stepsArea.setLineWrap(true);
         stepsArea.setWrapStyleWord(true);
+
+        JLabel imageLabel = new JLabel("Loading image...", SwingConstants.CENTER);
+        imageLabel.setPreferredSize(new Dimension(300, 200));
+
+        try {
+            String imageUrl = selected.getRecipeImage();
+            URL url = new URL(imageUrl);
+            ImageIcon icon = new ImageIcon(url);
+            Image scaled = icon.getImage().getScaledInstance(280, 180, Image.SCALE_SMOOTH);
+            imageLabel.setIcon(new ImageIcon(scaled));
+            imageLabel.setText("");
+        } catch (Exception e) {
+            imageLabel.setText("Image not available");
+        }
+
         JPanel top = new JPanel(new BorderLayout());
         top.add(new JLabel("Ingredients:"), BorderLayout.NORTH);
         top.add(new JScrollPane(ingArea), BorderLayout.CENTER);
-        JPanel bot = new JPanel(new BorderLayout());
-        bot.add(new JLabel("Steps:"), BorderLayout.NORTH);
-        bot.add(new JScrollPane(stepsArea), BorderLayout.CENTER);
-        JSplitPane popup = new JSplitPane(JSplitPane.VERTICAL_SPLIT, top, bot);
-        popup.setResizeWeight(0.3);
-        popup.setPreferredSize(new Dimension(500, 400));
+
+        JPanel bottom = new JPanel(new BorderLayout());
+        bottom.add(new JLabel("Steps:"), BorderLayout.NORTH);
+        bottom.add(new JScrollPane(stepsArea), BorderLayout.CENTER);
+
+        JSplitPane textSplit = new JSplitPane(JSplitPane.VERTICAL_SPLIT, top, bottom);
+        textSplit.setResizeWeight(0.3);
+
+        JPanel content = new JPanel(new BorderLayout(5, 5));
+        content.add(imageLabel, BorderLayout.NORTH);
+        content.add(textSplit, BorderLayout.CENTER);
+
         JOptionPane.showMessageDialog(
                 this,
-                popup,
+                content,
                 selected.getRecipeName(),
                 JOptionPane.INFORMATION_MESSAGE
         );
+    }
+
+    public String getViewName() {
+        return VIEWNAME;
     }
 }
