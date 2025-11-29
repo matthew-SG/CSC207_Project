@@ -23,19 +23,21 @@ public class RecipeGeneratorController {
          * catch handles if user inputs alphabetical values into the calories or protein field
          */
         try {
-            if (minCaloriesText != null && !minCaloriesText.isEmpty()) {
-                minCalories = Integer.parseInt(minCaloriesText);
+            if (minCaloriesText != null && !minCaloriesText.trim().isEmpty()) {
+                minCalories = Integer.parseInt(minCaloriesText.trim());
             }
-            if (maxCaloriesText != null && !maxCaloriesText.isEmpty()) {
-                maxCalories = Integer.parseInt(maxCaloriesText);
+            if (maxCaloriesText != null && !maxCaloriesText.trim().isEmpty()) {
+                maxCalories = Integer.parseInt(maxCaloriesText.trim());
             }
-            if (minProteinText != null && !minProteinText.isEmpty()) {
-                minProtein = Integer.parseInt(minProteinText);
+            if (minProteinText != null && !minProteinText.trim().isEmpty()) {
+                minProtein = Integer.parseInt(minProteinText.trim());
             }
-            if (maxProteinText != null && !maxProteinText.isEmpty()) {
-                maxProtein = Integer.parseInt(maxProteinText);
+            if (maxProteinText != null && !maxProteinText.trim().isEmpty()) {
+                maxProtein = Integer.parseInt(maxProteinText.trim());
             }
         } catch (NumberFormatException e) {
+            // Ideally notify user, but for now just return to avoid crash
+            System.out.println("Invalid number format: " + e.getMessage());
             return;
         }
         GenerateRecipeInputData inputData = new GenerateRecipeInputData(dietaryRestriction, intolerances, cuisine, minCalories, maxCalories, minProtein,  maxProtein);

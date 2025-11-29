@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RecipeDataAccessObject implements RecipeDataAccessInterface {
-    private static final String API_KEY = "75b07df6820b74cf1b2eae9c1b440f014";
+    private static final String API_KEY = "5b07df6820b74cf1b2eae9c1b440f014";
     private static final String API_BASE_URL = "https://api.spoonacular.com/recipes/complexSearch";
 
     @Override
@@ -44,9 +44,15 @@ public class RecipeDataAccessObject implements RecipeDataAccessInterface {
         String jsonResponse = callSpoonacular(apiUrl);
 
         // then Parse JSON into Recipe objects
-        List<Recipe> recipes = (jsonResponse != null)
-                ? parseRecipesFromJson(jsonResponse)
-                : getDefaultRecipes();
+        List<Recipe> recipes = null;
+        if (jsonResponse != null) {
+            recipes = parseRecipesFromJson(jsonResponse);
+        }
+
+        if (recipes == null || recipes.isEmpty()) {
+            System.out.println("[RECIPE-GEN DAO] No recipes found from API or parsing error. Using default fallback.");
+            recipes = getDefaultRecipes();
+        }
 
         // Filter by calorie and protein min / max
         return filterRecipesByNutrition(recipes, minCalories, maxCalories, minProtein, maxProtein);

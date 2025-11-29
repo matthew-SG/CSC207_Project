@@ -14,9 +14,12 @@ public class SearchByIngredientInteractor implements SearchByIngredientInputBoun
 
     private static final int MAX_RECIPES = 10;
     private final SearchByIngredientSpoonacular api;
+    private final data_access.FileDataAccessObject approveRecipeDAO;
 
-    public SearchByIngredientInteractor(SearchByIngredientSpoonacular api) {
+    public SearchByIngredientInteractor(SearchByIngredientSpoonacular api, 
+                                        data_access.FileDataAccessObject approveRecipeDAO) {
         this.api = api;
+        this.approveRecipeDAO = approveRecipeDAO;
     }
 
     @Override
@@ -42,6 +45,11 @@ public class SearchByIngredientInteractor implements SearchByIngredientInputBoun
             if (shouldIncludeRecipe(recipeJson, ingredients, allowedMissing)) {
                 recipes.add(buildRecipe(recipeJson));
             }
+        }
+
+        // Make recipes available for approval
+        if (approveRecipeDAO != null) {
+            approveRecipeDAO.setAvailableRecipes(recipes);
         }
 
         String msg = recipes.isEmpty()

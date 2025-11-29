@@ -12,15 +12,19 @@ import org.json.JSONObject;
 import entities.*;
 import use_case.login.LoginUserDataAccessInterface;
 import use_case.signup.SignupUserDataAccessInterface;
+import use_case.approve_recipe.ApproveRecipeDataAccessInterface;
 
 /**
  * DAO for all data, mainly user data, using a File to persist the data
  */
-public class FileDataAccessObject implements UserDataAccess {
+public class FileDataAccessObject implements UserDataAccess, ApproveRecipeDataAccessInterface {
 
     private final File usersCsv;
     private final Map<String, Integer> headers = new LinkedHashMap<>();
     private final Map<String, User> users = new HashMap<>();
+    
+    // Temporary storage for recipes waiting to be approved
+    private List<Recipe> pendingApprovalRecipes = new ArrayList<>();
 
     private String currentUsername;
 
@@ -451,5 +455,63 @@ public class FileDataAccessObject implements UserDataAccess {
     @Override
     public List<MealPlan> getMealPlans() {
         return users.get(currentUsername).getMealPlans();
+    }
+
+    // ApproveRecipeDataAccessInterface implementation
+
+    /**
+     * Get recipes that are pending approval
+     * @return list of recipes waiting to be approved
+     */
+    @Override
+    public List<Recipe> getAvailableRecipes() {
+        return new ArrayList<>(pendingApprovalRecipes);
+    }
+
+    /**
+     * Set recipes that should be available for approval
+     * @param recipes the recipes from recipe generator or search
+     */
+    public void setAvailableRecipes(List<Recipe> recipes) {
+        this.pendingApprovalRecipes = recipes != null ? new ArrayList<>(recipes) : new ArrayList<>();
+    }
+
+    @Override
+    public Recipe getRecipeById(int recipeId) {
+        for (Recipe recipe : pendingApprovalRecipes) {
+            if (recipe.getRecipeId() == recipeId) {
+                return recipe;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public User getUser(String username) {
+        return users.get(username);
+    }
+
+    /**
+     * Save an approved recipe to the user's saved recipes and persist to JSON
+     * @param username the username
+     * @param recipe the recipe to save
+     */
+    @Override
+    public void saveRecipeToUser(String username, Recipe recipe) {
+        User user = users.get(username);
+        if (user == null) {
+            System.err.println("User not found: " + username);
+            return;
+        }
+
+        // Check if recipe already exists
+        boolean alreadySaved = user.getSavedRecipes().stream()
+                .anyMatch(r -> r.getRecipeId() == recipe.getRecipeId());
+
+        if (!alreadySaved) {
+            user.getSavedRecipes().add(recipe);
+            // Persist changes to JSON file
+            save();
+        }
     }
 }
