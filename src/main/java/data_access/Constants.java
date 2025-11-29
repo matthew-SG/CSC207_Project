@@ -21,7 +21,7 @@ public class Constants {
     public static final String TARGET_PROTEIN = "targetProtein";
     public static final String TARGET_CARBS = "targetCarbs";
     public static final String TARGET_FATS = "targetFats";
-    public static final String USER_MEAL_PLANS_PATH = "data/%s/meal_plans.json";
-    public static final String USER_LIKED_RECIPES_PATH = "data/%s/liked_recipes.json";
-    public static final String USER_GROCERY_LIST_PATH = "data/%s/grocery_list.json";
+    public static final String USER_MEAL_PLANS_PATH = "data\\%s\\meal_plans.json";
+    public static final String USER_LIKED_RECIPES_PATH = "data\\%s\\liked_recipes.json";
+    public static final String USER_GROCERY_LIST_PATH = "data\\%s\\grocery_list.json";
 }
