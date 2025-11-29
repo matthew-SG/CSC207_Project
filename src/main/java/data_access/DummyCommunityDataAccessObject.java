@@ -17,7 +17,7 @@ public class DummyCommunityDataAccessObject implements CommunityDataAccessInterf
     public DummyCommunityDataAccessObject() {
         likedRecipes.put(1, new Recipe(1, "pizza",
                 "https://www.tasteofhome.com/wp-content/uploads/2018/01/Homemade-Pizza_EXPS_FT23_376_EC_120123_3.jpg",
-                new ArrayList<>(),"american", new HashMap<>()));
+                new ArrayList<>(), "american", new HashMap<>()));
         likedRecipes.put(2, new Recipe(2, "hamburger",
                 "https://en.wikipedia.org/wiki/Cheeseburger#/media/File:Cheeseburger.jpg", new ArrayList<>(),
                 "american", new HashMap<>()));

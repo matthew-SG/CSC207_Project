@@ -9,5 +9,8 @@ public final class GroceryList {
         this.items = new ArrayList<>(items);
     }
 
-    public List<Ingredient> getItems() {return items; }
+    public List<Ingredient> getItems() {
+        return items;
+    }
+
     }

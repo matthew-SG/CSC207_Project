@@ -1,15 +1,14 @@
 package data_access;
 
-import entities.*;
+import static data_access.Constants.*;
+import use_case.login.LoginUserDataAccessInterface;
+import use_case.signup.SignupUserDataAccessInterface;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import use_case.login.LoginUserDataAccessInterface;
-import use_case.signup.SignupUserDataAccessInterface;
-import static data_access.Constants.*;
-
 import java.io.*;
 import java.util.*;
+import entities.*;
 
 /**
  * DAO for all data, mainly user data, using a File to persist the data
@@ -116,7 +115,7 @@ public class FileDataAccessObject implements UserDataAccess {
         final List<Recipe> likedRecipes = user.getSavedRecipes();
         JSONArray recipesArray = recipesToJson(likedRecipes);
 
-        try (final BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
             writer.write(recipesArray.toString(4));
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -151,7 +150,7 @@ public class FileDataAccessObject implements UserDataAccess {
             }
 
             recipeJson.put(INGREDIENTS, ingredientsArray);
-            recipeJson.put(MEAL_TYPE,recipe.getMealType());
+            recipeJson.put(MEAL_TYPE, recipe.getMealType());
 
             JSONObject nutritionalValues = new JSONObject();
             for (String nutritionalValue : recipe.getNutritionalValues().keySet()) {
@@ -168,8 +167,9 @@ public class FileDataAccessObject implements UserDataAccess {
      * Helper method that saves changes of a user's meal plan to their associated local file
      * @param user the user to save changes to
      * @param jsonPath the path to their associated meal plan persistent file
+     * @throws RuntimeException when an IOException is raised when writing to the file
      */
-    private static void saveMealPlans(User user, String jsonPath) {
+    private static void saveMealPlans(User user, String jsonPath) throws RuntimeException {
         File file = new File(jsonPath);
 
         final List<MealPlan> mealPlans = user.getMealPlans();
@@ -180,16 +180,16 @@ public class FileDataAccessObject implements UserDataAccess {
             JSONObject mealPlanObject = new JSONObject();
 
             JSONArray recipes = recipesToJson(mealPlan.getRecipes());
-            mealPlanObject.put(RECIPES,recipes);
-            mealPlanObject.put(TARGET_CALORIES,mealPlan.getTargetCalories());
-            mealPlanObject.put(TARGET_PROTEIN,mealPlan.getTargetProtein());
-            mealPlanObject.put(TARGET_CARBS,mealPlan.getTargetCarbs());
-            mealPlanObject.put(TARGET_FATS,mealPlan.getTargetFats());
+            mealPlanObject.put(RECIPES, recipes);
+            mealPlanObject.put(TARGET_CALORIES, mealPlan.getTargetCalories());
+            mealPlanObject.put(TARGET_PROTEIN, mealPlan.getTargetProtein());
+            mealPlanObject.put(TARGET_CARBS, mealPlan.getTargetCarbs());
+            mealPlanObject.put(TARGET_FATS, mealPlan.getTargetFats());
 
             mealPlansArray.put(mealPlanObject);
         }
 
-        try (final BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
             writer.write(mealPlansArray.toString(4));
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -200,8 +200,9 @@ public class FileDataAccessObject implements UserDataAccess {
      * Helper method that saves changes to their grocery list
      * @param user the user to save the changes to
      * @param jsonPath the path to their associated grocery list persistent file
+     * @throws RuntimeException when an IOException is raised when writing to the file
      */
-    private static void saveGroceryList(User user, String jsonPath) {
+    private static void saveGroceryList(User user, String jsonPath) throws RuntimeException {
         File file = new File(jsonPath);
         GroceryList groceryList = user.getGroceryList();
         ensureDirectoryExists(file);
@@ -214,7 +215,7 @@ public class FileDataAccessObject implements UserDataAccess {
             ingredientObject.put(UNIT, ingredient.getUnit());
             groceryListArray.put(ingredientObject);
         }
-        try (final BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
             writer.write(groceryListArray.toString(4));
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -234,7 +235,7 @@ public class FileDataAccessObject implements UserDataAccess {
             return new ArrayList<>();
         }
 
-        try (final BufferedReader reader = new BufferedReader(new FileReader(file))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String likedRecipesJson = reader.readAllAsString();
             JSONArray likedRecipesArray = new JSONArray(likedRecipesJson);
 
@@ -317,7 +318,7 @@ public class FileDataAccessObject implements UserDataAccess {
         double quantity;
         String unit;
 
-        try (final BufferedReader reader = new BufferedReader(new FileReader(file))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String groceryListJson = reader.readAllAsString();
             JSONArray groceryList = new JSONArray(groceryListJson);
 
@@ -352,7 +353,7 @@ public class FileDataAccessObject implements UserDataAccess {
             return result;
         }
 
-        try (final BufferedReader reader = new BufferedReader(new FileReader(file))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String mealPlanJson = reader.readAllAsString();
             JSONArray mealPlanArray = new JSONArray(mealPlanJson);
 
