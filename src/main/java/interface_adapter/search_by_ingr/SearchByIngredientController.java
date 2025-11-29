@@ -7,8 +7,8 @@ public class SearchByIngredientController {
     public SearchByIngredientController(SearchByIngredientInputBoundary interactor) {
         this.interactor = interactor;
     }
-    public SearchByIngredientOutputData  search(List<Ingredient> ingredients) {
-        SearchByIngredientInputData inputData=new SearchByIngredientInputData(ingredients);
+    public SearchByIngredientOutputData  search(List<Ingredient> ingredients, int amountMissing) {
+        SearchByIngredientInputData inputData=new SearchByIngredientInputData(ingredients, amountMissing);
         return interactor.execute(inputData);
     }
 }
