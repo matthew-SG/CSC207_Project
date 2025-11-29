@@ -15,15 +15,19 @@ import entities.*;
 import use_case.community.CommunityUserRecipeDataAccessInterface;
 import use_case.login.LoginUserDataAccessInterface;
 import use_case.signup.SignupUserDataAccessInterface;
+import use_case.approve_recipe.ApproveRecipeDataAccessInterface;
 
 /**
  * DAO for all data, mainly user data, using a File to persist the data
  */
-public class FileDataAccessObject implements UserDataAccess, CommunityUserRecipeDataAccessInterface {
+public class FileDataAccessObject implements UserDataAccess, CommunityUserRecipeDataAccessInterface, ApproveRecipeDataAccessInterface {
 
     private final File usersCsv;
     private final Map<String, Integer> headers = new LinkedHashMap<>();
     private final Map<String, User> users = new HashMap<>();
+
+    // Temporary storage for recipes waiting to be approved
+    private List<Recipe> pendingApprovalRecipes = new ArrayList<>();
 
     private String currentUsername;
 
@@ -167,91 +171,6 @@ public class FileDataAccessObject implements UserDataAccess, CommunityUserRecipe
             result.put(recipeJson);
         }
         return result;
-    }
-
-    /**
-     * Helper method to create a defensive copy of a recipe (including ingredients and nutritional values)
-     * to avoid exposing internal mutable state to callers.
-     * @param source the recipe to copy
-     * @return a deep copy of the recipe
-     */
-    private static Recipe copyRecipe(Recipe source) {
-        if (source == null) {
-            return null;
-        }
-
-        List<Ingredient> ingredientsCopy = new ArrayList<>();
-        if (source.getIngredients() != null) {
-            for (Ingredient ingredient : source.getIngredients()) {
-                ingredientsCopy.add(new Ingredient(
-                        ingredient.getName(),
-                        ingredient.getQuantity(),
-                        ingredient.getUnit()
-                ));
-            }
-        }
-
-        Map<String, Double> nutritionCopy = source.getNutritionalValues() != null
-                ? new HashMap<>(source.getNutritionalValues())
-                : new HashMap<>();
-
-        String recipeName = Optional.ofNullable(source.getRecipeName()).orElse("");
-        String recipeImage = Optional.ofNullable(source.getRecipeImage()).orElse("");
-        String mealType = Optional.ofNullable(source.getMealType()).orElse("");
-
-        Recipe copy = new Recipe(source.getRecipeId(), recipeName, recipeImage,
-                ingredientsCopy, mealType, nutritionCopy);
-        copy.setSteps(source.getSteps());
-        return copy;
-    }
-
-    /**
-     * Returns a defensive copy of the liked recipes for the specified username.
-     * @param username the user whose liked recipes should be retrieved
-     * @return a list of recipes; empty if the user does not exist or has none saved
-     */
-    @Override
-    public List<Recipe> getLikedRecipesForUser(String username) {
-        if (username == null || username.trim().isEmpty()) {
-            return new ArrayList<>();
-        }
-
-        User user = users.get(username);
-        if (user == null || user.getSavedRecipes() == null) {
-            return new ArrayList<>();
-        }
-
-        List<Recipe> copies = new ArrayList<>();
-        for (Recipe recipe : user.getSavedRecipes()) {
-            Recipe copy = copyRecipe(recipe);
-            if (copy != null) {
-                copies.add(copy);
-            }
-        }
-        return copies;
-    }
-
-    /**
-     * Retrieves a liked recipe for the currently logged in user by recipe id.
-     * @param recipeId the recipe identifier
-     * @return an Optional containing a defensive copy of the recipe if found
-     */
-    @Override
-    public Optional<Recipe> getCurrentUserLikedRecipe(int recipeId) {
-        if (currentUsername == null || currentUsername.trim().isEmpty()) {
-            return Optional.empty();
-        }
-
-        User user = users.get(currentUsername);
-        if (user == null || user.getSavedRecipes() == null) {
-            return Optional.empty();
-        }
-
-        return user.getSavedRecipes().stream()
-                .filter(Objects::nonNull)
-                .filter(recipe -> recipe.getRecipeId() == recipeId)
-                .findFirst()
-                .map(FileDataAccessObject::copyRecipe);
     }
 
     /**
@@ -539,5 +458,63 @@ public class FileDataAccessObject implements UserDataAccess, CommunityUserRecipe
     @Override
     public List<MealPlan> getMealPlans() {
         return users.get(currentUsername).getMealPlans();
+    }
+
+    // ApproveRecipeDataAccessInterface implementation
+
+    /**
+     * Get recipes that are pending approval
+     * @return list of recipes waiting to be approved
+     */
+    @Override
+    public List<Recipe> getAvailableRecipes() {
+        return new ArrayList<>(pendingApprovalRecipes);
+    }
+
+    /**
+     * Set recipes that should be available for approval
+     * @param recipes the recipes from recipe generator or search
+     */
+    public void setAvailableRecipes(List<Recipe> recipes) {
+        this.pendingApprovalRecipes = recipes != null ? new ArrayList<>(recipes) : new ArrayList<>();
+    }
+
+    @Override
+    public Recipe getRecipeById(int recipeId) {
+        for (Recipe recipe : pendingApprovalRecipes) {
+            if (recipe.getRecipeId() == recipeId) {
+                return recipe;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public User getUser(String username) {
+        return users.get(username);
+    }
+
+    /**
+     * Save an approved recipe to the user's saved recipes and persist to JSON
+     * @param username the username
+     * @param recipe the recipe to save
+     */
+    @Override
+    public void saveRecipeToUser(String username, Recipe recipe) {
+        User user = users.get(username);
+        if (user == null) {
+            System.err.println("User not found: " + username);
+            return;
+        }
+
+        // Check if recipe already exists
+        boolean alreadySaved = user.getSavedRecipes().stream()
+                .anyMatch(r -> r.getRecipeId() == recipe.getRecipeId());
+
+        if (!alreadySaved) {
+            user.getSavedRecipes().add(recipe);
+            // Persist changes to JSON file
+            save();
+        }
     }
 }

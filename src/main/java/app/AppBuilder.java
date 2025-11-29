@@ -178,10 +178,12 @@ public class AppBuilder {
         viewManagerModel = new ViewManagerModel();
         viewManager = new ViewManager(contentPanel, cardLayout, viewManagerModel);
 
-        // Initialize approve recipe DAO with API access to real recipes
-        approveRecipeDataAccessObject = new SpoonacularApproveRecipeDataAccessObject(
-                userDataAccessObject.getUsers()
-        );
+        // Use FileDataAccessObject as the approve recipe DAO (implements ApproveRecipeDataAccessInterface)
+        if (userDataAccessObject instanceof FileDataAccessObject) {
+            approveRecipeDataAccessObject = (FileDataAccessObject) userDataAccessObject;
+        } else {
+            throw new RuntimeException("UserDataAccessObject must be FileDataAccessObject for approve recipe functionality");
+        }
         communityViewModel = new CommunityViewModel();
     }
 
@@ -237,9 +239,10 @@ public class AppBuilder {
         RecipeDataAccessInterface recipeGateway =
                 new RecipeDataAccessObject();
 
-        //interactor
+        //interactor - pass FileDataAccessObject for approve recipe functionality
         RecipeGeneratorInputBoundary recipeGeneratorInteractor =
-                new RecipeGeneratorInteractor(recipeGateway, recipeGeneratorPresenter);
+                new RecipeGeneratorInteractor(recipeGateway, recipeGeneratorPresenter, 
+                        (FileDataAccessObject) userDataAccessObject);
 
         //Controller
         RecipeGeneratorController recipeGeneratorController =
@@ -530,7 +533,9 @@ public class AppBuilder {
     }
     public AppBuilder buildSearchByIngredient() {
         searchByIngredientApi = new SearchByIngredientSpoonacular();
-        SearchByIngredientInputBoundary searchByIngredientInteractor = new SearchByIngredientInteractor(searchByIngredientApi);
+        SearchByIngredientInputBoundary searchByIngredientInteractor = new SearchByIngredientInteractor(
+                searchByIngredientApi, 
+                (FileDataAccessObject) userDataAccessObject);
         searchByIngredientController = new SearchByIngredientController(searchByIngredientInteractor);
         searchByIngredientView = new SearchByIngredientView(searchByIngredientController, searchByIngredientApi);
         contentPanel.add(searchByIngredientView, SearchByIngredientView.VIEWNAME);
