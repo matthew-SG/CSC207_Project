@@ -1,5 +1,6 @@
 package data_access;
 
+import entities.Ingredient;
 import entities.Rating;
 import entities.Recipe;
 import entities.User;
@@ -7,12 +8,16 @@ import okhttp3.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import use_case.community.CommunityDataAccessInterface;
+import use_case.community.CommunityUserRecipeDataAccessInterface;
 import use_case.community.input_data.CommunityPublishInputData;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * Data Access Object for Community features using Firestore REST API.
@@ -28,25 +33,15 @@ public class DBCommunityDataAccessObject implements CommunityDataAccessInterface
     private final String webapiKey;
     private final String ratingsEndpoint;
     private final OkHttpClient client;
-    HashMap<Integer, Recipe> likedRecipes = new HashMap<>(); // TODO: replace the dummy with actual accumulated data
-    ArrayList<Rating> ratings = new ArrayList<>();
+    private final CommunityUserRecipeDataAccessInterface userRecipeDataAccess;
     
     // Authentication credentials
     private String idToken;
     private String refreshToken;
     private int expiresIn;
 
-    public DBCommunityDataAccessObject() {
-        likedRecipes.put(1, new Recipe(1, "pizza",
-                "https://www.tasteofhome.com/wp-content/uploads/2018/01/Homemade-Pizza_EXPS_FT23_376_EC_120123_3.jpg",
-                new ArrayList<>(),"american", new HashMap<>()));
-        likedRecipes.put(2, new Recipe(2, "hamburger",
-                "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/Cheeseburger.jpg/2560px-Cheeseburger.jpg",
-                new ArrayList<>(), "american", new HashMap<>()));
-        ratings.add(new Rating(1, 1, "test@1.ca", 4, "yummy", "hamburger", "https://en.wikipedia.org/wiki/Cheeseburger#/media/File:Cheeseburger.jpg"));
-        ratings.add(new Rating(2, 2, "test@1.ca", 4, "good","pizza", "https://www.tasteofhome.com/wp-content/uploads/2018/01/Homemade-Pizza_EXPS_FT23_376_EC_120123_3.jpg"));
-
-
+    public DBCommunityDataAccessObject(CommunityUserRecipeDataAccessInterface userRecipeDataAccess) {
+        this.userRecipeDataAccess = Objects.requireNonNull(userRecipeDataAccess, "userRecipeDataAccess cannot be null");
         this.webapiKey = Constants.WEBAPI_KEY;
         this.ratingsEndpoint = BASE_URL + "/ratings";
         this.client = new OkHttpClient();
@@ -57,12 +52,17 @@ public class DBCommunityDataAccessObject implements CommunityDataAccessInterface
 
     @Override
     public List<Recipe> getLikedRecipes(User user) {
-        return new ArrayList<>(likedRecipes.values());
+        if (user == null || user.getUsername() == null) {
+            return Collections.emptyList();
+        }
+
+        List<Recipe> liked = userRecipeDataAccess.getLikedRecipesForUser(user.getUsername());
+        return liked == null ? Collections.emptyList() : liked;
     }
 
     @Override
     public Recipe getSelectedRecipe(int recipeID) {
-        return likedRecipes.get(recipeID);
+        return userRecipeDataAccess.getCurrentUserLikedRecipe(recipeID).orElse(null);
     }
 
 
@@ -132,15 +132,31 @@ public class DBCommunityDataAccessObject implements CommunityDataAccessInterface
         try {
             // Get the next available rating ID
             int nextRatingId = getNextRatingId();
+
+        // Resolve recipe details with fallbacks
+        Recipe recipeDetails = resolveRecipeDetails(data);
+        String resolvedRecipeName = coalesce(
+            recipeDetails.getRecipeName(),
+            data.getRecipeName(),
+            "Unnamed Recipe"
+        );
+        String resolvedRecipeImage = coalesce(
+            recipeDetails.getRecipeImage(),
+            data.getRecipeImageURL(),
+            ""
+        );
+        int resolvedRecipeId = recipeDetails.getRecipeId() != 0 ? recipeDetails.getRecipeId() : data.getRecipeID();
+    String resolvedUserName = coalesce(data.getUserName(), userRecipeDataAccess.getCurrentUsername(), "Anonymous");
             
             // Create Firestore document structure
             JSONObject fields = new JSONObject();
-            fields.put("stars", createIntegerValue(data.getRating()));
-            fields.put("comment", createStringValue(data.getComment()));
-            fields.put("userName", createStringValue(data.getUserName()));
-            fields.put("recipeName", createStringValue(data.getRecipeName()));
-            fields.put("recipeId", createIntegerValue(data.getRecipeID()));
-            fields.put("recipeImageUrl", createStringValue(data.getRecipeImageURL()));
+        fields.put("stars", createIntegerValue(sanitizeRating(data.getRating())));
+        fields.put("comment", createStringValue(coalesce(data.getComment(), "")));
+        fields.put("userName", createStringValue(resolvedUserName));
+        fields.put("recipeName", createStringValue(resolvedRecipeName));
+        fields.put("recipeId", createIntegerValue(resolvedRecipeId));
+        fields.put("recipeImageUrl", createStringValue(resolvedRecipeImage));
+        fields.put("recipeDetails", buildRecipeDetailsValue(recipeDetails));
             
             JSONObject document = new JSONObject();
             document.put("fields", fields);
@@ -177,6 +193,125 @@ public class DBCommunityDataAccessObject implements CommunityDataAccessInterface
         
         // Return updated list of all ratings
         return getCurrentRatings();
+    }
+
+    private Recipe resolveRecipeDetails(CommunityPublishInputData data) {
+    return userRecipeDataAccess.getCurrentUserLikedRecipe(data.getRecipeID())
+                .orElseGet(() -> {
+                    System.err.println("[CommunityDAO] Unable to find recipe " + data.getRecipeID() + " locally. Using fallback payload.");
+                    return buildFallbackRecipe(data);
+                });
+    }
+
+    private Recipe buildFallbackRecipe(CommunityPublishInputData data) {
+        int recipeId = data != null ? data.getRecipeID() : 0;
+        String recipeName = data != null ? coalesce(data.getRecipeName(), "Unnamed Recipe") : "Unnamed Recipe";
+        String recipeImage = data != null ? coalesce(data.getRecipeImageURL(), "") : "";
+        Recipe fallback = new Recipe(
+                recipeId,
+                recipeName,
+                recipeImage,
+                new ArrayList<>(),
+                "",
+                new HashMap<>()
+        );
+        fallback.setSteps("");
+        return fallback;
+    }
+
+    private String coalesce(String... values) {
+        if (values == null) {
+            return "";
+        }
+        for (String value : values) {
+            if (value != null && !value.isBlank()) {
+                return value;
+            }
+        }
+        return "";
+    }
+
+    private int sanitizeRating(int rating) {
+        if (rating < 1) {
+            return 1;
+        }
+        if (rating > 5) {
+            return 5;
+        }
+        return rating;
+    }
+
+    private JSONObject buildRecipeDetailsValue(Recipe recipe) {
+        Recipe safeRecipe = recipe != null ? recipe : buildFallbackRecipe(null);
+        JSONObject recipeFields = new JSONObject();
+        recipeFields.put("recipeId", createIntegerValue(safeRecipe.getRecipeId()));
+        recipeFields.put("recipeName", createStringValue(coalesce(safeRecipe.getRecipeName(), "Unnamed Recipe")));
+        recipeFields.put("recipeImage", createStringValue(coalesce(safeRecipe.getRecipeImage(), "")));
+        recipeFields.put("mealType", createStringValue(coalesce(safeRecipe.getMealType(), "")));
+        recipeFields.put("steps", createStringValue(coalesce(safeRecipe.getSteps(), "")));
+        recipeFields.put("ingredients", createArrayValue(buildIngredientArray(safeRecipe)));
+        recipeFields.put("nutritionalValues", createMapValue(buildNutritionFields(safeRecipe)));
+        return createMapValue(recipeFields);
+    }
+
+    private JSONArray buildIngredientArray(Recipe recipe) {
+        JSONArray ingredientValues = new JSONArray();
+        List<Ingredient> ingredients = recipe.getIngredients();
+        if (ingredients == null) {
+            return ingredientValues;
+        }
+        for (Ingredient ingredient : ingredients) {
+            if (ingredient == null) {
+                continue;
+            }
+            JSONObject ingredientFields = new JSONObject();
+            ingredientFields.put("name", createStringValue(coalesce(ingredient.getName(), "")));
+            ingredientFields.put("quantity", createDoubleValue(ingredient.getQuantity()));
+            ingredientFields.put("unit", createStringValue(coalesce(ingredient.getUnit(), "")));
+            ingredientValues.put(createMapValue(ingredientFields));
+        }
+        return ingredientValues;
+    }
+
+    private JSONObject buildNutritionFields(Recipe recipe) {
+        JSONObject nutritionFields = new JSONObject();
+        Map<String, Double> nutrition = recipe.getNutritionalValues();
+        if (nutrition == null) {
+            return nutritionFields;
+        }
+        for (Map.Entry<String, Double> entry : nutrition.entrySet()) {
+            String key = entry.getKey();
+            if (key == null || key.isBlank()) {
+                continue;
+            }
+            Double value = entry.getValue();
+            double safeValue = value != null && Double.isFinite(value) ? value : 0d;
+            nutritionFields.put(key, createDoubleValue(safeValue));
+        }
+        return nutritionFields;
+    }
+
+    private JSONObject createArrayValue(JSONArray values) {
+        JSONObject arrayValue = new JSONObject();
+        arrayValue.put("values", values != null ? values : new JSONArray());
+        JSONObject wrapper = new JSONObject();
+        wrapper.put("arrayValue", arrayValue);
+        return wrapper;
+    }
+
+    private JSONObject createMapValue(JSONObject fields) {
+        JSONObject mapValue = new JSONObject();
+        mapValue.put("fields", fields != null ? fields : new JSONObject());
+        JSONObject wrapper = new JSONObject();
+        wrapper.put("mapValue", mapValue);
+        return wrapper;
+    }
+
+    private JSONObject createDoubleValue(double value) {
+        double safeValue = Double.isFinite(value) ? value : 0d;
+        JSONObject doubleValue = new JSONObject();
+        doubleValue.put("doubleValue", safeValue);
+        return doubleValue;
     }
 
     /**
@@ -331,13 +466,4 @@ public class DBCommunityDataAccessObject implements CommunityDataAccessInterface
         authenticateAnonymously();
     }
 
-
-    public static void main(String[] args) {
-        DBCommunityDataAccessObject db = new DBCommunityDataAccessObject();
-        List<Rating> ratings = db.getCurrentRatings();
-
-        CommunityPublishInputData data = new CommunityPublishInputData("mockname", 4, 4, "not too bad",
-                "nice", "https://media.istockphoto.com/id/1457433817/photo/group-of-healthy-food-for-flexitarian-diet.jpg?s=612x612&w=0&k=20&c=v48RE0ZNWpMZOlSp13KdF1yFDmidorO2pZTu2Idmd3M=");
-        db.publishReview(data);
-    }
 }
