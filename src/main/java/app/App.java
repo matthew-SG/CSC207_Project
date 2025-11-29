@@ -23,6 +23,7 @@ public class App {
                     .buildCommunityFeature()
                     .buildGroceryList()
                     .buildAuthFeature()
+                    .buildSearchByIngredient()
                     .build();
         });
     }
