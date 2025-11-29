@@ -2,6 +2,7 @@ package view;
 
 import entities.InstructionStep;
 import entities.RecipeInstructions;
+import interface_adapter.ViewManagerModel;
 import interface_adapter.speech.SpeechService;
 import interface_adapter.step_by_step.*;
 import interface_adapter.step_by_step.StepByStepViewModel;
@@ -38,6 +39,7 @@ public class StepByStepView extends JFrame implements PropertyChangeListener {
         this.stepByStepViewModel = viewModel;
         this.speechService = speechService;
 
+        // Register this view as a property change listener
         viewModel.addPropertyChangeListener(this);
 
         setupUI();
@@ -126,22 +128,21 @@ public class StepByStepView extends JFrame implements PropertyChangeListener {
 
         stepLabel.setText("Step " + newState.getStepNumber());
         stepTextArea.setText(newState.getStepText());
+        nextButton.setEnabled(newState.canGoNext());
+        prevButton.setEnabled(newState.canGoPrevious());
     }
 
     // Example main method using SystemTTSService
     public static void main(String[] args) {
         // Example steps
-        List<InstructionStep> steps = List.of(
-                new InstructionStep(1, "Heat the oven", List.of(), List.of()),
-                new InstructionStep(2, "Make it hotter", List.of(), List.of()),
-                new InstructionStep(3, "MAKE IT EVEN HOTTER", List.of(), List.of()),
-                new InstructionStep(4, "You have been burned :)", List.of(), List.of())
-        );
+        List<InstructionStep> steps = List.of();
 
         RecipeInstructions instructions = new RecipeInstructions(steps);
 
         StepByStepViewModel viewModel = new StepByStepViewModel();
-        StepByStepPresenter presenter = new StepByStepPresenter(viewModel);
+        ViewManagerModel viewManagerModel = new ViewManagerModel();
+        ErrorMessageView errorMessageView = new ErrorMessageView(viewManagerModel);
+        StepByStepPresenter presenter = new StepByStepPresenter(viewModel, viewManagerModel);
         StepByStepInteractor interactor = new StepByStepInteractor(presenter);
         StepByStepController controller = new StepByStepController(interactor, instructions);
 
