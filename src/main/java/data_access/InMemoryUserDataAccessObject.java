@@ -1,9 +1,6 @@
 package data_access;
 
-import entities.Ingredient;
-import entities.MealPlan;
-import entities.Recipe;
-import entities.User;
+import entities.*;
 import use_case.login.LoginUserDataAccessInterface;
 import use_case.signup.SignupUserDataAccessInterface;
 
@@ -18,6 +15,16 @@ import java.util.Map;
  */
 public class InMemoryUserDataAccessObject implements UserDataAccess {
 
+    // Constants for testing Meal Plan Use Case
+    private static final String PASSWORD = "password";
+    private static final String CALORIES = "Calories";
+    private static final String PROTEIN = "Protein";
+    private static final String CARBOHYDRATES = "Carbohydrates";
+    private static final String FAT = "Fats";
+    private static final String RECIPE_NAME = "Pasta With Tuna";
+    private static final String RECIPE_IMAGE = "https://img.spoonacular.com/recipes/654959-312x231.jpg";
+    private static final String RECIPE_CUISINE = "Italian";
+
     private final Map<String, User> users = new HashMap<>();
     
     private String currentUsername;
@@ -27,35 +34,39 @@ public class InMemoryUserDataAccessObject implements UserDataAccess {
      *      Plan Use Case, other Use Cases may add to test users if they wish)
      */
     public InMemoryUserDataAccessObject() {
-        User testUserOne = new User("test_1", "password", new ArrayList<>());
-        User testUserTwo = new User("test_2", "password", new ArrayList<>());
-        User testUserThree = new User("test_3", "password", new ArrayList<>());
+        User testUserOne = new User("test_1", PASSWORD, new ArrayList<>(), new ArrayList<>(),
+                new GroceryList(new ArrayList<>()));
+        User testUserTwo = new User("test_2", PASSWORD, new ArrayList<>(), new ArrayList<>(),
+                new GroceryList(new ArrayList<>()));
+        User testUserThree = new User("test_3", PASSWORD, new ArrayList<>(), new ArrayList<>(),
+                new GroceryList(new ArrayList<>()));
 
-        Recipe miniPastaTuna = new Recipe(654959, "Pasta With Tuna",
-                "https://img.spoonacular.com/recipes/654959-312x231.jpg", "Italian");
         Ingredient flour = new Ingredient("flour", 2, "Tbsps");
         Ingredient greenO = new Ingredient("green onions", 100, "g");
+
+        Recipe miniPastaTuna = new Recipe(654959, RECIPE_NAME,
+                RECIPE_IMAGE, new ArrayList<>(), RECIPE_CUISINE, new HashMap<>());
         miniPastaTuna.addIngredient(flour); miniPastaTuna.addIngredient(greenO);
-        miniPastaTuna.addNutritionalValue("Calories", 422);
-        miniPastaTuna.addNutritionalValue("Carbohydrates", 57);
-        miniPastaTuna.addNutritionalValue("Protein", 24);
-        miniPastaTuna.addNutritionalValue("Fat", 10);
+        miniPastaTuna.addNutritionalValue(CALORIES, 422);
+        miniPastaTuna.addNutritionalValue(CARBOHYDRATES, 57);
+        miniPastaTuna.addNutritionalValue(PROTEIN, 24);
+        miniPastaTuna.addNutritionalValue(FAT, 10);
 
-        Recipe copyOne = new Recipe(654959, "Pasta With Tuna",
-                "https://img.spoonacular.com/recipes/654959-312x231.jpg", "Italian");
+        Recipe copyOne = new Recipe(654959, RECIPE_NAME,
+                RECIPE_IMAGE, new ArrayList<>(), RECIPE_CUISINE, new HashMap<>());
         copyOne.addIngredient(flour); copyOne.addIngredient(greenO);
-        copyOne.addNutritionalValue("Calories", 422);
-        copyOne.addNutritionalValue("Carbohydrates", 57);
-        copyOne.addNutritionalValue("Protein", 24);
-        copyOne.addNutritionalValue("Fat", 10);
+        copyOne.addNutritionalValue(CALORIES, 422);
+        copyOne.addNutritionalValue(CARBOHYDRATES, 57);
+        copyOne.addNutritionalValue(PROTEIN, 24);
+        copyOne.addNutritionalValue(FAT, 10);
 
-        Recipe copyTwo = new Recipe(654959, "Pasta With Tuna",
-                "https://img.spoonacular.com/recipes/654959-312x231.jpg", "Italian");
+        Recipe copyTwo = new Recipe(654959, RECIPE_NAME,
+                RECIPE_IMAGE, new ArrayList<>(), RECIPE_CUISINE, new HashMap<>());
         copyTwo.addIngredient(flour); copyTwo.addIngredient(greenO);
-        copyTwo.addNutritionalValue("Calories", 422);
-        copyTwo.addNutritionalValue("Carbohydrates", 57);
-        copyTwo.addNutritionalValue("Protein", 24);
-        copyTwo.addNutritionalValue("Fat", 10);
+        copyTwo.addNutritionalValue(CALORIES, 422);
+        copyTwo.addNutritionalValue(CARBOHYDRATES, 57);
+        copyTwo.addNutritionalValue(PROTEIN, 24);
+        copyTwo.addNutritionalValue(FAT, 10);
 
         testUserTwo.saveRecipe(miniPastaTuna);
         testUserTwo.saveRecipe(copyOne);
@@ -100,16 +111,17 @@ public class InMemoryUserDataAccessObject implements UserDataAccess {
     }
 
     @Override
-    public String signupUser(String email, String password) {
-        if (users.containsKey(email)) {
+    public String signupUser(String username, String password) {
+        if (users.containsKey(username)) {
             return SignupUserDataAccessInterface.USER_EXISTS_ERROR;
         }
-        User user = new User(email, password, new ArrayList<>());
-        currentUsername = email;
+        User user = new User(username, password, new ArrayList<>(), new ArrayList<>(), new GroceryList(new ArrayList<>()));
+        currentUsername = username;
         users.put(currentUsername, user);
         return SignupUserDataAccessInterface.SUCCESS;
     }
-    
+
+    @Override
     public List<Recipe> getSavedRecipes() {
         return users.get(currentUsername).getSavedRecipes();
     }

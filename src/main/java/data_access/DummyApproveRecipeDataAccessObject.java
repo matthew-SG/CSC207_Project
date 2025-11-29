@@ -27,27 +27,32 @@ public class DummyApproveRecipeDataAccessObject implements ApproveRecipeDataAcce
 
         // Recipe 1: Spaghetti Carbonara
         Recipe recipe1 = new Recipe(1, "Spaghetti Carbonara",
-                "https://via.placeholder.com/300x300?text=Spaghetti+Carbonara", "Dinner");
+                "https://via.placeholder.com/300x300?text=Spaghetti+Carbonara", new ArrayList<>(),
+                "Dinner", new HashMap<>());
         recipes.add(recipe1);
 
         // Recipe 2: Chicken Stir Fry
         Recipe recipe2 = new Recipe(2, "Chicken Stir Fry",
-                "https://via.placeholder.com/300x300?text=Chicken+Stir+Fry", "Lunch");
+                "https://via.placeholder.com/300x300?text=Chicken+Stir+Fry", new ArrayList<>(),
+                "Lunch", new HashMap<>());
         recipes.add(recipe2);
 
         // Recipe 3: Caesar Salad
         Recipe recipe3 = new Recipe(3, "Caesar Salad",
-                "https://via.placeholder.com/300x300?text=Caesar+Salad", "Lunch");
+                "https://via.placeholder.com/300x300?text=Caesar+Salad", new ArrayList<>(),
+                "Lunch", new HashMap<>());
         recipes.add(recipe3);
 
         // Recipe 4: Pancakes
         Recipe recipe4 = new Recipe(4, "Pancakes",
-                "https://via.placeholder.com/300x300?text=Pancakes", "Breakfast");
+                "https://via.placeholder.com/300x300?text=Pancakes", new ArrayList<>(),
+                "Breakfast", new HashMap<>());
         recipes.add(recipe4);
 
         // Recipe 5: Grilled Salmon
         Recipe recipe5 = new Recipe(5, "Grilled Salmon",
-                "https://via.placeholder.com/300x300?text=Grilled+Salmon", "Dinner");
+                "https://via.placeholder.com/300x300?text=Grilled+Salmon", new ArrayList<>(),
+                "Dinner", new HashMap<>());
         recipes.add(recipe5);
 
         return recipes;

@@ -88,7 +88,9 @@ public class AppBuilder {
     // Required components
     private UserFactory userFactory = new UserFactory();
     // In Memory Data Access Object
-    private UserDataAccess userDataAccessObject = new InMemoryUserDataAccessObject();
+    // private UserDataAccess userDataAccessObject = new InMemoryUserDataAccessObject();
+    // Persistent File Data Access Object
+    private UserDataAccess userDataAccessObject = new FileDataAccessObject("data\\users.csv", userFactory);
     private CommunityDataAccessInterface communityDataAccessObject = new DBCommunityDataAccessObject();
     private ApproveRecipeDataAccessInterface approveRecipeDataAccessObject;
     private JPanel contentPanel;
