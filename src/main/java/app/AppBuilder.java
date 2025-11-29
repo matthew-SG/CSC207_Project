@@ -76,6 +76,8 @@ import view.RecipeGeneratorView;
 
 import view.*;
 
+import interface_adapter.grocery_list.*;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -88,7 +90,9 @@ public class AppBuilder {
     // Required components
     private UserFactory userFactory = new UserFactory();
     // In Memory Data Access Object
-    private UserDataAccess userDataAccessObject = new InMemoryUserDataAccessObject();
+    // private UserDataAccess userDataAccessObject = new InMemoryUserDataAccessObject();
+    // Persistent File Data Access Object
+    private UserDataAccess userDataAccessObject = new FileDataAccessObject("data/users.csv", userFactory);
     private CommunityDataAccessInterface communityDataAccessObject = new DBCommunityDataAccessObject();
     private ApproveRecipeDataAccessInterface approveRecipeDataAccessObject;
     private JPanel contentPanel;
@@ -140,6 +144,11 @@ public class AppBuilder {
     // View Meal Plans Use Case
     private ViewMealPlansViewModel viewMealPlansViewModel;
     private ViewMealPlansView viewMealPlansView;
+
+    private GroceryState groceryState;
+    private GroceryViewModel groceryViewModel;
+    private GroceryController groceryController;
+    private GroceryView groceryView;
 
     /**
      * Initialize the builder with default setup.

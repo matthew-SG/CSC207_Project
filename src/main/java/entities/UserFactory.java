@@ -7,7 +7,8 @@ import java.util.List;
  */
 public class UserFactory {
 
-    public User create(String name, String password, List<MealPlan> mealPlans) {
-        return new User(name, password, mealPlans);
+    public User create(String name, String password, List<Recipe> savedRecipes, List<MealPlan> mealPlans,
+                       GroceryList groceryList) {
+        return new User(name, password, savedRecipes, mealPlans, groceryList);
     }
 }
