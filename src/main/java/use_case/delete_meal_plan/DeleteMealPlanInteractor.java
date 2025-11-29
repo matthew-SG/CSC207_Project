@@ -1,11 +1,11 @@
 package use_case.delete_meal_plan;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import entities.MealPlan;
 import use_case.view_meal_plans.ViewMealPlansOutputBoundary;
 import use_case.view_meal_plans.ViewMealPlansOutputData;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Interactor for the delete meal plan use case
@@ -66,7 +66,7 @@ public class DeleteMealPlanInteractor implements DeleteMealPlanInputBoundary {
      * @return  the list of the target carbs for each MealPlan in mealPlans
      */
     private static List<Double> getTargetCarbs(List<MealPlan> mealPlans) {
-        List<Double> result = new  ArrayList<>();
+        List<Double> result = new ArrayList<>();
         for (MealPlan mealPlan : mealPlans) {
             result.add(mealPlan.getTargetCarbs());
         }
@@ -93,7 +93,7 @@ public class DeleteMealPlanInteractor implements DeleteMealPlanInputBoundary {
      */
     private static List<Double> getTargetCalories(List<MealPlan> mealPlans) {
         List<Double> result = new ArrayList<>();
-        for  (MealPlan mealPlan : mealPlans) {
+        for (MealPlan mealPlan : mealPlans) {
             result.add(mealPlan.getTargetCalories());
         }
 

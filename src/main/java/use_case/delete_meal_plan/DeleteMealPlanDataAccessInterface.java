@@ -1,8 +1,8 @@
 package use_case.delete_meal_plan;
 
-import entities.MealPlan;
-
 import java.util.List;
+
+import entities.MealPlan;
 
 /**
  * DAI for the Delete Meal Plan Use Case

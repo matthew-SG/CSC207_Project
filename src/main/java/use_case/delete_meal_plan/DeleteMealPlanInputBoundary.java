@@ -1,7 +1,5 @@
 package use_case.delete_meal_plan;
 
-import java.io.IOException;
-
 /**
  * Input boundary for the delete meal plan use case
  */

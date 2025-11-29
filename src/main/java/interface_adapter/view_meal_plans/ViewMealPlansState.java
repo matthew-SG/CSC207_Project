@@ -54,7 +54,11 @@ public class ViewMealPlansState {
         this.targetFats = targetFats;
     }
 
-    public String getOneMealPlanError() { return  oneMealPlanError; }
+    public String getOneMealPlanError() {
+        return oneMealPlanError;
+    }
 
-    public void setOneMealPlanError(String oneMealPlanError) {  this.oneMealPlanError = oneMealPlanError; }
+    public void setOneMealPlanError(String oneMealPlanError) {
+        this.oneMealPlanError = oneMealPlanError;
+    }
 }

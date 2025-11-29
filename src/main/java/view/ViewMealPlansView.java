@@ -17,7 +17,7 @@ import java.util.List;
 public class ViewMealPlansView extends JPanel implements PropertyChangeListener {
 
     private static final String VIEW_NAME = "view meal plans";
-    private transient final ViewMealPlansViewModel viewMealPlansViewModel;
+    private final transient ViewMealPlansViewModel viewMealPlansViewModel;
 
     private static final int CARD_DIMENSIONS = 10;
     private static final int CARD_LABEL_SPACING = 5;
@@ -25,8 +25,8 @@ public class ViewMealPlansView extends JPanel implements PropertyChangeListener 
 
     private final JLabel onlyOneMealPlanErrorField = new JLabel();
 
-    private transient LoadMealPlanController loadMealPlanController = null;
-    private transient DeleteMealPlanController deleteMealPlanController = null;
+    private transient LoadMealPlanController loadMealPlanController;
+    private transient DeleteMealPlanController deleteMealPlanController;
 
     private JPanel listPanel;
 
