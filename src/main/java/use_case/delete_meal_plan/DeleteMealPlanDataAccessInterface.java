@@ -16,8 +16,7 @@ public interface DeleteMealPlanDataAccessInterface {
     List<MealPlan> getMealPlans();
 
     /**
-     * Deletes the meal plan of the current user at the specified index
-     * @param index the index of the meal plan in their meal plans list
+     * Saves the meal plans of the current user to the database
      */
-    void deleteMealPlan(int index);
+    void saveMealPlans();
 }
