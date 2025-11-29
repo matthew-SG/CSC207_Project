@@ -23,7 +23,7 @@ public class CommunityRatingsOutputData {
         List<String> imageUrls = new ArrayList<>();
 
         for (Rating rating : currentRatings){
-            recipeIds.add(rating.getRatingId());
+            recipeIds.add(rating.getRecipeId());
             recipeNames.add(rating.getRecipeName());
             stars.add(rating.getStars());
             comments.add(rating.getComment());

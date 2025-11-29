@@ -1,15 +1,15 @@
 package data_access;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import entities.Cuisine;
 import entities.DietaryRestriction;
 import entities.Intolerance;
 import entities.Recipe;
 import use_case.recipe_generator.RecipeDataAccessInterface;
 import entities.Ingredient;
-
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class DummyRecipeDataAccessObject implements RecipeDataAccessInterface {
     public DummyRecipeDataAccessObject() {
@@ -30,7 +30,9 @@ public class DummyRecipeDataAccessObject implements RecipeDataAccessInterface {
                 1,
                 "Veggie Tacos",
                 "https://example.com/tacos.jpg",
-                "DINNER"
+                new ArrayList<>(),
+                "DINNER",
+                new HashMap<>()
         );
         veggieTacos.getIngredients().add(new Ingredient("Tortilla", 2, "pieces"));
         veggieTacos.getIngredients().add(new Ingredient("Black beans", 100, "g"));
@@ -46,7 +48,9 @@ public class DummyRecipeDataAccessObject implements RecipeDataAccessInterface {
                 2,
                 "Chicken Stir Fry",
                 "https://example.com/stirfry.jpg",
-                "DINNER"
+                new ArrayList<>(),
+                "DINNER",
+                new HashMap<>()
         );
         chickenStirFry.getIngredients().add(new Ingredient("Chicken breast", 150, "g"));
         chickenStirFry.getIngredients().add(new Ingredient("Mixed vegetables", 120, "g"));
@@ -62,7 +66,9 @@ public class DummyRecipeDataAccessObject implements RecipeDataAccessInterface {
                 3,
                 "Oatmeal Breakfast Bowl",
                 "https://example.com/oatmeal.jpg",
-                "BREAKFAST"
+                new ArrayList<>(),
+                "BREAKFAST",
+                new HashMap<>()
         );
         oatmealBowl.getIngredients().add(new Ingredient("Oats", 60, "g"));
         oatmealBowl.getIngredients().add(new Ingredient("Milk", 200, "ml"));

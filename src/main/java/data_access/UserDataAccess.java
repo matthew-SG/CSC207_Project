@@ -1,6 +1,7 @@
 package data_access;
 
 import entities.User;
+import use_case.load_meal_plan.LoadMealPlanDataAccessInterface;
 import use_case.login.LoginUserDataAccessInterface;
 import use_case.logout.LogoutUserDataAccessInterface;
 import use_case.meal_plan.MealPlanUserDataAccessInterface;
@@ -12,7 +13,7 @@ import java.util.Map;
 public interface UserDataAccess extends SignupUserDataAccessInterface,
         LoginUserDataAccessInterface,
         LogoutUserDataAccessInterface,
-        MealPlanUserDataAccessInterface, ViewMealPlansDataAccessInterface {
+        MealPlanUserDataAccessInterface, ViewMealPlansDataAccessInterface, LoadMealPlanDataAccessInterface {
 
     /**
      * Get the users map for accessing user data.

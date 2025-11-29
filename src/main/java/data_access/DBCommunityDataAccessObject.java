@@ -37,8 +37,12 @@ public class DBCommunityDataAccessObject implements CommunityDataAccessInterface
     private int expiresIn;
 
     public DBCommunityDataAccessObject() {
-        likedRecipes.put(1, new Recipe(1, "pizza", "https://www.tasteofhome.com/wp-content/uploads/2018/01/Homemade-Pizza_EXPS_FT23_376_EC_120123_3.jpg", "american"));
-        likedRecipes.put(2, new Recipe(2, "hamburger", "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/Cheeseburger.jpg/2560px-Cheeseburger.jpg", "american"));
+        likedRecipes.put(1, new Recipe(1, "pizza",
+                "https://www.tasteofhome.com/wp-content/uploads/2018/01/Homemade-Pizza_EXPS_FT23_376_EC_120123_3.jpg",
+                new ArrayList<>(),"american", new HashMap<>()));
+        likedRecipes.put(2, new Recipe(2, "hamburger",
+                "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/Cheeseburger.jpg/2560px-Cheeseburger.jpg",
+                new ArrayList<>(), "american", new HashMap<>()));
         ratings.add(new Rating(1, 1, "test@1.ca", 4, "yummy", "hamburger", "https://en.wikipedia.org/wiki/Cheeseburger#/media/File:Cheeseburger.jpg"));
         ratings.add(new Rating(2, 2, "test@1.ca", 4, "good","pizza", "https://www.tasteofhome.com/wp-content/uploads/2018/01/Homemade-Pizza_EXPS_FT23_376_EC_120123_3.jpg"));
 

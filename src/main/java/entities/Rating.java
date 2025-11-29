@@ -15,7 +15,7 @@ public class Rating {
         this.stars = stars;
         this.comment = comment;
         this.recipeName = recipeName;
-        this.setRecipeImageUrl(recipeImageUrl);
+        this.recipeImageUrl = recipeImageUrl;
     }
 
     public String getComment() {
@@ -38,15 +38,9 @@ public class Rating {
         return recipeName;
     }
 
-    public String getUsername() {
-        return username;
-    }
 
     public String getRecipeImageUrl() {
         return recipeImageUrl;
     }
 
-    public void setRecipeImageUrl(String recipeImageUrl) {
-        this.recipeImageUrl = recipeImageUrl;
-    }
 }
