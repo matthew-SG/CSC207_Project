@@ -20,6 +20,7 @@ public class Recipe {
         this.mealType = mealType;
         this.nutritionalValues = nutritionalValues;
     }
+
     public Recipe(int recipeId, String recipeName, String recipeImage, List<Ingredient> ingredients, String mealType) {
         this.recipeId = recipeId;
         this.recipeName = recipeName;
