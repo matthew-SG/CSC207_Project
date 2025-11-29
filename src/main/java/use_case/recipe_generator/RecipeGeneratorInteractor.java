@@ -22,9 +22,11 @@ public class RecipeGeneratorInteractor implements RecipeGeneratorInputBoundary{
         DietaryRestriction dietRestriction = inputData.getDietaryRestriction();
         List<Intolerance> intolerances = inputData.getIntolerances();
         Cuisine cuisine = inputData.getCuisine();
+        Integer minCalories = inputData.getMinCalories();
         Integer maxCalories = inputData.getMaxCalories();
         Integer minProtein = inputData.getMinProtein();
-        List<Recipe> recipes = userRecipeAccessObject.getRecipes(dietRestriction, intolerances, cuisine, maxCalories, minProtein);
+        Integer maxProtein = inputData.getMaxProtein();
+        List<Recipe> recipes = userRecipeAccessObject.getRecipes(dietRestriction, intolerances, cuisine, minCalories, maxCalories, minProtein, maxProtein);
         List<RecipeSummary>  recipeSummaryList = new ArrayList<>();
         String message;
         for (Recipe recipe : recipes) {

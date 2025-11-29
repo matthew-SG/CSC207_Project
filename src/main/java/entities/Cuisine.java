@@ -4,5 +4,6 @@ public enum Cuisine {
     MEXICAN,
     JAPANESE,
     INDIAN,
-    CHINESE
+    CHINESE,
+    ANY
 }
