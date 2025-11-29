@@ -1,7 +1,6 @@
 package use_case.step_by_step;
 
 import entities.InstructionStep;
-import app.AppBuilder;
 import java.util.List;
 
 /**
@@ -69,7 +68,7 @@ public class StepByStepInteractor implements StepByStepInputBoundary {
 
         StepByStepOutputData outputData = new StepByStepOutputData(
                 currentStep.getStep(),
-                currentIndex + 1,  // Use index + 1 for display number
+                currentIndex + 1,
                 hasNext,
                 hasPrev
         );
