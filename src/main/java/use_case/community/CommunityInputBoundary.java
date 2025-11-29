@@ -11,6 +11,8 @@ import use_case.community.input_data.CommunityRecipeSelectionInputData;
 public interface CommunityInputBoundary {
     void viewCommunity();
 
+//    void likeRecipe();
+
     /**
      * Executes the view to view liked recipes.
      * @param data the input data

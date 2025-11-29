@@ -19,8 +19,6 @@ public class CommunityMarketInteractor implements CommunityInputBoundary {
         this.setCommunityPresenter(communityPresenter);
     }
 
-
-
     @Override
     public void viewCommunity() {
         getCommunityPresenter().prepareViewRating(
