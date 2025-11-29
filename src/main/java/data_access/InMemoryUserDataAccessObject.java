@@ -88,7 +88,7 @@ public class InMemoryUserDataAccessObject implements UserDataAccess {
 
     @Override
     public void logout() {
-
+        // Unsure if we actually need it to run
     }
 
     /**
@@ -134,5 +134,10 @@ public class InMemoryUserDataAccessObject implements UserDataAccess {
     @Override
     public List<MealPlan> getMealPlans() {
         return users.get(currentUsername).getMealPlans();
+    }
+
+    @Override
+    public void deleteMealPlan(int index) {
+        users.get(currentUsername).getMealPlans().remove(index);
     }
 }

@@ -26,13 +26,13 @@ public class DeleteMealPlanInteractor implements DeleteMealPlanInputBoundary {
     @Override
     public void execute(DeleteMealPlanInputData deleteMealPlanInputData) {
         final int index = deleteMealPlanInputData.getIndex();
-        final List<MealPlan> mealPlans = dataAccessObject.getMealPlans();
+        List<MealPlan> mealPlans = dataAccessObject.getMealPlans();
 
         if (mealPlans.size() == 1) {
             deleteMealPlanPresenter.prepareFailureView("Cannot delete only meal plan!");
         } else {
-            mealPlans.remove(index);
-            dataAccessObject.saveMealPlans();
+            dataAccessObject.deleteMealPlan(index);
+            mealPlans = dataAccessObject.getMealPlans();
 
             final List<String> firstRecipeNames = getFirstRecipeNames(mealPlans);
             final List<Double> targetCalories = getTargetCalories(mealPlans);

@@ -416,7 +416,7 @@ public class FileDataAccessObject implements UserDataAccess {
 
     @Override
     public void logout() {
-
+        // Method has no current impact on application performance
     }
 
     @Override
@@ -451,5 +451,12 @@ public class FileDataAccessObject implements UserDataAccess {
     @Override
     public List<MealPlan> getMealPlans() {
         return users.get(currentUsername).getMealPlans();
+    }
+
+    @Override
+    public void deleteMealPlan(int index) {
+        User currentUser = users.get(currentUsername);
+        currentUser.getMealPlans().remove(index);
+        saveMealPlans(currentUser, USER_MEAL_PLANS_PATH);
     }
 }
