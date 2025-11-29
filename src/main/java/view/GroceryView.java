@@ -15,8 +15,8 @@ import java.beans.PropertyChangeListener;
 
 public class GroceryView extends JPanel implements PropertyChangeListener {
 
-    private final GroceryController controller;
-    private final GroceryViewModel viewModel;
+    private final transient GroceryController controller;
+    private final transient GroceryViewModel viewModel;
 
     private final JPanel listPanel;
     private final JTextField nameField;
