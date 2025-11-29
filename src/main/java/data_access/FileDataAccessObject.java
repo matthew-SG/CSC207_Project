@@ -10,7 +10,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import entities.*;
-
 import use_case.login.LoginUserDataAccessInterface;
 import use_case.signup.SignupUserDataAccessInterface;
 
@@ -232,7 +231,7 @@ public class FileDataAccessObject implements UserDataAccess {
      * @return the list of their liked recipes
      * @throws RuntimeException if the reader throws an IOException when reading the file
      */
-    private static List<Recipe> loadLikedRecipes(String username) throws RuntimeException{
+    private static List<Recipe> loadLikedRecipes(String username) throws RuntimeException {
         String filePath = String.format(USER_LIKED_RECIPES_PATH, username);
         File file = new File(filePath);
 
