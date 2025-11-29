@@ -86,7 +86,12 @@ public class SearchByIngredientView extends JPanel {
         leftPanel.setBorder(new TitledBorder("Your ingredients"));
         leftPanel.add(new JScrollPane(ingredientList), BorderLayout.CENTER);
         JButton clearBtn = new JButton("Clear");
-        leftPanel.add(clearBtn, BorderLayout.SOUTH);
+        JButton deleteBtn = new JButton("Delete selected");
+
+        JPanel leftBottomButtons = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 5));
+        leftBottomButtons.add(deleteBtn);
+        leftBottomButtons.add(clearBtn);
+        leftPanel.add(leftBottomButtons, BorderLayout.SOUTH);
 
         JPanel rightPanel = new JPanel(new BorderLayout());
         rightPanel.setBorder(new TitledBorder("Matching recipes"));
@@ -135,6 +140,15 @@ public class SearchByIngredientView extends JPanel {
                     return;
                 }
             }
+            deleteBtn.addActionListener(eDel -> {
+                int idx = ingredientList.getSelectedIndex();
+                if (idx < 0) {
+                    statusLabel.setText("Select an ingredient to delete.");
+                    return;
+                }
+                ingredientModel.remove(idx);
+                statusLabel.setText("Ingredient removed.");
+            });
 
             Ingredient ing = new Ingredient(name, qty, unit);
             ingredientModel.addElement(ing);
@@ -235,10 +249,12 @@ public class SearchByIngredientView extends JPanel {
 
         JPanel bottom = new JPanel(new BorderLayout());
         bottom.add(new JLabel("Steps:"), BorderLayout.NORTH);
-        bottom.add(new JScrollPane(stepsArea), BorderLayout.CENTER);
+        JScrollPane stepsScroll = new JScrollPane(stepsArea);
+        stepsScroll.setPreferredSize(new Dimension(500, 350));
+        bottom.add(stepsScroll, BorderLayout.CENTER);
 
         JSplitPane textSplit = new JSplitPane(JSplitPane.VERTICAL_SPLIT, top, bottom);
-        textSplit.setResizeWeight(0.3);
+        textSplit.setResizeWeight(0.15);
 
         JPanel content = new JPanel(new BorderLayout(5, 5));
         content.add(imageLabel, BorderLayout.NORTH);
