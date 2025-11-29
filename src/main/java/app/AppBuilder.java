@@ -33,6 +33,7 @@ import interface_adapter.signup.SignupViewModel;
 import interface_adapter.view_meal_plans.ViewMealPlansController;
 import interface_adapter.view_meal_plans.ViewMealPlansPresenter;
 import interface_adapter.view_meal_plans.ViewMealPlansViewModel;
+import interface_adapter.search_by_ingr.SearchByIngredientController;
 import use_case.approve_recipe.ApproveRecipeDataAccessInterface;
 import use_case.approve_recipe.ApproveRecipeInputBoundary;
 import use_case.approve_recipe.ApproveRecipeInteractor;
@@ -74,6 +75,8 @@ import use_case.recipe_generator.RecipeGeneratorInputBoundary;
 import use_case.recipe_generator.RecipeGeneratorOutputBoundary;
 import view.RecipeGeneratorView;
 
+import use_case.search_by_ingr.SearchByIngredientInputBoundary;
+import use_case.search_by_ingr.SearchByIngredientInteractor;
 import view.*;
 
 import interface_adapter.grocery_list.*;
@@ -149,6 +152,12 @@ public class AppBuilder {
     private GroceryViewModel groceryViewModel;
     private GroceryController groceryController;
     private GroceryView groceryView;
+
+    // Search by Ingredient
+    private SearchByIngredientView searchByIngredientView;
+    private SearchByIngredientController searchByIngredientController;
+    private SearchByIngredientSpoonacular searchByIngredientApi;
+
 
     /**
      * Initialize the builder with default setup.
@@ -517,5 +526,13 @@ public class AppBuilder {
 
     public LoginViewModel getLoginViewModel() {
         return loginViewModel;
+    }
+    public AppBuilder buildSearchByIngredient() {
+        searchByIngredientApi = new SearchByIngredientSpoonacular();
+        SearchByIngredientInputBoundary searchByIngredientInteractor = new SearchByIngredientInteractor(searchByIngredientApi);
+        searchByIngredientController = new SearchByIngredientController(searchByIngredientInteractor);
+        searchByIngredientView = new SearchByIngredientView(searchByIngredientController, searchByIngredientApi);
+        contentPanel.add(searchByIngredientView, SearchByIngredientView.VIEWNAME);
+        return this;
     }
 }
