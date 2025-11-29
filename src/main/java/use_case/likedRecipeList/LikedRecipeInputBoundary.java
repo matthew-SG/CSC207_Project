@@ -7,9 +7,9 @@ import java.util.List;
 
 public interface LikedRecipeInputBoundary {
 
-    void addLikedRecipe(Recipe recipe);
+    void addLikedRecipe(LikedRecipeInputData inputData);
 
-    void deleteLikedRecipe(Recipe recipe);
+    void deleteLikedRecipe(LikedRecipeInputData inputData);
 
-    public List<InstructionStep> handsfree(Recipe recipe);
+    List<InstructionStep> handsfree(LikedRecipeInputData inputData);
 }
