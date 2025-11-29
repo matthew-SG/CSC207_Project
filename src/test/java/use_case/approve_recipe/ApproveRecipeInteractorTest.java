@@ -69,6 +69,12 @@ class ApproveRecipeInteractorTest {
                     user.getSavedRecipes().add(recipe);
                 }
             }
+            // Remove from pending list
+            removeFromPendingApproval(recipe.getRecipeId());
+        }
+
+        public void removeFromPendingApproval(int recipeId) {
+            availableRecipes.removeIf(r -> r.getRecipeId() == recipeId);
         }
     }
 
@@ -257,6 +263,45 @@ class ApproveRecipeInteractorTest {
         // Should only have 1 recipe (no duplicates)
         User user = dao.getUser("testUser");
         assertEquals(1, user.getSavedRecipes().size());
+    }
+
+    @Test
+    void testPendingRecipesRemovedAfterApproval() {
+        // Setup
+        List<Recipe> recipes = new ArrayList<>();
+        recipes.add(new Recipe(1, "Pasta", "img1.jpg", "Dinner"));
+        recipes.add(new Recipe(2, "Salad", "img2.jpg", "Lunch"));
+        dao.setAvailableRecipes(recipes);
+
+        assertEquals(2, dao.getAvailableRecipes().size());
+
+        interactor.loadRecipes();
+        interactor.approveRecipe(new ApproveRecipeInputData(1, "testUser"));
+
+        // Pending list should now have only 1 recipe
+        assertEquals(1, dao.getAvailableRecipes().size());
+        assertEquals(2, dao.getAvailableRecipes().get(0).getRecipeId());
+    }
+
+    @Test
+    void testPendingRecipesRemovedAfterDecline() {
+        // Setup
+        List<Recipe> recipes = new ArrayList<>();
+        recipes.add(new Recipe(1, "Pasta", "img1.jpg", "Dinner"));
+        recipes.add(new Recipe(2, "Salad", "img2.jpg", "Lunch"));
+        dao.setAvailableRecipes(recipes);
+
+        assertEquals(2, dao.getAvailableRecipes().size());
+
+        interactor.loadRecipes();
+        interactor.declineRecipe(new DeclineRecipeInputData(1, "testUser"));
+
+        // Pending list should now have only 1 recipe
+        assertEquals(1, dao.getAvailableRecipes().size());
+        assertEquals(2, dao.getAvailableRecipes().get(0).getRecipeId());
+
+        // User should not have saved the declined recipe
+        assertEquals(0, dao.getUser("testUser").getSavedRecipes().size());
     }
 }
 

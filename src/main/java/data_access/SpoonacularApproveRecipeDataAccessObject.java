@@ -194,4 +194,12 @@ public class SpoonacularApproveRecipeDataAccessObject implements ApproveRecipeDa
             }
         }
     }
+
+    @Override
+    public void removeFromPendingApproval(int recipeId) {
+        // Remove from cached recipes if they exist
+        if (cachedRecipes != null) {
+            cachedRecipes.removeIf(r -> r.getRecipeId() == recipeId);
+        }
+    }
 }

@@ -513,5 +513,16 @@ public class FileDataAccessObject implements UserDataAccess, ApproveRecipeDataAc
             // Persist changes to JSON file
             save();
         }
+
+        // Remove from pending approval list
+        removeFromPendingApproval(recipe.getRecipeId());
+    }
+
+    /**
+     * Remove a recipe from the pending approval list (after approve or decline)
+     * @param recipeId the ID of the recipe to remove
+     */
+    public void removeFromPendingApproval(int recipeId) {
+        pendingApprovalRecipes.removeIf(r -> r.getRecipeId() == recipeId);
     }
 }

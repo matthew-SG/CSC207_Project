@@ -35,4 +35,10 @@ public interface ApproveRecipeDataAccessInterface {
      * @param recipe the recipe to save
      */
     void saveRecipeToUser(String username, Recipe recipe);
+
+    /**
+     * Remove a recipe from the pending approval list.
+     * @param recipeId the ID of the recipe to remove
+     */
+    void removeFromPendingApproval(int recipeId);
 }
