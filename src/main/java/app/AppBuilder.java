@@ -65,6 +65,7 @@ import use_case.view_meal_plans.ViewMealPlansInputBoundary;
 import use_case.view_meal_plans.ViewMealPlansInteractor;
 import use_case.view_meal_plans.ViewMealPlansOutputBoundary;
 import data_access.DummyRecipeDataAccessObject;
+import data_access.SharedRecipeRepository;
 import interface_adapter.recipe_generator.RecipeGeneratorController;
 import interface_adapter.recipe_generator.RecipeGeneratorPresenter;
 import interface_adapter.recipe_generator.RecipeGeneratorViewModel;
@@ -90,9 +91,10 @@ public class AppBuilder {
     // In Memory Data Access Object
     // private UserDataAccess userDataAccessObject = new InMemoryUserDataAccessObject();
     // Persistent File Data Access Object
-    private UserDataAccess userDataAccessObject = new FileDataAccessObject("data\\users.csv", userFactory);
+    private UserDataAccess userDataAccessObject = new FileDataAccessObject("data/users.csv", userFactory);
     private CommunityDataAccessInterface communityDataAccessObject = new DBCommunityDataAccessObject();
     private ApproveRecipeDataAccessInterface approveRecipeDataAccessObject;
+    private SharedRecipeRepository sharedRecipeRepository;
     private JPanel contentPanel;
     private CardLayout cardLayout;
     private ViewManagerModel viewManagerModel;
@@ -162,9 +164,10 @@ public class AppBuilder {
         viewManager = new ViewManager(contentPanel, cardLayout, viewManagerModel);
 
         // Initialize approve recipe DAO with API access to real recipes
-        approveRecipeDataAccessObject = new SpoonacularApproveRecipeDataAccessObject(
-                userDataAccessObject.getUsers()
-        );
+        RecipeDataAccessInterface generatorDao = new DummyRecipeDataAccessObject();
+        sharedRecipeRepository = new SharedRecipeRepository(generatorDao, userDataAccessObject.getUsers());
+        approveRecipeDataAccessObject = sharedRecipeRepository;
+        
         communityViewModel = new CommunityViewModel();
     }
 
@@ -217,8 +220,7 @@ public class AppBuilder {
                 new RecipeGeneratorPresenter(recipeGeneratorViewModel, viewManagerModel);
 
         // 3. Data access accessing dummy recipe generator
-        RecipeDataAccessInterface recipeGateway =
-                new DummyRecipeDataAccessObject();
+        RecipeDataAccessInterface recipeGateway = sharedRecipeRepository;
 
         //interactor
         RecipeGeneratorInputBoundary recipeGeneratorInteractor =
