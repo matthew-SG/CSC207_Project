@@ -11,10 +11,14 @@ import java.util.List;
 public class RecipeGeneratorInteractor implements RecipeGeneratorInputBoundary{
     private final RecipeDataAccessInterface userRecipeAccessObject;
     private final RecipeGeneratorOutputBoundary recipePresenter;
+    private final data_access.FileDataAccessObject approveRecipeDAO;
 
-    public RecipeGeneratorInteractor(RecipeDataAccessInterface userRecipeAccessObject, RecipeGeneratorOutputBoundary recipePresenter) {
+    public RecipeGeneratorInteractor(RecipeDataAccessInterface userRecipeAccessObject, 
+                                     RecipeGeneratorOutputBoundary recipePresenter,
+                                     data_access.FileDataAccessObject approveRecipeDAO) {
         this.userRecipeAccessObject = userRecipeAccessObject;
         this.recipePresenter = recipePresenter;
+        this.approveRecipeDAO = approveRecipeDAO;
     }
 
     @Override
@@ -27,6 +31,12 @@ public class RecipeGeneratorInteractor implements RecipeGeneratorInputBoundary{
         Integer minProtein = inputData.getMinProtein();
         Integer maxProtein = inputData.getMaxProtein();
         List<Recipe> recipes = userRecipeAccessObject.getRecipes(dietRestriction, intolerances, cuisine, minCalories, maxCalories, minProtein, maxProtein);
+        
+        // Make recipes available for approval
+        if (approveRecipeDAO != null) {
+            approveRecipeDAO.setAvailableRecipes(recipes);
+        }
+        
         List<RecipeSummary>  recipeSummaryList = new ArrayList<>();
         String message;
         for (Recipe recipe : recipes) {
