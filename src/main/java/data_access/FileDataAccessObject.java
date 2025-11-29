@@ -1,14 +1,18 @@
 package data_access;
 
 import static data_access.Constants.*;
-import use_case.login.LoginUserDataAccessInterface;
-import use_case.signup.SignupUserDataAccessInterface;
+
+import java.io.*;
+import java.util.*;
+
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import java.io.*;
-import java.util.*;
+
 import entities.*;
+
+import use_case.login.LoginUserDataAccessInterface;
+import use_case.signup.SignupUserDataAccessInterface;
 
 /**
  * DAO for all data, mainly user data, using a File to persist the data
@@ -27,7 +31,7 @@ public class FileDataAccessObject implements UserDataAccess {
      * @param userFactory factory for creating user objects
      * @throws RuntimeException if there is an IOException when accessing the file
      */
-    public FileDataAccessObject(String csvPath, UserFactory userFactory) {
+    public FileDataAccessObject(String csvPath, UserFactory userFactory) throws RuntimeException {
 
         usersCsv = new File(csvPath);
         headers.put("username", 0);
@@ -73,7 +77,7 @@ public class FileDataAccessObject implements UserDataAccess {
      *      Changes to a user's grocery list
      * @throws RuntimeException if there is an IOException when writing to the files
      */
-    private void save() {
+    private void save() throws RuntimeException {
         final BufferedWriter writer;
         try {
             writer = new BufferedWriter(new FileWriter(usersCsv));
@@ -108,7 +112,7 @@ public class FileDataAccessObject implements UserDataAccess {
      * @param jsonPath the path to their liked recipes JSON
      * @throws RuntimeException if there is an IOException when writing to the file
      */
-    private static void saveLikedRecipes(User user, String jsonPath) {
+    private static void saveLikedRecipes(User user, String jsonPath) throws RuntimeException {
         File file = new File(jsonPath);
         ensureDirectoryExists(file);
 
@@ -226,8 +230,9 @@ public class FileDataAccessObject implements UserDataAccess {
      * Helper method that loads the liked recipes of a given user
      * @param username the username of the user
      * @return the list of their liked recipes
+     * @throws RuntimeException if the reader throws an IOException when reading the file
      */
-    private static List<Recipe> loadLikedRecipes(String username) {
+    private static List<Recipe> loadLikedRecipes(String username) throws RuntimeException{
         String filePath = String.format(USER_LIKED_RECIPES_PATH, username);
         File file = new File(filePath);
 
@@ -303,8 +308,9 @@ public class FileDataAccessObject implements UserDataAccess {
      * Helper method that loads the grocery list of a given user from their associated grocery list JSON
      * @param username the username of the user to load for
      * @return the user's grocery list
+     * @throws RuntimeException if reader throws an IOException when reading the file
      */
-    private static GroceryList loadGroceryList(String username) {
+    private static GroceryList loadGroceryList(String username) throws RuntimeException {
         List<Ingredient> items = new ArrayList<>();
         String filePath = String.format(USER_GROCERY_LIST_PATH, username);
         File file = new File(filePath);
@@ -323,7 +329,7 @@ public class FileDataAccessObject implements UserDataAccess {
             JSONArray groceryList = new JSONArray(groceryListJson);
 
             for (int i = 0; i < groceryList.length(); i++) {
-                JSONObject ingredient =  groceryList.getJSONObject(i);
+                JSONObject ingredient = groceryList.getJSONObject(i);
 
                 name = ingredient.getString(NAME);
                 quantity = ingredient.getDouble(QUANTITY);
@@ -343,8 +349,9 @@ public class FileDataAccessObject implements UserDataAccess {
      * Helper method that loads the meal plans of a user from their associated JSON file
      * @param username the username of the user to load from
      * @return the user's list of meal plans
+     * @throws RuntimeException if the reader throws an IOException when reading the file
      */
-    private static List<MealPlan> loadMealPlans(String username) {
+    private static List<MealPlan> loadMealPlans(String username) throws RuntimeException {
         List<MealPlan> result = new ArrayList<>();
         String filePath = String.format(USER_MEAL_PLANS_PATH, username);
         File file = new File(filePath);

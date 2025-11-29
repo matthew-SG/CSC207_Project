@@ -40,7 +40,7 @@ public class DummyApproveRecipeDataAccessObject implements ApproveRecipeDataAcce
         // Recipe 3: Caesar Salad
         Recipe recipe3 = new Recipe(3, "Caesar Salad",
                 "https://via.placeholder.com/300x300?text=Caesar+Salad", new ArrayList<>(),
-                "Lunch",new HashMap<>());
+                "Lunch", new HashMap<>());
         recipes.add(recipe3);
 
         // Recipe 4: Pancakes

@@ -1,5 +1,10 @@
 package data_access;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import entities.Recipe;
 import entities.User;
 import use_case.approve_recipe.ApproveRecipeDataAccessInterface;
@@ -9,10 +14,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * API data access object for fetching real recipes from Spoonacular API.
@@ -101,7 +102,7 @@ public class SpoonacularApproveRecipeDataAccessObject implements ApproveRecipeDa
                 }
 
                 if (id != -1 && !title.isEmpty()) {
-                    Recipe recipe = new Recipe(id, title, image, new ArrayList<>(),"main course",
+                    Recipe recipe = new Recipe(id, title, image, new ArrayList<>(), "main course",
                             new HashMap<>());
                     recipes.add(recipe);
                 }
@@ -155,7 +156,7 @@ public class SpoonacularApproveRecipeDataAccessObject implements ApproveRecipeDa
                 "https://via.placeholder.com/300x300?text=Chicken+Stir+Fry", new ArrayList<>(),
                 "Lunch", new HashMap<>()));
         recipes.add(new Recipe(3, "Caesar Salad",
-                "https://via.placeholder.com/300x300?text=Caesar+Salad", new ArrayList<>(),"Lunch",
+                "https://via.placeholder.com/300x300?text=Caesar+Salad", new ArrayList<>(), "Lunch",
                 new HashMap<>()));
         return recipes;
     }

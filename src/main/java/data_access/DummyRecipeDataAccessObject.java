@@ -1,16 +1,15 @@
 package data_access;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import entities.Cuisine;
 import entities.DietaryRestriction;
 import entities.Intolerance;
 import entities.Recipe;
 import use_case.recipe_generator.RecipeDataAccessInterface;
 import entities.Ingredient;
-
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 public class DummyRecipeDataAccessObject implements RecipeDataAccessInterface {
     public DummyRecipeDataAccessObject() {
