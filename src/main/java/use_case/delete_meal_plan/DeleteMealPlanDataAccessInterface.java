@@ -1,0 +1,23 @@
+package use_case.delete_meal_plan;
+
+import entities.MealPlan;
+
+import java.util.List;
+
+/**
+ * DAI for the Delete Meal Plan Use Case
+ */
+public interface DeleteMealPlanDataAccessInterface {
+
+    /**
+     * Retreives the meal plans of the current user
+     * @return the list of meal plans of the current user
+     */
+    List<MealPlan> getMealPlans();
+
+    /**
+     * Deletes the meal plan of the current user at the specified index
+     * @param index the index of the meal plan in their meal plans list
+     */
+    void deleteMealPlan(int index);
+}
