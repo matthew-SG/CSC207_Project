@@ -1,4 +1,4 @@
-package API;
+package data_access;
 
 import entities.Recipe;
 import entities.Ingredient;
@@ -15,21 +15,28 @@ public class SearchByIngredientSpoonacular {
     public SearchByIngredientSpoonacular(String apiKey) {
         this.apiKey = apiKey;
     }
+    public SearchByIngredientSpoonacular() {
+        this.apiKey = "6e0b1d9ab8b94b9dbf723c0203286189";
+    }
 
-    public List<Recipe> searchByIngredientSpoonacular(List<String> ingredients) {
-        List<Recipe> result = new ArrayList<>();
+
+    public JSONArray searchByIngredientSpoonacular(List<Ingredient> ingredients) {
         if (ingredients.isEmpty()) {
-            return result;
+            return null;
         }
-        String ingredientsString = String.join(",", ingredients);
+        List<String> names=new ArrayList<>();
+        for (Ingredient ingredient : ingredients) {
+            names.add(ingredient.getName());
+        }
+        String ingredientsString = String.join(",", names);
         ingredientsString = ingredientsString.replace(" ", "+");
         HttpUrl url = HttpUrl.parse(BYINGREDIENTSURL).newBuilder().
                 addQueryParameter("apiKey", apiKey).
                 addQueryParameter("ingredients", ingredientsString).
                 //returns 15 results
-                addQueryParameter("number", "15").
+                        addQueryParameter("number", "15").
                 //"minimize missing ingredients"
-                addQueryParameter("ranking", "2").
+                        addQueryParameter("ranking", "2").
                 addQueryParameter("ignorePantry", "true").
                 build();
         Request request = new Request.Builder()
@@ -40,24 +47,10 @@ public class SearchByIngredientSpoonacular {
                 .build();
         try {
             Response response = client.newCall(request).execute();
-           String rspns = response.body().string();
+            String rspns = response.body().string();
             final JSONArray responseBody = new JSONArray(rspns);
             if (responseBody.length() == 0) throw new IOException("Empty response");
-            for (int i = 0; i < responseBody.length() && result.size() < 5; i++) {
-                JSONObject object = responseBody.getJSONObject(i);
-                int missedIngredients = object.getInt("missedIngredientCount");
-                if (missedIngredients == 0) {
-                    Recipe recipe = new Recipe(
-                            object.getInt("id"),
-                            object.getString("title"),
-                            object.getString("image"),
-                            new ArrayList<>(),
-                            "N/A",
-                            new HashMap<>());
-                    result.add(recipe);
-                }
-            }
-            return result;
+            return responseBody;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -67,7 +60,7 @@ public class SearchByIngredientSpoonacular {
         if (recipe.getIngredients() != null && !recipe.getIngredients().isEmpty()
                 && recipe.getSteps() != null && !recipe.getSteps().isEmpty()) {
             return;
-    }
+        }
         String recipeInfoUrl = RECIPEINFOURL+recipe.getRecipeId()+"/information";
         HttpUrl url = HttpUrl.parse(recipeInfoUrl).newBuilder().addQueryParameter("apiKey", apiKey).build();
         final OkHttpClient client = new OkHttpClient.Builder().build();

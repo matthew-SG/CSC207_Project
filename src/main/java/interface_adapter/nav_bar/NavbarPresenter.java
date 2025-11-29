@@ -5,6 +5,7 @@ import interface_adapter.approve_recipe.ApproveRecipeViewModel;
 import interface_adapter.community.CommunityViewModel;
 import interface_adapter.logged_in.LoggedInViewModel;
 import interface_adapter.login.LoginViewModel;
+import interface_adapter.search_by_ingr.SearchByIngredientViewModel;
 import interface_adapter.meal_plan.MealPlanGeneratorState;
 import interface_adapter.meal_plan.MealPlanGeneratorViewModel;
 import interface_adapter.signup.SignupViewModel;
@@ -13,6 +14,7 @@ import use_case.nav_bar.NavbarOutputBoundary;
 import interface_adapter.recipe_generator.RecipeGeneratorViewModel;
 
 import view.MealPlanGeneratorView;
+import view.SearchByIngredientView;
 
 import java.util.Objects;
 
@@ -85,6 +87,12 @@ public class NavbarPresenter implements NavbarOutputBoundary {
         viewManagerModel.firePropertyChange();
     }
 
+    @Override
+    public void switchToSearchByIngredients() {
+        viewManagerModel.getState().viewName = SearchByIngredientViewModel.viewName;
+        viewManagerModel.firePropertyChange();
+    }
+  
     @Override
     public void switchToGroceryList() {
         viewManagerModel.getState().viewName = "Grocery_List";

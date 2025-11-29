@@ -33,6 +33,7 @@ import interface_adapter.signup.SignupViewModel;
 import interface_adapter.view_meal_plans.ViewMealPlansController;
 import interface_adapter.view_meal_plans.ViewMealPlansPresenter;
 import interface_adapter.view_meal_plans.ViewMealPlansViewModel;
+import interface_adapter.search_by_ingr.SearchByIngredientController;
 import use_case.approve_recipe.ApproveRecipeDataAccessInterface;
 import use_case.approve_recipe.ApproveRecipeInputBoundary;
 import use_case.approve_recipe.ApproveRecipeInteractor;
@@ -61,10 +62,10 @@ import use_case.nav_bar.NavbarInteractor;
 import use_case.signup.SignupInputBoundary;
 import use_case.signup.SignupInteractor;
 import use_case.signup.SignupOutputBoundary;
+import data_access.RecipeDataAccessObject;
 import use_case.view_meal_plans.ViewMealPlansInputBoundary;
 import use_case.view_meal_plans.ViewMealPlansInteractor;
 import use_case.view_meal_plans.ViewMealPlansOutputBoundary;
-import data_access.DummyRecipeDataAccessObject;
 import interface_adapter.recipe_generator.RecipeGeneratorController;
 import interface_adapter.recipe_generator.RecipeGeneratorPresenter;
 import interface_adapter.recipe_generator.RecipeGeneratorViewModel;
@@ -74,7 +75,11 @@ import use_case.recipe_generator.RecipeGeneratorInputBoundary;
 import use_case.recipe_generator.RecipeGeneratorOutputBoundary;
 import view.RecipeGeneratorView;
 
+import use_case.search_by_ingr.SearchByIngredientInputBoundary;
+import use_case.search_by_ingr.SearchByIngredientInteractor;
 import view.*;
+
+import interface_adapter.grocery_list.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -90,7 +95,7 @@ public class AppBuilder {
     // In Memory Data Access Object
     // private UserDataAccess userDataAccessObject = new InMemoryUserDataAccessObject();
     // Persistent File Data Access Object
-    private UserDataAccess userDataAccessObject = new FileDataAccessObject("data\\users.csv", userFactory);
+    private UserDataAccess userDataAccessObject = new FileDataAccessObject("data/users.csv", userFactory);
     private CommunityDataAccessInterface communityDataAccessObject = new DBCommunityDataAccessObject();
     private ApproveRecipeDataAccessInterface approveRecipeDataAccessObject;
     private JPanel contentPanel;
@@ -143,6 +148,17 @@ public class AppBuilder {
     private ViewMealPlansViewModel viewMealPlansViewModel;
     private ViewMealPlansView viewMealPlansView;
 
+    private GroceryState groceryState;
+    private GroceryViewModel groceryViewModel;
+    private GroceryController groceryController;
+    private GroceryView groceryView;
+
+    // Search by Ingredient
+    private SearchByIngredientView searchByIngredientView;
+    private SearchByIngredientController searchByIngredientController;
+    private SearchByIngredientSpoonacular searchByIngredientApi;
+
+
     /**
      * Initialize the builder with default setup.
      */
@@ -161,10 +177,12 @@ public class AppBuilder {
         viewManagerModel = new ViewManagerModel();
         viewManager = new ViewManager(contentPanel, cardLayout, viewManagerModel);
 
-        // Initialize approve recipe DAO with API access to real recipes
-        approveRecipeDataAccessObject = new SpoonacularApproveRecipeDataAccessObject(
-                userDataAccessObject.getUsers()
-        );
+        // Use FileDataAccessObject as the approve recipe DAO (implements ApproveRecipeDataAccessInterface)
+        if (userDataAccessObject instanceof FileDataAccessObject) {
+            approveRecipeDataAccessObject = (FileDataAccessObject) userDataAccessObject;
+        } else {
+            throw new RuntimeException("UserDataAccessObject must be FileDataAccessObject for approve recipe functionality");
+        }
         communityViewModel = new CommunityViewModel();
     }
 
@@ -218,11 +236,12 @@ public class AppBuilder {
 
         // 3. Data access accessing dummy recipe generator
         RecipeDataAccessInterface recipeGateway =
-                new DummyRecipeDataAccessObject();
+                new RecipeDataAccessObject();
 
-        //interactor
+        //interactor - pass FileDataAccessObject for approve recipe functionality
         RecipeGeneratorInputBoundary recipeGeneratorInteractor =
-                new RecipeGeneratorInteractor(recipeGateway, recipeGeneratorPresenter);
+                new RecipeGeneratorInteractor(recipeGateway, recipeGeneratorPresenter, 
+                        (FileDataAccessObject) userDataAccessObject);
 
         //Controller
         RecipeGeneratorController recipeGeneratorController =
@@ -510,5 +529,15 @@ public class AppBuilder {
 
     public LoginViewModel getLoginViewModel() {
         return loginViewModel;
+    }
+    public AppBuilder buildSearchByIngredient() {
+        searchByIngredientApi = new SearchByIngredientSpoonacular();
+        SearchByIngredientInputBoundary searchByIngredientInteractor = new SearchByIngredientInteractor(
+                searchByIngredientApi, 
+                (FileDataAccessObject) userDataAccessObject);
+        searchByIngredientController = new SearchByIngredientController(searchByIngredientInteractor);
+        searchByIngredientView = new SearchByIngredientView(searchByIngredientController, searchByIngredientApi);
+        contentPanel.add(searchByIngredientView, SearchByIngredientView.VIEWNAME);
+        return this;
     }
 }

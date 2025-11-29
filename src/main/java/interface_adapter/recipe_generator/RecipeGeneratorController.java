@@ -14,23 +14,33 @@ public class RecipeGeneratorController {
         this.recipeUseCaseInteractor = recipeUseCaseInteractor;
     }
     public void generateRecipe(
-        DietaryRestriction dietaryRestriction, List<Intolerance> intolerances, Cuisine cuisine, String maxCaloriesText, String minProteinText) {
+        DietaryRestriction dietaryRestriction, List<Intolerance> intolerances, Cuisine cuisine, String minCaloriesText, String maxCaloriesText, String minProteinText, String maxProteinText) {
+        Integer minCalories = null;
         Integer maxCalories = null;
         Integer minProtein = null;
+        Integer maxProtein = null;
         /**
          * catch handles if user inputs alphabetical values into the calories or protein field
          */
         try {
-            if (maxCaloriesText != null && !maxCaloriesText.isEmpty()) {
-                maxCalories = Integer.parseInt(maxCaloriesText);
+            if (minCaloriesText != null && !minCaloriesText.trim().isEmpty()) {
+                minCalories = Integer.parseInt(minCaloriesText.trim());
             }
-            if (minProteinText != null && !minProteinText.isEmpty()) {
-                minProtein = Integer.parseInt(minProteinText);
+            if (maxCaloriesText != null && !maxCaloriesText.trim().isEmpty()) {
+                maxCalories = Integer.parseInt(maxCaloriesText.trim());
+            }
+            if (minProteinText != null && !minProteinText.trim().isEmpty()) {
+                minProtein = Integer.parseInt(minProteinText.trim());
+            }
+            if (maxProteinText != null && !maxProteinText.trim().isEmpty()) {
+                maxProtein = Integer.parseInt(maxProteinText.trim());
             }
         } catch (NumberFormatException e) {
+            // Ideally notify user, but for now just return to avoid crash
+            System.out.println("Invalid number format: " + e.getMessage());
             return;
         }
-        GenerateRecipeInputData inputData = new GenerateRecipeInputData(dietaryRestriction, intolerances, cuisine, maxCalories, minProtein);
+        GenerateRecipeInputData inputData = new GenerateRecipeInputData(dietaryRestriction, intolerances, cuisine, minCalories, maxCalories, minProtein,  maxProtein);
         recipeUseCaseInteractor.generateRecipes(inputData);
 
     }

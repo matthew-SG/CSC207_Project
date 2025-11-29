@@ -4,5 +4,9 @@ public enum Intolerance {
     DAIRY,
     NUTS,
     SHELLFISH,
-    GLUTEN
+    GLUTEN,
+    SOY,
+    SEAFOOD,
+    SESAME,
+    NONE
 }
