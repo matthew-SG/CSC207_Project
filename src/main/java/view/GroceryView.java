@@ -23,9 +23,10 @@ public class GroceryView extends JPanel implements PropertyChangeListener {
     private final JTextField qtyField;
     private final JTextField unitsField;
 
-    private final Color HEADER_BG = new Color(240, 240, 240);
-    private final Color ODD_ROW_BG = new Color(255, 255, 255);
-    private final Color EVEN_ROW_BG = new Color(248, 250, 252);
+    private static final Color HEADER_BG = new Color(240, 240, 240);
+    private static final Color ODD_ROW_BG = new Color(255, 255, 255);
+    private static final Color EVEN_ROW_BG = new Color(248, 250, 252);
+    private static final String MY_FONT = "SansSerif";
 
     public GroceryView(GroceryController controller, GroceryViewModel viewModel) {
         this.controller = controller;
@@ -121,7 +122,7 @@ public class GroceryView extends JPanel implements PropertyChangeListener {
 
     private JLabel createHeaderLabel(String text) {
         JLabel label = new JLabel(text);
-        label.setFont(new Font("SansSerif", Font.BOLD, 14));
+        label.setFont(new Font(MY_FONT, Font.BOLD, 14));
         label.setForeground(Color.DARK_GRAY);
         return label;
     }
@@ -152,7 +153,7 @@ public class GroceryView extends JPanel implements PropertyChangeListener {
         left.setBackground(bgColor);
         left.setBorder(new EmptyBorder(0, 10, 0, 0));
 
-        Font dataFont = new Font("SansSerif", Font.PLAIN, 13);
+        Font dataFont = new Font(MY_FONT, Font.PLAIN, 13);
 
         JLabel nameLbl = new JLabel(g.getName());
         JLabel qtyLbl = new JLabel(String.valueOf(g.getQuantity()));
@@ -175,8 +176,8 @@ public class GroceryView extends JPanel implements PropertyChangeListener {
 
         editBtn.setPreferredSize(new Dimension(60, 24));
         delBtn.setPreferredSize(new Dimension(60, 24));
-        editBtn.setFont(new Font("SansSerif", Font.PLAIN, 11));
-        delBtn.setFont(new Font("SansSerif", Font.PLAIN, 11));
+        editBtn.setFont(new Font(MY_FONT, Font.PLAIN, 11));
+        delBtn.setFont(new Font(MY_FONT, Font.PLAIN, 11));
 
         editBtn.addActionListener(e -> {
             String newName = JOptionPane.showInputDialog(this, "Edit Item name", g.getName());
