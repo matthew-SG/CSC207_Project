@@ -25,4 +25,20 @@ public class LikedRecipeListState {
     public void setRecipeNames(List<String> recipeNames) {
         this.recipeNames = recipeNames;
     }
+
+    public int getSelectedRecipe() {
+        return selectedRecipe;
+    }
+
+    public String getSelectedRecipeName() {
+        return selectedRecipeName;
+    }
+
+    public void setRecipeIds(int recipeId) {
+        this.selectedRecipe = recipeId;
+    }
+
+    public void setSelectedRecipeName(String recipeName) {
+        this.selectedRecipeName = recipeName;
+    }
 }
