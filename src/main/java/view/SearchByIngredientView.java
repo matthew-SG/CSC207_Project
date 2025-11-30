@@ -1,22 +1,27 @@
 package view;
 
-import data_access.SearchByIngredientSpoonacular;
-import entities.*;
-import interface_adapter.search_by_ingr.*;
-import use_case.search_by_ingr.*;
-import java.util.ArrayList;
-import java.util.List;
+import entities.Ingredient;
+import entities.Recipe;
+import interface_adapter.search_by_ingr.SearchByIngredientController;
+import interface_adapter.search_by_ingr.SearchByIngredientState;
+import interface_adapter.search_by_ingr.SearchByIngredientViewModel;
+
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
-public class SearchByIngredientView extends JPanel {
+public class SearchByIngredientView extends JPanel implements PropertyChangeListener {
 
     public static final String VIEWNAME = "Search By Ingredient";
 
     private final SearchByIngredientController controller;
-    private final SearchByIngredientSpoonacular api;
+    private final SearchByIngredientViewModel searchByIngredientViewModel;
+
     private final JTextField nameField = new JTextField();
     private final JTextField amountField = new JTextField();
     private final JSpinner maxMissingSpinner =
@@ -30,10 +35,12 @@ public class SearchByIngredientView extends JPanel {
 
     private final JLabel statusLabel = new JLabel(" ");
 
-    public SearchByIngredientView(SearchByIngredientController controller,
-                                  SearchByIngredientSpoonacular api) {
+    public SearchByIngredientView(SearchByIngredientViewModel viewModel,
+                                  SearchByIngredientController controller) {
+        this.searchByIngredientViewModel = viewModel;
         this.controller = controller;
-        this.api = api;
+
+        this.searchByIngredientViewModel.addPropertyChangeListener(this);
 
         setLayout(new BorderLayout(10, 10));
         JPanel inputRow = new JPanel(new GridLayout(2, 5, 5, 5));
@@ -51,6 +58,7 @@ public class SearchByIngredientView extends JPanel {
         JButton addIngredientBtn = new JButton("Add ingredient");
         inputRow.add(addIngredientBtn);
         add(inputRow, BorderLayout.NORTH);
+
         ingredientList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         ingredientList.setCellRenderer(new DefaultListCellRenderer() {
             @Override
@@ -66,6 +74,7 @@ public class SearchByIngredientView extends JPanel {
                         isSelected, cellHasFocus);
             }
         });
+
         recipeList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         recipeList.setCellRenderer(new DefaultListCellRenderer() {
             @Override
@@ -140,15 +149,6 @@ public class SearchByIngredientView extends JPanel {
                     return;
                 }
             }
-            deleteBtn.addActionListener(eDel -> {
-                int idx = ingredientList.getSelectedIndex();
-                if (idx < 0) {
-                    statusLabel.setText("Select an ingredient to delete.");
-                    return;
-                }
-                ingredientModel.remove(idx);
-                statusLabel.setText("Ingredient removed.");
-            });
 
             Ingredient ing = new Ingredient(name, qty, unit);
             ingredientModel.addElement(ing);
@@ -158,6 +158,16 @@ public class SearchByIngredientView extends JPanel {
             unitField.setText("");
 
             statusLabel.setText("Ingredient added.");
+        });
+
+        deleteBtn.addActionListener(eDel -> {
+            int idx = ingredientList.getSelectedIndex();
+            if (idx < 0) {
+                statusLabel.setText("Select an ingredient to delete.");
+                return;
+            }
+            ingredientModel.remove(idx);
+            statusLabel.setText("Ingredient removed.");
         });
 
         clearBtn.addActionListener(e -> {
@@ -175,6 +185,7 @@ public class SearchByIngredientView extends JPanel {
             }
             statusLabel.setText("Added to liked list (not implemented yet).");
         });
+
         detailsBtn.addActionListener(e -> viewDetails());
     }
 
@@ -190,13 +201,7 @@ public class SearchByIngredientView extends JPanel {
         }
 
         int maxMissing = (Integer) maxMissingSpinner.getValue();
-
-        SearchByIngredientOutputData out = controller.search(list, maxMissing);
-        recipeModel.clear();
-        for (Recipe r : out.getRecipes()) {
-            recipeModel.addElement(r);
-        }
-        statusLabel.setText(out.getMsg());
+        controller.search(list, maxMissing);
     }
 
     private void viewDetails() {
@@ -205,8 +210,6 @@ public class SearchByIngredientView extends JPanel {
             statusLabel.setText("Select a recipe first.");
             return;
         }
-
-        api.populateRecipeDetails(selected);
 
         StringBuilder ingText = new StringBuilder();
         for (Ingredient ing : selected.getIngredients()) {
@@ -270,5 +273,25 @@ public class SearchByIngredientView extends JPanel {
 
     public String getViewName() {
         return VIEWNAME;
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        SearchByIngredientState state = searchByIngredientViewModel.getState();
+
+        recipeModel.clear();
+        if (state.getRecipes() != null) {
+            for (Recipe r : state.getRecipes()) {
+                recipeModel.addElement(r);
+            }
+        }
+
+        if (state.getErrorMessage() != null) {
+            statusLabel.setText(state.getErrorMessage());
+        } else if (state.getStatusMessage() != null) {
+            statusLabel.setText(state.getStatusMessage());
+        } else {
+            statusLabel.setText(" ");
+        }
     }
 }
