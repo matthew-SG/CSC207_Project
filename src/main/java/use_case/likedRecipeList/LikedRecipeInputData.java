@@ -6,11 +6,11 @@ package use_case.likedRecipeList;
 
 public class LikedRecipeInputData {
     private final int id;
-    private final String recipe_name;
+    private final String recipeName;
 
     public LikedRecipeInputData(int id, String recipeName) {
         this.id = id;
-        recipe_name = recipeName;
+        this.recipeName = recipeName;
     }
 
     int getId() {
@@ -18,6 +18,6 @@ public class LikedRecipeInputData {
     }
 
     String getRecipeName() {
-        return recipe_name;
+        return recipeName;
     }
 }

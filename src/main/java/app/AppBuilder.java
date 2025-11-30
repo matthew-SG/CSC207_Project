@@ -90,19 +90,20 @@ import java.awt.*;
  * and create the main JFrame window.
  */
 public class AppBuilder {
+    private static final String apiKey = "5b07df6820b74cf1b2eae9c1b440f014";
+
     // Required components
     private UserFactory userFactory = new UserFactory();
     // In Memory Data Access Object
     // private UserDataAccess userDataAccessObject = new InMemoryUserDataAccessObject();
     // Persistent File Data Access Object
-    private UserDataAccess userDataAccessObject = new FileDataAccessObject("data/users.csv", userFactory, API_key);
+    private UserDataAccess userDataAccessObject = new FileDataAccessObject("data/users.csv", userFactory, apiKey);
     private CommunityDataAccessInterface communityDataAccessObject = new DBCommunityDataAccessObject();
     private ApproveRecipeDataAccessInterface approveRecipeDataAccessObject;
     private JPanel contentPanel;
     private CardLayout cardLayout;
     private ViewManagerModel viewManagerModel;
     private ViewManager viewManager;
-    private static final String API_key = "5b07df6820b74cf1b2eae9c1b440f014";
 
     // Error pop up
     ErrorMessageView errorMessageView;
