@@ -61,7 +61,7 @@ public class SearchByIngredientSpoonacular implements SearchByIngredientGateway 
                 addQueryParameter("apiKey", apiKey).
                 addQueryParameter("ingredients", ingredientsString).
                 //returns 15 results
-                        addQueryParameter("number", "15").
+                        addQueryParameter("number", "9").
                 //"minimize missing ingredients"
                         addQueryParameter("ranking", "2").
                 addQueryParameter("ignorePantry", "true").

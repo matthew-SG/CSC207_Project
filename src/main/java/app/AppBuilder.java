@@ -463,7 +463,9 @@ public class AppBuilder {
                 new SearchByIngredientController(searchByIngredientInteractor);
 
         searchByIngredientView =
-                new SearchByIngredientView(searchByIngredientViewModel, searchByIngredientController);
+                new SearchByIngredientView(searchByIngredientViewModel,
+                        searchByIngredientController,
+                        (FileDataAccessObject) userDataAccessObject);
 
         contentPanel.add(searchByIngredientView, SearchByIngredientView.VIEWNAME);
         return this;

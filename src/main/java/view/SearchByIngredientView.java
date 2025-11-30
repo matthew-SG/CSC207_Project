@@ -1,5 +1,6 @@
 package view;
 
+import data_access.FileDataAccessObject;
 import entities.Ingredient;
 import entities.Recipe;
 import interface_adapter.search_by_ingr.SearchByIngredientController;
@@ -21,6 +22,7 @@ public class SearchByIngredientView extends JPanel implements PropertyChangeList
 
     private final SearchByIngredientController controller;
     private final SearchByIngredientViewModel searchByIngredientViewModel;
+    private final FileDataAccessObject fileDao;
 
     private final JTextField nameField = new JTextField();
     private final JTextField amountField = new JTextField();
@@ -36,9 +38,11 @@ public class SearchByIngredientView extends JPanel implements PropertyChangeList
     private final JLabel statusLabel = new JLabel(" ");
 
     public SearchByIngredientView(SearchByIngredientViewModel viewModel,
-                                  SearchByIngredientController controller) {
+                                  SearchByIngredientController controller,
+                                  FileDataAccessObject fileDao) {
         this.searchByIngredientViewModel = viewModel;
         this.controller = controller;
+        this.fileDao = fileDao;
 
         this.searchByIngredientViewModel.addPropertyChangeListener(this);
 
@@ -183,8 +187,17 @@ public class SearchByIngredientView extends JPanel implements PropertyChangeList
                 statusLabel.setText("Select a recipe first.");
                 return;
             }
-            statusLabel.setText("Added to liked list (not implemented yet).");
+            String username = fileDao.getCurrentUsername();
+            if (username == null || username.isEmpty()) {
+                statusLabel.setText("You must be logged in to save recipes.");
+                return;
+            }
+
+            fileDao.saveRecipeToUser(username, selected);
+            statusLabel.setText("Recipe added to your liked list.");
         });
+
+
 
         detailsBtn.addActionListener(e -> viewDetails());
     }
