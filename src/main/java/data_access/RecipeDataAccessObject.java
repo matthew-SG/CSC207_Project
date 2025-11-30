@@ -15,9 +15,14 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
+
 
 public class RecipeDataAccessObject implements RecipeDataAccessInterface {
-    private static final String API_KEY = "75b07df6820b74cf1b2eae9c1b440f014";
+    private static final String API_KEY = "7265c428408440ef96740ae1a4040acd";
     private static final String API_BASE_URL = "https://api.spoonacular.com/recipes/complexSearch";
 
     @Override
@@ -43,13 +48,17 @@ public class RecipeDataAccessObject implements RecipeDataAccessInterface {
         // get the recipes from API
         String jsonResponse = callSpoonacular(apiUrl);
 
-        // then Parse JSON into Recipe objects
-        List<Recipe> recipes = (jsonResponse != null)
-                ? parseRecipesFromJson(jsonResponse)
-                : getDefaultRecipes();
+        if (jsonResponse == null) {
+            System.err.println("[RECIPE-GEN DAO] API call failed response was empty.");
+            throw new RuntimeException("Recipe API call failed");
+        }
 
-        // Filter by calorie and protein min / max
+// Parse JSON into Recipe objects
+        List<Recipe> recipes = parseRecipesFromJson(jsonResponse);
+
+// Filter by calorie and protein min / max
         return filterRecipesByNutrition(recipes, minCalories, maxCalories, minProtein, maxProtein);
+
     }
 
     /**
@@ -63,6 +72,8 @@ public class RecipeDataAccessObject implements RecipeDataAccessInterface {
         url.append("?apiKey=").append(API_KEY);
         url.append("&number=10");
         url.append("&addRecipeNutrition=true");
+        url.append("&addRecipeInformation=true");
+        url.append("&instructionsRequired=true");
 
         // Add dietary filters
         String dietParam = mapDiet(dietaryRestriction);
@@ -90,7 +101,8 @@ public class RecipeDataAccessObject implements RecipeDataAccessInterface {
     }
 
     /**
-     * Makes HTTP request to Spoonacular API
+     * Makes HTTP request to Spoonacular API.
+     * Returns the JSON body on success, or null if the call failed.
      */
     private String callSpoonacular(String urlString) {
         HttpURLConnection connection = null;
@@ -104,13 +116,16 @@ public class RecipeDataAccessObject implements RecipeDataAccessInterface {
             connection.setReadTimeout(5000);
 
             int status = connection.getResponseCode();
+            System.out.println("[RECIPE-GEN DAO] HTTP status: " + status);
 
-            reader = new BufferedReader(new InputStreamReader(
-                    (status >= 200 && status < 300)
-                            ? connection.getInputStream()
-                            : connection.getErrorStream()
-            ));
+            // Treat any non-2xx status as a failure: return null so upper layers
+            // can decide how to notify the user.
+            if (status < 200 || status >= 300) {
+                System.err.println("[RECIPE-GEN DAO] Spoonacular call failed with status " + status);
+                return null;
+            }
 
+            reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             StringBuilder response = new StringBuilder();
             String line;
             while ((line = reader.readLine()) != null) {
@@ -120,13 +135,18 @@ public class RecipeDataAccessObject implements RecipeDataAccessInterface {
             return response.toString();
 
         } catch (Exception e) {
-            System.err.println("Error calling Spoonacular API: " + e.getMessage());
+            System.err.println("[RECIPE-GEN DAO] Error calling Spoonacular API: " + e.getMessage());
             return null;
+
         } finally {
             try {
-                if (reader != null) reader.close();
-                if (connection != null) connection.disconnect();
+                if (reader != null) {
+                    reader.close();
+                }
             } catch (Exception ignored) {}
+            if (connection != null) {
+                connection.disconnect();
+            }
         }
     }
 
@@ -159,7 +179,22 @@ public class RecipeDataAccessObject implements RecipeDataAccessInterface {
             String title = json.getString("title");
             String image = json.optString("image", "");
 
-            Recipe recipe = new Recipe(id, title, image, "UNKNOWN");
+            List<Ingredient> ingredients = new ArrayList<>();
+            Map<String, Double> nutritionalValues = new HashMap<>();
+
+            Recipe recipe = new Recipe(
+                    id,
+                    title,
+                    image,
+                    ingredients,
+                    "UNKNOWN",
+                    nutritionalValues
+            );
+
+            String instructions = json.optString("instructions", "");
+            if (!instructions.isBlank()) {
+                recipe.setSteps(instructions);
+            }
 
             // Extract calories and protein
             if (json.has("nutrition")) {
@@ -183,22 +218,6 @@ public class RecipeDataAccessObject implements RecipeDataAccessInterface {
         }
     }
 
-    /**
-     * Returns default dummy recipe (fallback if API fails)
-     */
-    private List<Recipe> getDefaultRecipes() {
-        List<Recipe> recipes = new ArrayList<>();
-
-        Recipe veggieTacos = new Recipe(1, "Veggie Tacos", "https://example.com/tacos.jpg", "DINNER");
-        veggieTacos.getIngredients().add(new Ingredient("Tortilla", 2, "pieces"));
-        veggieTacos.getIngredients().add(new Ingredient("Black beans", 100, "g"));
-        veggieTacos.getIngredients().add(new Ingredient("Cheddar cheese", 30, "g"));
-        veggieTacos.getNutritionalValues().put("calories", 450.0);
-        veggieTacos.getNutritionalValues().put("protein", 18.0);
-
-        recipes.add(veggieTacos);
-        return recipes;
-    }
 
     /**
      * Filters recipes by calorie and protein bounds

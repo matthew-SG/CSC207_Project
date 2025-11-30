@@ -33,6 +33,7 @@ public class RecipeGeneratorView extends JPanel implements PropertyChangeListene
     private DefaultListModel<String> recipesListModel;
     private JList<String> recipesList;
 
+    private JLabel recipeImageLabel;
     private JLabel messageLabel;
 
     public RecipeGeneratorView(RecipeGeneratorViewModel viewModel,
@@ -100,6 +101,19 @@ public class RecipeGeneratorView extends JPanel implements PropertyChangeListene
         recipesList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JScrollPane recipesScroll = new JScrollPane(recipesList);
 
+        // when the user selects a recipe, update the image
+        recipesList.addListSelectionListener(e -> {
+            if (e.getValueIsAdjusting()) {
+                updateRecipeImage();
+            }
+        });
+        // add recipeImage label
+        recipeImageLabel = new JLabel();
+        recipeImageLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        recipeImageLabel.setVerticalAlignment(SwingConstants.CENTER);
+        recipeImageLabel.setPreferredSize(new Dimension(250, 250));
+        recipeImageLabel.setBorder(BorderFactory.createTitledBorder("Recipe image"));
+
         // ----- BOTTOM: MESSAGE LABEL -----
         messageLabel = new JLabel("");
         messageLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -110,7 +124,12 @@ public class RecipeGeneratorView extends JPanel implements PropertyChangeListene
         topContainer.add(numbersAndButtonPanel, BorderLayout.SOUTH);
 
         this.add(topContainer, BorderLayout.NORTH);
-        this.add(recipesScroll, BorderLayout.CENTER);
+        // creates a center panel with the list of recipes on the left side and images on the right
+        JPanel centerPanel = new JPanel(new BorderLayout());
+        centerPanel.add(recipesScroll, BorderLayout.WEST);
+        centerPanel.add(recipeImageLabel, BorderLayout.CENTER);
+
+        this.add(centerPanel, BorderLayout.CENTER);
         this.add(messageLabel, BorderLayout.SOUTH);
 
         generateButton.addActionListener(e -> {
@@ -127,12 +146,29 @@ public class RecipeGeneratorView extends JPanel implements PropertyChangeListene
             );
 
 
-            String minCaloriesText = minCaloriesField.getText();
-            String maxCaloriesText = maxCaloriesField.getText();
-            String minProteinText = minProteinField.getText();
-            String maxProteinText = maxProteinField.getText();
+            String minCaloriesText = minCaloriesField.getText().trim();
+            String maxCaloriesText = maxCaloriesField.getText().trim();
+            String minProteinText = minProteinField.getText().trim();
+            String maxProteinText = maxProteinField.getText().trim();
 
-            // call the use case
+            // check to see whether the protein/calorie inputs are valid (meaning negative or not a whole number)
+            try {
+                if (!minCaloriesText.isEmpty() && Integer.parseInt(minCaloriesText) < 0
+                        || !maxCaloriesText.isEmpty() && Integer.parseInt(maxCaloriesText) < 0
+                        || !minProteinText.isEmpty() && Integer.parseInt(minProteinText) < 0
+                        || !maxProteinText.isEmpty() && Integer.parseInt(maxProteinText) < 0) {
+
+                    String msg = " Calorie and protein filters cannot be negative.";
+                    viewManagerModel.showsErrorMessage(msg);
+                    return;
+                }
+            } catch (NumberFormatException ex) {
+              String msg = "Calorie and protein filters must be whole numbers";
+              viewManagerModel.showsErrorMessage(msg);
+              return;
+            }
+
+            //  call the use case only  if the validation before this has passed
             controller.generateRecipe(
                     dr,
                     intolerances,
@@ -149,21 +185,18 @@ public class RecipeGeneratorView extends JPanel implements PropertyChangeListene
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        // We only care about changes to the view-model state
         if (!"state".equals(evt.getPropertyName())) {
             return;
         }
 
         RecipeGeneratorState state = (RecipeGeneratorState) evt.getNewValue();
 
-        // 1) Update the message label
         String message = state.getMessage();
         if (message == null) {
             message = "";
         }
         messageLabel.setText(message);
 
-        // 2) Update the recipes list
         recipesListModel.clear();
         java.util.List<use_case.recipe_generator.RecipeSummary> recipes = state.getRecipes();
         if (recipes != null) {
@@ -177,4 +210,49 @@ public class RecipeGeneratorView extends JPanel implements PropertyChangeListene
     public String getViewName() {
         return viewModel.getViewName();
     }
+
+    private void updateRecipeImage() {
+        int index = recipesList.getSelectedIndex();
+        if (index < 0) {
+            recipeImageLabel.setIcon(null);
+            recipeImageLabel.setText("No recipe selected");
+            return;
+        }
+
+        RecipeGeneratorState state = viewModel.getState();
+        java.util.List<use_case.recipe_generator.RecipeSummary> recipes = state.getRecipes();
+
+        if (recipes == null || index >= recipes.size()) {
+            recipeImageLabel.setIcon(null);
+            recipeImageLabel.setText("No image available");
+            return;
+        }
+
+        String imageUrl = recipes.get(index).getRecipeImage();
+        if (imageUrl == null || imageUrl.isBlank()) {
+            recipeImageLabel.setIcon(null);
+            recipeImageLabel.setText("No image available");
+            return;
+        }
+
+        try {
+            // set image dimensions
+            int targetWidth = 500;
+            int targetHeight = 500;
+
+            java.net.URL url = new java.net.URL(imageUrl);
+            ImageIcon icon = new ImageIcon(url);
+            Image scaled = icon.getImage().getScaledInstance(
+                    targetWidth,
+                    targetHeight,
+                    Image.SCALE_SMOOTH
+            );
+            recipeImageLabel.setIcon(new ImageIcon(scaled));
+            recipeImageLabel.setText("");
+        } catch (Exception ex) {
+            recipeImageLabel.setIcon(null);
+            recipeImageLabel.setText("Image failed to load");
+        }
+    }
+
 }

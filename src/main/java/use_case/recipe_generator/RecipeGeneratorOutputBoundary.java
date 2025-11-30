@@ -6,4 +6,5 @@ package use_case.recipe_generator;
 
  public interface RecipeGeneratorOutputBoundary {
     void prepareView(GenerateRecipeOutputData outputData);
+    void presentError(String errorMessage);
 }
