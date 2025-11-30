@@ -10,6 +10,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import entities.*;
+import use_case.likedRecipeList.LikedRecipeDataAccessInterface;
 import use_case.login.LoginUserDataAccessInterface;
 import use_case.signup.SignupUserDataAccessInterface;
 import use_case.approve_recipe.ApproveRecipeDataAccessInterface;
@@ -17,7 +18,7 @@ import use_case.approve_recipe.ApproveRecipeDataAccessInterface;
 /**
  * DAO for all data, mainly user data, using a File to persist the data
  */
-public class FileDataAccessObject implements UserDataAccess, ApproveRecipeDataAccessInterface {
+public class FileDataAccessObject implements UserDataAccess, ApproveRecipeDataAccessInterface, LikedRecipeDataAccessInterface {
 
     private final File usersCsv;
     private final Map<String, Integer> headers = new LinkedHashMap<>();
@@ -474,6 +475,29 @@ public class FileDataAccessObject implements UserDataAccess, ApproveRecipeDataAc
      */
     public void setAvailableRecipes(List<Recipe> recipes) {
         this.pendingApprovalRecipes = recipes != null ? new ArrayList<>(recipes) : new ArrayList<>();
+    }
+
+    @Override
+    public void saveLikedRecipe(String username, Recipe recipe) {
+        saveRecipeToUser(username, recipe);
+    }
+
+    @Override
+    public void deleteLikedRecipe(String username, int recipeId) {
+        User user = users.get(username);
+        if (user == null) {
+            System.err.println("User not found: " + username);
+            return;
+        }
+
+        user.getSavedRecipes().removeIf(recipe -> recipe.getRecipeId() == recipeId);
+        save();
+    }
+
+    @Override
+    public List<Recipe> getLikedRecipes(String username) {
+        User user = users.get(username);
+        return user != null ? user.getSavedRecipes() : new ArrayList<>();
     }
 
     @Override
