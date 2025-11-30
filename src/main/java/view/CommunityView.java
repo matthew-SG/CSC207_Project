@@ -1,6 +1,7 @@
 package view;
 
 import interface_adapter.ViewManagerModel;
+import interface_adapter.ViewManagerState;
 import interface_adapter.community.CommunityController;
 import interface_adapter.community.CommunityState;
 import interface_adapter.community.CommunityViewModel;
@@ -90,7 +91,8 @@ public class CommunityView extends JPanel implements PropertyChangeListener {
         reviewListPanel.repaint();
     }
 
-    private void displayReviews(List<String> recipeNames, List<Integer> stars, List<String> comments, List<String> recipeImages, List<String> usernames) {
+    private void displayReviews(List<String> recipeNames, List<Integer> stars, List<String> comments,
+                                List<String> recipeImages, List<String> usernames, List<Integer> ratingIds) {
         reviewListPanel.removeAll();
 
         if (recipeNames == null || recipeNames.isEmpty()) {
@@ -104,8 +106,9 @@ public class CommunityView extends JPanel implements PropertyChangeListener {
             String comment = (comments != null && i < comments.size()) ? comments.get(i) : "";
             String recipeImageUrl = (recipeImages != null && i < recipeImages.size()) ? recipeImages.get(i) : null;
             String username = (usernames != null && i < usernames.size()) ? usernames.get(i) : null;
+            int ratingId = (ratingIds != null && i < ratingIds.size()) ? ratingIds.get(i) : -1;
 
-            JPanel reviewCard = createReviewCard(recipeName, starRating, comment, recipeImageUrl, username);
+            JPanel reviewCard = createReviewCard(recipeName, starRating, comment, recipeImageUrl, username, ratingId);
             reviewListPanel.add(reviewCard);
             reviewListPanel.add(Box.createRigidArea(new Dimension(0, 10))); // Spacing between cards
         }
@@ -114,7 +117,8 @@ public class CommunityView extends JPanel implements PropertyChangeListener {
         reviewListPanel.repaint();
     }
 
-    private JPanel createReviewCard(String recipeName, int starRating, String comment, String recipeImageUrl, String username) {
+    private JPanel createReviewCard(String recipeName, int starRating, String comment,
+                                    String recipeImageUrl, String username, int ratingId) {
         JPanel card = new JPanel();
         card.setLayout(new BorderLayout(10, 10));
         card.setBorder(BorderFactory.createCompoundBorder(
@@ -193,10 +197,68 @@ public class CommunityView extends JPanel implements PropertyChangeListener {
         contentPanel.setBackground(Color.WHITE);
         contentPanel.add(middlePanel, BorderLayout.WEST);
         contentPanel.add(commentScroll, BorderLayout.CENTER);
+
+        JButton addButton = buildAddToLikedButton(ratingId, recipeName);
+        JPanel actionPanel = new JPanel();
+        actionPanel.setBackground(Color.WHITE);
+        actionPanel.setLayout(new BoxLayout(actionPanel, BoxLayout.Y_AXIS));
+        addButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        actionPanel.add(addButton);
+        actionPanel.add(Box.createVerticalGlue());
+        contentPanel.add(actionPanel, BorderLayout.EAST);
         
         card.add(contentPanel, BorderLayout.CENTER);
 
         return card;
+    }
+
+    private JButton buildAddToLikedButton(int ratingId, String recipeName) {
+        JButton addButton = new JButton("Add to Liked");
+        addButton.setFocusPainted(false);
+        addButton.setBackground(new Color(60, 179, 113));
+        addButton.setForeground(Color.WHITE);
+        addButton.setPreferredSize(new Dimension(140, 35));
+
+        if (ratingId <= 0) {
+            addButton.setEnabled(false);
+            addButton.setToolTipText("Recipe details unavailable.");
+        } else {
+            addButton.addActionListener(e -> handleAddToLiked(ratingId, recipeName));
+        }
+        return addButton;
+    }
+
+    private void handleAddToLiked(int ratingId, String recipeName) {
+        if (communityController == null) {
+            return;
+        }
+        if (ratingId <= 0) {
+            JOptionPane.showMessageDialog(this,
+                    "Recipe details are not available for this review yet.",
+                    "Unavailable",
+                    JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
+    ViewManagerState managerState = viewManagerModel.getState();
+        if (managerState == null || !managerState.isLoggedIn) {
+            JOptionPane.showMessageDialog(this,
+                    "Log in to add recipes to your liked list.",
+                    "Login Required",
+                    JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
+        String username = managerState.userName;
+        if (username == null || username.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                    "User session missing. Please log in again.",
+                    "Login Required",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        communityController.likeRecipe(ratingId, username);
     }
 
     private String getStarString(int rating) {
@@ -229,13 +291,14 @@ public class CommunityView extends JPanel implements PropertyChangeListener {
     }
 
     private void updateView(CommunityState state) {
-        List<String> recipeNames = state.getRecipeNames();
-        List<Integer> stars = state.getStars();
-        List<String> comments = state.getComments();
-        List<String> recipeImages = state.getRecipeImages();
-        List<String> usernames = state.getUsernames();
+    List<String> recipeNames = state.getRecipeNames();
+    List<Integer> stars = state.getStars();
+    List<String> comments = state.getComments();
+    List<String> recipeImages = state.getRecipeImages();
+    List<String> usernames = state.getUsernames();
+    List<Integer> ratingIds = state.getRatingIds();
         
-        displayReviews(recipeNames, stars, comments, recipeImages, usernames);
+    displayReviews(recipeNames, stars, comments, recipeImages, usernames, ratingIds);
         
         // Update title if there's a prompt
         if (state.getPrompt() != null && !state.getPrompt().isEmpty()) {
@@ -255,7 +318,7 @@ public class CommunityView extends JPanel implements PropertyChangeListener {
             @Override
             protected ImageIcon doInBackground() {
                 try {
-                    java.net.URL url = new java.net.URL(imageUrl);
+                    java.net.URL url = java.net.URI.create(imageUrl).toURL();
                     ImageIcon icon = new ImageIcon(url);
                     
                     // Scale image to fit
