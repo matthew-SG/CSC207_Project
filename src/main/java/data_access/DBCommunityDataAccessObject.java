@@ -51,12 +51,12 @@ public class DBCommunityDataAccessObject implements CommunityDataAccessInterface
     }
 
     @Override
-    public List<Recipe> getLikedRecipes(User user) {
-        if (user == null || user.getUsername() == null) {
+    public List<Recipe> getLikedRecipes(String username) {
+        if (username == null) {
             return Collections.emptyList();
         }
 
-        List<Recipe> liked = userRecipeDataAccess.getLikedRecipesForUser(user.getUsername());
+        List<Recipe> liked = userRecipeDataAccess.getLikedRecipesForUser(username);
         return liked == null ? Collections.emptyList() : liked;
     }
 
@@ -353,12 +353,108 @@ public class DBCommunityDataAccessObject implements CommunityDataAccessInterface
             String comment = parseStringField(fields, "comment");
             String recipeName = parseStringField(fields, "recipeName");
             String recipeImageUrl = parseStringField(fields, "recipeImageUrl");
-            
-            return new Rating(ratingId, recipeId, userName, stars, comment, recipeName, recipeImageUrl);
+
+            Rating rating = new Rating(ratingId, recipeId, userName, stars, comment, recipeName, recipeImageUrl);
+            Recipe detailedRecipe = parseDetailedRecipe(fields);
+            if (detailedRecipe != null) {
+                rating.setDetailedRecipe(detailedRecipe);
+            }
+            return rating;
         } catch (Exception e) {
             System.err.println("Error parsing rating document: " + e.getMessage());
             return null;
         }
+    }
+
+    private Recipe parseDetailedRecipe(JSONObject fields) {
+        JSONObject recipeDetailsField = fields.optJSONObject("recipeDetails");
+        JSONObject recipeDetailsMap = extractMapFields(recipeDetailsField);
+        if (recipeDetailsMap == null) {
+            return null;
+        }
+
+        int recipeId = parseIntegerField(recipeDetailsMap, "recipeId");
+        String recipeName = coalesce(parseStringField(recipeDetailsMap, "recipeName"), "Unnamed Recipe");
+        String recipeImage = coalesce(parseStringField(recipeDetailsMap, "recipeImage"), "");
+        String mealType = parseStringField(recipeDetailsMap, "mealType");
+        String steps = parseStringField(recipeDetailsMap, "steps");
+
+        List<Ingredient> ingredients = parseIngredientList(recipeDetailsMap);
+        Map<String, Double> nutrition = parseNutritionMap(recipeDetailsMap);
+
+        Recipe recipe = new Recipe(recipeId, recipeName, recipeImage, ingredients, mealType, nutrition);
+        recipe.setSteps(steps);
+        return recipe;
+    }
+
+    private JSONObject extractMapFields(JSONObject fieldWrapper) {
+        if (fieldWrapper == null || !fieldWrapper.has("mapValue")) {
+            return null;
+        }
+        JSONObject mapValue = fieldWrapper.optJSONObject("mapValue");
+        if (mapValue == null) {
+            return null;
+        }
+        return mapValue.optJSONObject("fields");
+    }
+
+    private List<Ingredient> parseIngredientList(JSONObject recipeDetailsMap) {
+        List<Ingredient> ingredients = new ArrayList<>();
+        if (recipeDetailsMap == null) {
+            return ingredients;
+        }
+
+        JSONObject ingredientsField = recipeDetailsMap.optJSONObject("ingredients");
+        if (ingredientsField == null) {
+            return ingredients;
+        }
+
+        JSONObject arrayValue = ingredientsField.optJSONObject("arrayValue");
+        if (arrayValue == null) {
+            return ingredients;
+        }
+
+        JSONArray values = arrayValue.optJSONArray("values");
+        if (values == null) {
+            return ingredients;
+        }
+
+        for (int i = 0; i < values.length(); i++) {
+            JSONObject value = values.optJSONObject(i);
+            JSONObject ingredientFields = extractMapFields(value);
+            if (ingredientFields == null) {
+                continue;
+            }
+
+            String name = parseStringField(ingredientFields, "name");
+            double quantity = parseDoubleField(ingredientFields, "quantity");
+            String unit = parseStringField(ingredientFields, "unit");
+
+            ingredients.add(new Ingredient(name, quantity, unit));
+        }
+
+        return ingredients;
+    }
+
+    private Map<String, Double> parseNutritionMap(JSONObject recipeDetailsMap) {
+        Map<String, Double> nutrition = new HashMap<>();
+        if (recipeDetailsMap == null) {
+            return nutrition;
+        }
+
+        JSONObject nutritionField = recipeDetailsMap.optJSONObject("nutritionalValues");
+        JSONObject nutritionFields = extractMapFields(nutritionField);
+        if (nutritionFields == null) {
+            return nutrition;
+        }
+
+        for (String key : nutritionFields.keySet()) {
+            JSONObject valueWrapper = nutritionFields.optJSONObject(key);
+            double value = parseDoubleValueNode(valueWrapper);
+            nutrition.put(key, value);
+        }
+
+        return nutrition;
     }
 
     /**
@@ -388,6 +484,34 @@ public class DBCommunityDataAccessObject implements CommunityDataAccessInterface
             }
         }
         return "";
+    }
+
+    private double parseDoubleField(JSONObject fields, String fieldName) {
+        if (fields == null || !fields.has(fieldName)) {
+            return 0d;
+        }
+        JSONObject field = fields.optJSONObject(fieldName);
+        return parseDoubleValueNode(field);
+    }
+
+    private double parseDoubleValueNode(JSONObject field) {
+        if (field == null) {
+            return 0d;
+        }
+        try {
+            if (field.has("doubleValue")) {
+                return field.getDouble("doubleValue");
+            }
+            if (field.has("integerValue")) {
+                return Double.parseDouble(field.getString("integerValue"));
+            }
+            if (field.has("stringValue")) {
+                return Double.parseDouble(field.getString("stringValue"));
+            }
+        } catch (NumberFormatException ignore) {
+            return 0d;
+        }
+        return 0d;
     }
 
     /**
