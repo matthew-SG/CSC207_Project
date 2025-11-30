@@ -271,8 +271,6 @@ public class SearchByIngredientInteractor implements SearchByIngredientInputBoun
             }
         }
     }
-
-
 }
 
 

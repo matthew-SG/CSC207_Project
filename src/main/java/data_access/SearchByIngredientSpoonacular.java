@@ -4,13 +4,16 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import entities.Ingredient;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import entities.Ingredient;
+
 import use_case.search_by_ingr.SearchByIngredientGateway;
 
 public class SearchByIngredientSpoonacular implements SearchByIngredientGateway {
@@ -101,6 +104,12 @@ public class SearchByIngredientSpoonacular implements SearchByIngredientGateway 
         }
     }
 
+    /**
+     * Retrieves detailed recipe information for a list of recipe IDs.
+     *
+     * @param ids the list of recipe IDs to fetch information for
+     * @return a JSONArray containing the information for each recipe
+     */
     public JSONArray getInfo(List<Integer> ids) {
         if (ids.isEmpty()) {
             return null;
