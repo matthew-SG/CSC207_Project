@@ -34,7 +34,7 @@ public class LikedRecipeListState {
         return selectedRecipeName;
     }
 
-    public void setRecipeIds(int recipeId) {
+    public void setSelectedRecipe(int recipeId) {
         this.selectedRecipe = recipeId;
     }
 
