@@ -1,20 +1,21 @@
 package view;
 
-import data_access.FileDataAccessObject;
-import entities.Ingredient;
-import entities.Recipe;
-import interface_adapter.search_by_ingr.SearchByIngredientController;
-import interface_adapter.search_by_ingr.SearchByIngredientState;
-import interface_adapter.search_by_ingr.SearchByIngredientViewModel;
-
-import javax.swing.*;
-import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.swing.*;
+import javax.swing.border.TitledBorder;
+
+import data_access.FileDataAccessObject;
+import entities.Ingredient;
+import entities.Recipe;
+import interface_adapter.search_by_ingr.SearchByIngredientController;
+import interface_adapter.search_by_ingr.SearchByIngredientState;
+import interface_adapter.search_by_ingr.SearchByIngredientViewModel;
 
 public class SearchByIngredientView extends JPanel implements PropertyChangeListener {
 
@@ -133,6 +134,8 @@ public class SearchByIngredientView extends JPanel implements PropertyChangeList
         addIngredientBtn.addActionListener(e -> {
             String name = nameField.getText().trim();
             String amountStr = amountField.getText().trim();
+
+            // unitField is effectively final because we never reassign it
             String unit = unitField.getText().trim();
 
             if (name.isEmpty()) {
@@ -196,8 +199,6 @@ public class SearchByIngredientView extends JPanel implements PropertyChangeList
             fileDao.saveRecipeToUser(username, selected);
             statusLabel.setText("Recipe added to your liked list.");
         });
-
-
 
         detailsBtn.addActionListener(e -> viewDetails());
     }

@@ -1,9 +1,9 @@
 package interface_adapter.search_by_ingr;
 
+import java.util.List;
+
 import entities.Ingredient;
 import use_case.search_by_ingr.*;
-
-import java.util.List;
 
 public class SearchByIngredientController {
     private final SearchByIngredientInputBoundary interactor;

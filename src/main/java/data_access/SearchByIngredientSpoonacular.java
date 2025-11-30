@@ -1,12 +1,18 @@
 package data_access;
 
-import use_case.search_by_ingr.SearchByIngredientGateway;
-import entities.Ingredient;
-import okhttp3.*;
-import org.json.*;
-
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import okhttp3.HttpUrl;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import entities.Ingredient;
+import use_case.search_by_ingr.SearchByIngredientGateway;
 
 public class SearchByIngredientSpoonacular implements SearchByIngredientGateway {
     private static final String BYINGREDIENTSURL = "https://api.spoonacular.com/recipes/findByIngredients";
@@ -16,24 +22,25 @@ public class SearchByIngredientSpoonacular implements SearchByIngredientGateway 
     public SearchByIngredientSpoonacular(String apiKey) {
         this.apiKey = apiKey;
     }
+
     public SearchByIngredientSpoonacular() {
         this.apiKey = "6e0b1d9ab8b94b9dbf723c0203286189";
     }
 
     @Override
     public JSONObject searchByIngredients(List<Ingredient> ingredients) {
-            JSONArray recipesJSON = findResipes(ingredients);
+        JSONArray recipesJSON = findResipes(ingredients);
 
-            if (recipesJSON == null || recipesJSON.isEmpty()) {
-                return null;
-            }
+        if (recipesJSON == null || recipesJSON.isEmpty()) {
+            return null;
+        }
 
-            List<Integer> ids = new ArrayList<>();
+        List<Integer> ids = new ArrayList<>();
 
-            for (int i = 0; i < recipesJSON.length(); i++) {
-                JSONObject r = recipesJSON.getJSONObject(i);
-                ids.add(r.getInt("id"));
-            }
+        for (int i = 0; i < recipesJSON.length(); i++) {
+            JSONObject r = recipesJSON.getJSONObject(i);
+            ids.add(r.getInt("id"));
+        }
 
         JSONArray infoJSON;
         if (ids.isEmpty()) {
@@ -41,6 +48,7 @@ public class SearchByIngredientSpoonacular implements SearchByIngredientGateway 
         } else {
             infoJSON = getInfo(ids);
         }
+
         JSONObject result = new JSONObject();
         result.put("findResults", recipesJSON);
         result.put("bulkResults", infoJSON);
@@ -51,32 +59,40 @@ public class SearchByIngredientSpoonacular implements SearchByIngredientGateway 
         if (ingredients.isEmpty()) {
             return null;
         }
-        List<String> names=new ArrayList<>();
+
+        List<String> names = new ArrayList<>();
         for (Ingredient ingredient : ingredients) {
             names.add(ingredient.getName());
         }
+
         String ingredientsString = String.join(",", names);
         ingredientsString = ingredientsString.replace(" ", "+");
-        HttpUrl url = HttpUrl.parse(BYINGREDIENTSURL).newBuilder().
-                addQueryParameter("apiKey", apiKey).
-                addQueryParameter("ingredients", ingredientsString).
-                //returns 15 results
-                        addQueryParameter("number", "9").
-                //"minimize missing ingredients"
-                        addQueryParameter("ranking", "2").
-                addQueryParameter("ignorePantry", "true").
-                build();
+
+        HttpUrl url = HttpUrl.parse(BYINGREDIENTSURL).newBuilder()
+                .addQueryParameter("apiKey", apiKey)
+                .addQueryParameter("ingredients", ingredientsString)
+                // returns 9 results
+                .addQueryParameter("number", "9")
+                // "minimize missing ingredients"
+                .addQueryParameter("ranking", "2")
+                .addQueryParameter("ignorePantry", "true")
+                .build();
+
         Request request = new Request.Builder()
                 .url(url)
                 .get()
                 .build();
-        final OkHttpClient client = new OkHttpClient().newBuilder()
+
+        final OkHttpClient client = new OkHttpClient.Builder()
                 .build();
+
         try {
             Response response = client.newCall(request).execute();
             String rspns = response.body().string();
             final JSONArray responseBody = new JSONArray(rspns);
-            if (responseBody.length() == 0) throw new IOException("Empty response");
+            if (responseBody.isEmpty()) {
+                throw new IOException("Empty response");
+            }
             return responseBody;
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -87,27 +103,35 @@ public class SearchByIngredientSpoonacular implements SearchByIngredientGateway 
         if (ids.isEmpty()) {
             return null;
         }
-        List<String> recIds=new ArrayList<>();
+
+        List<String> recIds = new ArrayList<>();
         for (Integer id : ids) {
             recIds.add(id.toString());
         }
+
         String recipeIds = String.join(",", recIds);
-        HttpUrl url = HttpUrl.parse(RECIPEINFOURL).newBuilder().
-                addQueryParameter("apiKey", apiKey).
-                addQueryParameter("ids", recipeIds).
-                addQueryParameter("includeNutrition", "true").
-                build();
+
+        HttpUrl url = HttpUrl.parse(RECIPEINFOURL).newBuilder()
+                .addQueryParameter("apiKey", apiKey)
+                .addQueryParameter("ids", recipeIds)
+                .addQueryParameter("includeNutrition", "true")
+                .build();
+
         Request request = new Request.Builder()
                 .url(url)
                 .get()
                 .build();
-        final OkHttpClient client = new OkHttpClient().newBuilder()
+
+        final OkHttpClient client = new OkHttpClient.Builder()
                 .build();
+
         try {
             Response response = client.newCall(request).execute();
             String rspns = response.body().string();
             final JSONArray responseBody = new JSONArray(rspns);
-            if (responseBody.length() == 0) throw new IOException("Empty response");
+            if (responseBody.length() == 0) {
+                throw new IOException("Empty response");
+            }
             return responseBody;
         } catch (IOException e) {
             throw new RuntimeException(e);
