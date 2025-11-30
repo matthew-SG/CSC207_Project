@@ -83,7 +83,7 @@ public class InMemoryUserDataAccessObject implements UserDataAccess {
 
     @Override
     public String getCurrentUsername() {
-        return currentUsername;
+        return this.currentUsername;
     }
 
     @Override
@@ -96,49 +96,49 @@ public class InMemoryUserDataAccessObject implements UserDataAccess {
      * @return the map of users
      */
     public Map<String, User> getUsers() {
-        return users;
+        return this.users;
     }
 
     @Override
     public String login(String username, String password) {
-        if (!users.containsKey(username)) {
+        if (!this.users.containsKey(username)) {
             return LoginUserDataAccessInterface.USER_DNE_ERROR;
-        } else if (!users.get(username).getPassword().equals(password)) {
+        } else if (!this.users.get(username).getPassword().equals(password)) {
             return LoginUserDataAccessInterface.INCORRECT_PASSWORD_ERROR;
         }
-        currentUsername = username;
+        this.currentUsername = username;
         return LoginUserDataAccessInterface.SUCCESS;
     }
 
     @Override
     public String signupUser(String username, String password) {
-        if (users.containsKey(username)) {
+        if (this.users.containsKey(username)) {
             return SignupUserDataAccessInterface.USER_EXISTS_ERROR;
         }
         User user = new User(username, password, new ArrayList<>(), new ArrayList<>(), new GroceryList(new ArrayList<>()));
-        currentUsername = username;
-        users.put(currentUsername, user);
+        this.currentUsername = username;
+        this.users.put(this.currentUsername, user);
         return SignupUserDataAccessInterface.SUCCESS;
     }
 
     @Override
     public List<Recipe> getSavedRecipes() {
-        return users.get(currentUsername).getSavedRecipes();
+        return this.users.get(this.currentUsername).getSavedRecipes();
     }
 
     @Override
     public void saveMealPlan(MealPlan mealPlan) {
-        users.get(currentUsername).saveMealPlan(mealPlan);
+        this.users.get(this.currentUsername).saveMealPlan(mealPlan);
     }
 
     @Override
     public List<MealPlan> getMealPlans() {
-        return users.get(currentUsername).getMealPlans();
+        return this.users.get(this.currentUsername).getMealPlans();
     }
 
     @Override
     public void deleteMealPlan(int index) {
-        users.get(currentUsername).getMealPlans().remove(index);
+        this.users.get(this.currentUsername).getMealPlans().remove(index);
     }
 
     @Override
@@ -160,7 +160,7 @@ public class InMemoryUserDataAccessObject implements UserDataAccess {
     public void saveRecipeToUser(String username, Recipe recipe) {
         // In-memory implementation - not used for approve recipe in production
         // Just add to user's saved recipes if user exists
-        User user = users.get(username);
+        User user = this.users.get(username);
         if (user != null) {
             boolean alreadySaved = user.getSavedRecipes().stream()
                     .anyMatch(r -> r.getRecipeId() == recipe.getRecipeId());

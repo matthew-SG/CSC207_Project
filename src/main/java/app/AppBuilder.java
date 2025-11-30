@@ -192,7 +192,7 @@ public class AppBuilder {
         communityViewModel = new CommunityViewModel();
     }
 
-    public AppBuilder buildErrorPopUp(){
+    public AppBuilder buildErrorPopUp() {
         errorMessageView = new ErrorMessageView(viewManagerModel);
         return this;
     }
@@ -398,7 +398,7 @@ public class AppBuilder {
         navBarContentPanel.add(navBarLoggedIn, NavbarManagerViewModel.LOGGED_IN);
 
         navbarManagerViewModel = new NavbarManagerViewModel();
-        navBarManagerView = new NavBarManagerView(navBarContentPanel, navBarCardLayout,navbarManagerViewModel);
+        navBarManagerView = new NavBarManagerView(navBarContentPanel, navBarCardLayout, navbarManagerViewModel);
 
         return this;
     }

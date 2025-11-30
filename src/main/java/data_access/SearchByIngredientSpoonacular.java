@@ -71,7 +71,7 @@ public class SearchByIngredientSpoonacular implements SearchByIngredientGateway 
         ingredientsString = ingredientsString.replace(" ", "+");
 
         HttpUrl url = HttpUrl.parse(BYINGREDIENTSURL).newBuilder()
-                .addQueryParameter("apiKey", apiKey)
+                .addQueryParameter("apiKey", this.apiKey)
                 .addQueryParameter("ingredients", ingredientsString)
                 // returns 9 results
                 .addQueryParameter("number", "9")
@@ -136,7 +136,7 @@ public class SearchByIngredientSpoonacular implements SearchByIngredientGateway 
         String recipeIds = String.join(",", recIds);
 
         HttpUrl url = HttpUrl.parse(RECIPEINFOURL).newBuilder()
-                .addQueryParameter("apiKey", apiKey)
+                .addQueryParameter("apiKey", this.apiKey)
                 .addQueryParameter("ids", recipeIds)
                 .addQueryParameter("includeNutrition", "true")
                 .build();
