@@ -185,6 +185,10 @@ public class AppBuilder {
             throw new RuntimeException("UserDataAccessObject must be FileDataAccessObject for approve recipe functionality");
         }
         communityViewModel = new CommunityViewModel();
+        loggedInViewModel = new LoggedInViewModel();
+        approveRecipeViewModel = new ApproveRecipeViewModel();
+        signupViewModel = new SignupViewModel();
+        loginViewModel = new LoginViewModel();
     }
 
     public AppBuilder buildErrorPopUp(){
@@ -199,7 +203,6 @@ public class AppBuilder {
      * @return this builder for method chaining
      */
     public AppBuilder buildApproveRecipeFeature() {
-        approveRecipeViewModel = new ApproveRecipeViewModel();
         approveRecipeView = new ApproveRecipeView(approveRecipeViewModel, viewManagerModel);
 
         // Wire up use case
@@ -299,7 +302,8 @@ public class AppBuilder {
         );
         CommunityInputBoundary communityInteractor = new CommunityMarketInteractor(
                 communityDataAccessObject,
-                communityPresenter
+                communityPresenter,
+                fileUserDataAccessObject
         );
         communityController = new CommunityController(communityInteractor);
 
@@ -325,13 +329,10 @@ public class AppBuilder {
      * @return this builder for method chaining
      */
     public AppBuilder buildAuthFeature() {
-        loggedInViewModel = new LoggedInViewModel();
         loggedInView = new LoggedInView(loggedInViewModel);
 
-        signupViewModel = new SignupViewModel();
         signupView = new SignupView(signupViewModel);
 
-        loginViewModel = new LoginViewModel();
         loginView = new LoginView(loginViewModel);
 
         final SignupOutputBoundary signupOutputBoundary = new SignupPresenter(viewManagerModel,
