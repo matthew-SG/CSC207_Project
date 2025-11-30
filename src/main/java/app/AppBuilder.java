@@ -27,8 +27,6 @@ import interface_adapter.meal_plan.MealPlanPresenter;
 import interface_adapter.nav_bar.NavbarController;
 import interface_adapter.nav_bar.NavbarManagerViewModel;
 import interface_adapter.nav_bar.NavbarPresenter;
-import interface_adapter.search_by_ingr.SearchByIngredientPresenter;
-import interface_adapter.search_by_ingr.SearchByIngredientViewModel;
 import interface_adapter.signup.SignupController;
 import interface_adapter.signup.SignupPresenter;
 import interface_adapter.signup.SignupViewModel;
@@ -36,6 +34,8 @@ import interface_adapter.view_meal_plans.ViewMealPlansController;
 import interface_adapter.view_meal_plans.ViewMealPlansPresenter;
 import interface_adapter.view_meal_plans.ViewMealPlansViewModel;
 import interface_adapter.search_by_ingr.SearchByIngredientController;
+import interface_adapter.search_by_ingr.SearchByIngredientPresenter;
+import interface_adapter.search_by_ingr.SearchByIngredientViewModel;
 import use_case.approve_recipe.ApproveRecipeDataAccessInterface;
 import use_case.approve_recipe.ApproveRecipeInputBoundary;
 import use_case.approve_recipe.ApproveRecipeInteractor;
@@ -61,7 +61,6 @@ import use_case.meal_plan.MealPlanInputBoundary;
 import use_case.meal_plan.MealPlanInteractor;
 import use_case.meal_plan.MealPlanOutputBoundary;
 import use_case.nav_bar.NavbarInteractor;
-import use_case.search_by_ingr.SearchByIngredientOutputBoundary;
 import use_case.signup.SignupInputBoundary;
 import use_case.signup.SignupInteractor;
 import use_case.signup.SignupOutputBoundary;
@@ -80,23 +79,16 @@ import view.RecipeGeneratorView;
 
 import use_case.search_by_ingr.SearchByIngredientInputBoundary;
 import use_case.search_by_ingr.SearchByIngredientInteractor;
+import use_case.search_by_ingr.SearchByIngredientOutputBoundary;
 import view.*;
 
 import interface_adapter.grocery_list.*;
 
 import javax.swing.*;
 import java.awt.*;
-/**
- * Builder class for constructing the application.
- * Uses the builder pattern to construct all application components
- * and create the main JFrame window.
- */
+
 public class AppBuilder {
-    // Required components
     private UserFactory userFactory = new UserFactory();
-    // In Memory Data Access Object
-    // private UserDataAccess userDataAccessObject = new InMemoryUserDataAccessObject();
-    // Persistent File Data Access Object
     private UserDataAccess userDataAccessObject = new FileDataAccessObject("data/users.csv", userFactory);
     private CommunityDataAccessInterface communityDataAccessObject = new DBCommunityDataAccessObject();
     private ApproveRecipeDataAccessInterface approveRecipeDataAccessObject;
@@ -105,15 +97,12 @@ public class AppBuilder {
     private ViewManagerModel viewManagerModel;
     private ViewManager viewManager;
 
-    // Error pop up
     ErrorMessageView errorMessageView;
 
-    // Approve Recipe components
     private ApproveRecipeViewModel approveRecipeViewModel;
     private ApproveRecipeView approveRecipeView;
     private ApproveRecipeController approveRecipeController;
 
-    // Community components
     private CommunityViewModel communityViewModel;
     private JPanel communityContentPanel;
     private CardLayout communityCardLayout;
@@ -123,7 +112,6 @@ public class AppBuilder {
     private CommunityController communityController;
     private CommunityManagerView communityManagerView;
 
-    // Auth components
     private SignupViewModel signupViewModel;
     private SignupView signupView;
     private LoginViewModel loginViewModel;
@@ -131,7 +119,6 @@ public class AppBuilder {
     private LoggedInViewModel loggedInViewModel;
     private LoggedInView loggedInView;
 
-    // Navigation
     private NavBarManagerView navBarManagerView;
     private NavbarManagerViewModel navbarManagerViewModel;
     private NavbarUnloggedInView navBar;
@@ -140,13 +127,11 @@ public class AppBuilder {
     private CardLayout navBarCardLayout;
     private NavbarPresenter navbarPresenter;
 
-    // Meal Plan Generator Use Case
     private MealPlanGeneratorView mealPlanGeneratorView;
     private MealPlanGeneratorViewModel mealPlanGeneratorViewModel;
     private MealPlanGeneratedView mealPlanGeneratedView;
     private MealPlanGeneratedViewModel mealPlanGeneratedViewModel;
 
-    // View Meal Plans Use Case
     private ViewMealPlansViewModel viewMealPlansViewModel;
     private ViewMealPlansView viewMealPlansView;
 
@@ -155,22 +140,14 @@ public class AppBuilder {
     private GroceryController groceryController;
     private GroceryView groceryView;
 
-    // Search by Ingredient
     private SearchByIngredientView searchByIngredientView;
     private SearchByIngredientController searchByIngredientController;
     private SearchByIngredientSpoonacular searchByIngredientApi;
 
-
-    /**
-     * Initialize the builder with default setup.
-     */
     public AppBuilder() {
         initializeViewManagerAndLayouts();
     }
 
-    /**
-     * Initialize view manager and card layouts.
-     */
     private void initializeViewManagerAndLayouts() {
         contentPanel = new JPanel();
         cardLayout = new CardLayout();
@@ -178,7 +155,7 @@ public class AppBuilder {
 
         viewManagerModel = new ViewManagerModel();
         viewManager = new ViewManager(contentPanel, cardLayout, viewManagerModel);
-        // Use FileDataAccessObject as the approve recipe DAO (implements ApproveRecipeDataAccessInterface)
+
         if (userDataAccessObject instanceof FileDataAccessObject) {
             approveRecipeDataAccessObject = (FileDataAccessObject) userDataAccessObject;
         } else {
@@ -192,17 +169,10 @@ public class AppBuilder {
         return this;
     }
 
-    /**
-     * Build approve recipe feature components.
-     * Sets up view, controller, and use case for approving/declining recipes.
-     *
-     * @return this builder for method chaining
-     */
     public AppBuilder buildApproveRecipeFeature() {
         approveRecipeViewModel = new ApproveRecipeViewModel();
         approveRecipeView = new ApproveRecipeView(approveRecipeViewModel, viewManagerModel);
 
-        // Wire up use case
         ApproveRecipeOutputBoundary approveRecipePresenter = new ApproveRecipePresenter(
                 viewManagerModel,
                 approveRecipeViewModel
@@ -213,15 +183,12 @@ public class AppBuilder {
         );
         approveRecipeController = new ApproveRecipeController(approveRecipeInteractor);
 
-        // Set controller on view
         approveRecipeView.setApproveRecipeController(approveRecipeController);
 
-        // Set controller on navbar presenter if it exists
         if (navbarPresenter != null) {
             navbarPresenter.setApproveRecipeController(approveRecipeController);
         }
 
-        // Add to main content panel
         contentPanel.add(approveRecipeView, approveRecipeViewModel.getViewName());
 
         return this;
@@ -231,23 +198,19 @@ public class AppBuilder {
         RecipeGeneratorViewModel recipeGeneratorViewModel =
                 new RecipeGeneratorViewModel();
 
-        // Presenter
         RecipeGeneratorOutputBoundary recipeGeneratorPresenter =
                 new RecipeGeneratorPresenter(recipeGeneratorViewModel, viewManagerModel);
 
-        // 3. Data access accessing dummy recipe generator
         RecipeDataAccessInterface recipeGateway =
                 new RecipeDataAccessObject();
-        //interactor - pass FileDataAccessObject for approve recipe functionality
+
         RecipeGeneratorInputBoundary recipeGeneratorInteractor =
                 new RecipeGeneratorInteractor(recipeGateway, recipeGeneratorPresenter,
                         (FileDataAccessObject) userDataAccessObject);
 
-        //Controller
         RecipeGeneratorController recipeGeneratorController =
                 new RecipeGeneratorController(recipeGeneratorInteractor);
 
-        // View
         RecipeGeneratorView recipeGeneratorView =
                 new RecipeGeneratorView(
                         recipeGeneratorViewModel,
@@ -255,43 +218,30 @@ public class AppBuilder {
                         viewManagerModel
                 );
 
-        // register view with main content panel
         contentPanel.add(recipeGeneratorView, recipeGeneratorViewModel.getViewName());
 
         return this;
     }
 
-
-
-    /**
-     * Build community feature components.
-     * Sets up all views, controllers, and use cases related to the community review feature.
-     *
-     * @return this builder for method chaining
-     */
     public AppBuilder buildCommunityFeature() {
         communityContentPanel = new JPanel();
         communityCardLayout = new CardLayout();
         communityContentPanel.setLayout(communityCardLayout);
 
-        // Create community views
         communityView = new CommunityView(communityViewModel, viewManagerModel);
         selectLikedRecipeView = new SelectLikedRecipeView(communityViewModel);
         writeReviewView = new WriteReviewView(communityViewModel, loggedInViewModel);
 
-        // Add views to community panel
         communityContentPanel.add(communityView, CommunityViewModel.VIEWING);
         communityContentPanel.add(selectLikedRecipeView, CommunityViewModel.SELECTING_RECIPE);
         communityContentPanel.add(writeReviewView, CommunityViewModel.WRITING_REVIEW);
 
-        // Setup community manager
         communityManagerView = new CommunityManagerView(
                 communityContentPanel,
                 communityCardLayout,
                 communityViewModel
         );
 
-        // Wire up community use case
         CommunityOutputBoundary communityPresenter = new CommunityPresenter(
                 viewManagerModel,
                 communityViewModel
@@ -302,27 +252,18 @@ public class AppBuilder {
         );
         communityController = new CommunityController(communityInteractor);
 
-        // Set controllers on views
         communityView.setCommunityController(communityController);
         selectLikedRecipeView.setCommunityController(communityController);
         writeReviewView.setCommunityController(communityController);
 
-        // Set initial state
         communityViewModel.getState().setSubviewName(CommunityViewModel.VIEWING);
         communityViewModel.firePropertyChange();
 
-        // Add to main content panel
         contentPanel.add(communityContentPanel, communityViewModel.getViewName());
 
         return this;
     }
 
-    /**
-     * Build authentication feature components.
-     * Sets up signup and login views with their view models.
-     *
-     * @return this builder for method chaining
-     */
     public AppBuilder buildAuthFeature() {
         loggedInViewModel = new LoggedInViewModel();
         loggedInView = new LoggedInView(loggedInViewModel);
@@ -358,21 +299,13 @@ public class AppBuilder {
         final LogoutController logoutController = new LogoutController(logoutInteractor);
         loggedInView.setLogoutController(logoutController);
 
-        // Add to main content panel
         contentPanel.add(signupView, signupViewModel.getViewName());
         contentPanel.add(loginView, loginViewModel.getViewName());
         contentPanel.add(loggedInView, loggedInView.getViewName());
 
-
         return this;
     }
 
-    /**
-     * Build navigation bar.
-     * Sets up the navigation bar with its controller and presenter.
-     *
-     * @return this builder for method chaining
-     */
     public AppBuilder buildNavigation() {
         navBar = new NavbarUnloggedInView();
         navBarLoggedIn = new NavbarLoggedInView();
@@ -414,8 +347,6 @@ public class AppBuilder {
         return this;
     }
 
-
-
     public AppBuilder buildMealPlan() {
         mealPlanGeneratorViewModel = new MealPlanGeneratorViewModel();
         mealPlanGeneratorView = new MealPlanGeneratorView(mealPlanGeneratorViewModel);
@@ -423,7 +354,6 @@ public class AppBuilder {
         mealPlanGeneratedView = new MealPlanGeneratedView(mealPlanGeneratedViewModel);
         viewMealPlansViewModel = new ViewMealPlansViewModel();
         viewMealPlansView = new ViewMealPlansView(viewMealPlansViewModel);
-
 
         final MealPlanOutputBoundary mealPlanPresenter = new MealPlanPresenter(mealPlanGeneratorViewModel,
                 mealPlanGeneratedViewModel, viewManagerModel);
@@ -452,23 +382,12 @@ public class AppBuilder {
         return this;
     }
 
-    /**
-     * Build and display the application window.
-     * Creates a JFrame with all configured components and makes it visible.
-     *
-     * @return the created and displayed JFrame
-     */
     public JFrame build() {
         validateBuilder();
 
         return createAndShowFrame();
     }
 
-    /**
-     * Create and configure the main application frame.
-     *
-     * @return the configured JFrame
-     */
     private JFrame createAndShowFrame() {
         JFrame frame = new JFrame("Recipe Generator Application");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -488,11 +407,6 @@ public class AppBuilder {
         return frame;
     }
 
-    /**
-     * Validate that all required components are initialized.
-     *
-     * @throws IllegalStateException if required components are missing
-     */
     private void validateBuilder() {
         if (contentPanel == null || cardLayout == null) {
             throw new IllegalStateException("Content panel and card layout must be initialized");
@@ -504,8 +418,6 @@ public class AppBuilder {
             throw new IllegalStateException("Navigation bar must be built before creating App");
         }
     }
-
-    // Getters for testing purposes
 
     public JPanel getContentPanel() {
         return contentPanel;
@@ -530,9 +442,12 @@ public class AppBuilder {
     public LoginViewModel getLoginViewModel() {
         return loginViewModel;
     }
+
     public AppBuilder buildSearchByIngredient() {
+        searchByIngredientApi = new SearchByIngredientSpoonacular();
+
         SearchByIngredientViewModel searchByIngredientViewModel =
-            new SearchByIngredientViewModel();
+                new SearchByIngredientViewModel();
 
         SearchByIngredientOutputBoundary searchByIngredientPresenter =
                 new SearchByIngredientPresenter(viewManagerModel, searchByIngredientViewModel);
@@ -551,6 +466,7 @@ public class AppBuilder {
                 new SearchByIngredientView(searchByIngredientViewModel,
                         searchByIngredientController,
                         (FileDataAccessObject) userDataAccessObject);
+
         contentPanel.add(searchByIngredientView, SearchByIngredientView.VIEWNAME);
         return this;
     }
