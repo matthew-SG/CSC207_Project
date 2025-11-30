@@ -1,6 +1,7 @@
 package use_case.community;
 
 import entities.User;
+import use_case.community.input_data.CommunityLikeRecipeInputData;
 import use_case.community.input_data.CommunityPoseSelectionInputData;
 import use_case.community.input_data.CommunityPublishInputData;
 import use_case.community.input_data.CommunityRecipeSelectionInputData;
@@ -26,6 +27,16 @@ public class CommunityMarketInteractor implements CommunityInputBoundary {
                         getCommunityDAO().getCurrentRatings()
                 )
         );
+    }
+
+    /**
+     * Get
+     *
+     * @param data
+     */
+    @Override
+    public void likeRecipe(CommunityLikeRecipeInputData data) {
+
     }
 
     @Override

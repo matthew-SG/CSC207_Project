@@ -14,5 +14,6 @@ public interface CommunityOutputBoundary {
     public void prepareCommentWriting(CommunitySelectedRecipeOutputData response);
 
     public void preparePublishSucc(CommunityRatingsOutputData response);
+    public void prepareAddSucc(CommunityRatingsOutputData response);
 
 }
