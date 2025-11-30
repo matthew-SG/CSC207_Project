@@ -1,9 +1,8 @@
 package use_case.likedRecipeList;
 
-import entities.InstructionStep;
-import entities.Recipe;
-
 import java.util.List;
+
+import entities.InstructionStep;
 
 public interface LikedRecipeInputBoundary {
 

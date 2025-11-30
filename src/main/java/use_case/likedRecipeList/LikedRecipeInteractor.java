@@ -1,13 +1,13 @@
 package use_case.likedRecipeList;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import entities.InstructionStep;
 import entities.Recipe;
 import entities.Ingredient;
 import entities.RecipeInstructions;
 import use_case.step_by_step.StepByStepInputData;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Interactor for the Liked Recipe use case.
@@ -29,10 +29,10 @@ public class LikedRecipeInteractor implements LikedRecipeInputBoundary {
             String username = dataAccess.getCurrentUsername();
 
             // Get the full recipe by ID
-            Recipe recipe = dataAccess.getRecipeById(inputData.getID());
+            Recipe recipe = dataAccess.getRecipeById(inputData.getId());
 
             if (recipe == null) {
-                presenter.prepareFailView("Recipe not found with ID: " + inputData.getID());
+                presenter.prepareFailView("Recipe not found with ID: " + inputData.getId());
                 return;
             }
 
@@ -50,7 +50,7 @@ public class LikedRecipeInteractor implements LikedRecipeInputBoundary {
     public void deleteLikedRecipe(LikedRecipeInputData inputData) {
         try {
             String username = dataAccess.getCurrentUsername();
-            dataAccess.deleteLikedRecipe(username, inputData.getID());
+            dataAccess.deleteLikedRecipe(username, inputData.getId());
 
             // Reload the liked recipes list
             loadLikedRecipes();
@@ -108,7 +108,7 @@ public class LikedRecipeInteractor implements LikedRecipeInputBoundary {
     @Override
     public List<InstructionStep> handsfree(LikedRecipeInputData inputData) {
         try {
-            int recipeId = inputData.getID();
+            int recipeId = inputData.getId();
 
             // Fetch instructions from data access layer (which calls the API)
             List<InstructionStep> instructions = dataAccess.getAnalyzedInstructions(recipeId);

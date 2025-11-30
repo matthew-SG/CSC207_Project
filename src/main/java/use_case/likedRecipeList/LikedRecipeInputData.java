@@ -5,14 +5,19 @@ package use_case.likedRecipeList;
  */
 
 public class LikedRecipeInputData {
-    private final int ID;
-    private final String Recipe_name;
+    private final int id;
+    private final String recipe_name;
 
     public LikedRecipeInputData(int id, String recipeName) {
-        ID = id;
-        Recipe_name = recipeName;
+        this.id = id;
+        recipe_name = recipeName;
     }
 
-    int getID() {return ID;}
-    String getRecipeName() {return Recipe_name;}
+    int getId() {
+        return id;
+    }
+
+    String getRecipeName() {
+        return recipe_name;
+    }
 }
