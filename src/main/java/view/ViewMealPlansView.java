@@ -1,5 +1,6 @@
 package view;
 
+import interface_adapter.delete_meal_plan.DeleteMealPlanController;
 import interface_adapter.load_meal_plan.LoadMealPlanController;
 import interface_adapter.view_meal_plans.ViewMealPlansState;
 import interface_adapter.view_meal_plans.ViewMealPlansViewModel;
@@ -16,19 +17,24 @@ import java.util.List;
 public class ViewMealPlansView extends JPanel implements PropertyChangeListener {
 
     private static final String VIEW_NAME = "view meal plans";
-    private final ViewMealPlansViewModel viewMealPlansViewModel;
+    private final transient ViewMealPlansViewModel viewMealPlansViewModel;
 
     private static final int CARD_DIMENSIONS = 10;
     private static final int CARD_LABEL_SPACING = 5;
     private static final int CARD_SPACING = 10;
 
-    private LoadMealPlanController loadMealPlanController = null;
+    private final JLabel onlyOneMealPlanErrorField = new JLabel();
+
+    private transient LoadMealPlanController loadMealPlanController;
+    private transient DeleteMealPlanController deleteMealPlanController;
 
     private JPanel listPanel;
 
     public ViewMealPlansView(ViewMealPlansViewModel viewMealPlansViewModel) {
         this.viewMealPlansViewModel = viewMealPlansViewModel;
         this.viewMealPlansViewModel.addPropertyChangeListener(this);
+
+        onlyOneMealPlanErrorField.setText(" ");
 
         setLayout(new BorderLayout());
 
@@ -37,6 +43,7 @@ public class ViewMealPlansView extends JPanel implements PropertyChangeListener 
 
         JScrollPane scrollPane = new JScrollPane(listPanel);
         this.add(scrollPane, BorderLayout.CENTER);
+        this.add(onlyOneMealPlanErrorField, BorderLayout.NORTH);
     }
 
     @Override
@@ -67,22 +74,35 @@ public class ViewMealPlansView extends JPanel implements PropertyChangeListener 
                     + " | Target Fats: " + targetFats.get(i)
             );
 
+            final JPanel buttons = new JPanel();
             JButton viewButton = new JButton("View Meal Plan");
+            JButton deleteButton = new JButton("Delete Meal Plan");
             int index = i;
             viewButton.addActionListener(e -> loadMealPlanController.execute(index));
+            deleteButton.addActionListener(e -> deleteMealPlanController.execute(index));
+            buttons.add(viewButton);
+            buttons.add(deleteButton);
+
+            card.setAlignmentX(Component.LEFT_ALIGNMENT);
+            nameLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+            nutrientsLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+            buttons.setAlignmentX(Component.LEFT_ALIGNMENT);
+            buttons.setLayout(new FlowLayout(FlowLayout.LEFT));
 
             card.add(nameLabel);
             card.add(Box.createVerticalStrut(CARD_LABEL_SPACING));
             card.add(nutrientsLabel);
             card.add(Box.createVerticalStrut(CARD_LABEL_SPACING));
-            card.add(viewButton);
+            card.add(buttons);
 
             listPanel.add(card);
             listPanel.add(Box.createVerticalStrut(CARD_SPACING));
         }
 
-        listPanel.revalidate();
-        listPanel.repaint();
+        onlyOneMealPlanErrorField.setText(viewMealPlansState.getOneMealPlanError());
+
+        revalidate();
+        repaint();
     }
 
     public String getViewName() {
@@ -91,5 +111,9 @@ public class ViewMealPlansView extends JPanel implements PropertyChangeListener 
 
     public void setLoadMealPlanController(LoadMealPlanController loadMealPlanController) {
         this.loadMealPlanController = loadMealPlanController;
+    }
+
+    public void setDeleteMealPlanController(DeleteMealPlanController deleteMealPlanController) {
+        this.deleteMealPlanController = deleteMealPlanController;
     }
 }

@@ -9,6 +9,8 @@ import interface_adapter.approve_recipe.ApproveRecipeViewModel;
 import interface_adapter.community.CommunityController;
 import interface_adapter.community.CommunityPresenter;
 import interface_adapter.community.CommunityViewModel;
+import interface_adapter.delete_meal_plan.DeleteMealPlanController;
+import interface_adapter.delete_meal_plan.DeleteMealPlanPresenter;
 import interface_adapter.grocery_list.GroceryController;
 import interface_adapter.grocery_list.GroceryPresenter;
 import interface_adapter.grocery_list.GroceryViewModel;
@@ -42,6 +44,9 @@ import use_case.community.CommunityDataAccessInterface;
 import use_case.community.CommunityInputBoundary;
 import use_case.community.CommunityMarketInteractor;
 import use_case.community.CommunityOutputBoundary;
+import use_case.delete_meal_plan.DeleteMealPlanInputBoundary;
+import use_case.delete_meal_plan.DeleteMealPlanInteractor;
+import use_case.delete_meal_plan.DeleteMealPlanOutputBoundary;
 import use_case.grocery_list.add.AddInteractor;
 import use_case.grocery_list.delete.DeleteInteractor;
 import use_case.grocery_list.edit.EditInteractor;
@@ -437,6 +442,9 @@ public class AppBuilder {
                 viewManagerModel);
         final LoadMealPlanInputBoundary loadMealPlanInteractor = new LoadMealPlanInteractor(userDataAccessObject,
                 loadMealPlanPresenter);
+        final DeleteMealPlanOutputBoundary deleteMealPlanPresenter = new DeleteMealPlanPresenter(viewMealPlansViewModel);
+        final DeleteMealPlanInputBoundary deleteMealPlanInteractor = new DeleteMealPlanInteractor(userDataAccessObject,
+                deleteMealPlanPresenter, viewMealPlansPresenter);
 
         MealPlanController mealPlanController = new MealPlanController(mealPlanInteractor);
         mealPlanGeneratorView.setMealPlanController(mealPlanController);
@@ -444,6 +452,8 @@ public class AppBuilder {
         mealPlanGeneratorView.setViewMealPlansController(viewMealPlansController);
         LoadMealPlanController loadMealPlanController = new LoadMealPlanController(loadMealPlanInteractor);
         viewMealPlansView.setLoadMealPlanController(loadMealPlanController);
+        DeleteMealPlanController deleteMealPlanController = new DeleteMealPlanController(deleteMealPlanInteractor);
+        viewMealPlansView.setDeleteMealPlanController(deleteMealPlanController);
 
         contentPanel.add(mealPlanGeneratorView, mealPlanGeneratorView.getViewName());
         contentPanel.add(mealPlanGeneratedView, mealPlanGeneratedView.getViewName());
