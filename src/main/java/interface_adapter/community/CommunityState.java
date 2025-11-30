@@ -9,6 +9,7 @@ public class CommunityState {
     // presented in ratings and recipe selection view;
     // from: requested after user clicks pose
     private List<Integer> recipeIds;
+    private List<Integer> ratingIds;
     private List<String> recipeNames;
     private List<Integer> stars;
     private List<String> comments;
@@ -35,6 +36,10 @@ public class CommunityState {
 
     public List<Integer> getRecipeIds() {
         return recipeIds;
+    }
+
+    public List<Integer> getRatingIds() {
+        return ratingIds;
     }
 
     public List<String> getRecipeNames() {
@@ -79,6 +84,10 @@ public class CommunityState {
 
     public void setRecipeIds(List<Integer> recipeIds) {
         this.recipeIds = recipeIds;
+    }
+
+    public void setRatingIds(List<Integer> ratingIds) {
+        this.ratingIds = ratingIds;
     }
 
     public void setRecipeNames(List<String> recipeNames) {
