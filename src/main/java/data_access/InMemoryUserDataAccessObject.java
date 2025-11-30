@@ -158,6 +158,21 @@ public class InMemoryUserDataAccessObject implements UserDataAccess {
 
     @Override
     public void saveRecipeToUser(String username, Recipe recipe) {
+        // In-memory implementation - not used for approve recipe in production
+        // Just add to user's saved recipes if user exists
+        User user = users.get(username);
+        if (user != null) {
+            boolean alreadySaved = user.getSavedRecipes().stream()
+                    .anyMatch(r -> r.getRecipeId() == recipe.getRecipeId());
+            if (!alreadySaved) {
+                user.getSavedRecipes().add(recipe);
+            }
+        }
+    }
 
+    @Override
+    public void removeFromPendingApproval(int recipeId) {
+        // In-memory implementation - no pending approval list to maintain
+        // This is a no-op since in-memory DAO doesn't manage pending recipes
     }
 }

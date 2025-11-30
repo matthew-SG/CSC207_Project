@@ -21,6 +21,7 @@ public class RecipeGeneratorView extends JPanel implements PropertyChangeListene
     private final RecipeGeneratorViewModel viewModel;
     private final RecipeGeneratorController controller;
     private final ViewManagerModel viewManagerModel;
+    private interface_adapter.approve_recipe.ApproveRecipeController approveRecipeController;
 
     private JComboBox<DietaryRestriction> dietaryRestrictionBox;
     private JList<Intolerance> intolerancesList;
@@ -100,9 +101,14 @@ public class RecipeGeneratorView extends JPanel implements PropertyChangeListene
         recipesList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JScrollPane recipesScroll = new JScrollPane(recipesList);
 
-        // ----- BOTTOM: MESSAGE LABEL -----
+        // ----- BOTTOM: MESSAGE LABEL AND APPROVE BUTTON -----
         messageLabel = new JLabel("");
         messageLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        
+        JButton approveRecipesBtn = new JButton("Approve Recipes");
+        JPanel bottomPanel = new JPanel(new BorderLayout());
+        bottomPanel.add(messageLabel, BorderLayout.CENTER);
+        bottomPanel.add(approveRecipesBtn, BorderLayout.EAST);
 
         // ----- ADD TO MAIN PANEL (this) -----
         JPanel topContainer = new JPanel(new BorderLayout());
@@ -111,7 +117,7 @@ public class RecipeGeneratorView extends JPanel implements PropertyChangeListene
 
         this.add(topContainer, BorderLayout.NORTH);
         this.add(recipesScroll, BorderLayout.CENTER);
-        this.add(messageLabel, BorderLayout.SOUTH);
+        this.add(bottomPanel, BorderLayout.SOUTH);
 
         generateButton.addActionListener(e -> {
             // read current selections
@@ -142,6 +148,22 @@ public class RecipeGeneratorView extends JPanel implements PropertyChangeListene
                     minProteinText,
                     maxProteinText
             );
+        });
+
+        approveRecipesBtn.addActionListener(e -> {
+            if (recipesListModel.isEmpty()) {
+                messageLabel.setText("Generate recipes first.");
+                return;
+            }
+            
+            // Navigate to approve recipe view
+            if (approveRecipeController != null) {
+                approveRecipeController.loadRecipes();
+                viewManagerModel.getState().viewName = interface_adapter.approve_recipe.ApproveRecipeViewModel.viewName;
+                viewManagerModel.firePropertyChange();
+            } else {
+                messageLabel.setText("Approve recipe feature not available.");
+            }
         });
 
     }
@@ -176,5 +198,9 @@ public class RecipeGeneratorView extends JPanel implements PropertyChangeListene
 
     public String getViewName() {
         return viewModel.getViewName();
+    }
+
+    public void setApproveRecipeController(interface_adapter.approve_recipe.ApproveRecipeController controller) {
+        this.approveRecipeController = controller;
     }
 }
