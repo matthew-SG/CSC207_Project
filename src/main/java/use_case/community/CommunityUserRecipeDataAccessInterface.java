@@ -21,6 +21,8 @@ public interface CommunityUserRecipeDataAccessInterface {
      */
     List<Recipe> getLikedRecipesForUser(String username);
 
+    void saveRecipeToUser(String username, Recipe recipe);
+
     /**
      * Retrieves a liked recipe by id for the currently authenticated user.
      *
