@@ -2,9 +2,9 @@ package use_case.community.input_data;
 
 public class CommunityLikeRecipeInputData {
     private final String username;
-    private final String ratingId;
+    private final int ratingId;
 
-    public CommunityLikeRecipeInputData(String username, String ratingId) {
+    public CommunityLikeRecipeInputData(String username, int ratingId) {
         this.username = username;
         this.ratingId = ratingId;
     }
@@ -13,7 +13,7 @@ public class CommunityLikeRecipeInputData {
         return username;
     }
 
-    public String getRatingId() {
+    public int getRatingId() {
         return ratingId;
     }
 }
