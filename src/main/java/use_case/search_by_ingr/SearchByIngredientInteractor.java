@@ -37,6 +37,11 @@ public class SearchByIngredientInteractor implements SearchByIngredientInputBoun
 
         JSONObject apiResult = gateway.searchByIngredients(ingredients);
 
+        if (apiResult == null) {
+            presenter.prepareFailView("Failed to call the API.");
+            return;
+        }
+
         JSONArray findResults = apiResult.getJSONArray("findResults");
         JSONArray bulkResults = apiResult.getJSONArray("bulkResults");
         ArrayList<Integer> acceptedIds = new ArrayList<>();

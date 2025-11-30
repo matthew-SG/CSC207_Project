@@ -4,14 +4,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import entities.Ingredient;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.json.JSONArray;
 import org.json.JSONObject;
-
-import entities.Ingredient;
 import use_case.search_by_ingr.SearchByIngredientGateway;
 
 public class SearchByIngredientSpoonacular implements SearchByIngredientGateway {
@@ -89,6 +88,9 @@ public class SearchByIngredientSpoonacular implements SearchByIngredientGateway 
         try {
             Response response = client.newCall(request).execute();
             String rspns = response.body().string();
+            if (rspns.charAt(0) == '{') {
+                return null;
+            }
             final JSONArray responseBody = new JSONArray(rspns);
             if (responseBody.isEmpty()) {
                 throw new IOException("Empty response");
