@@ -29,15 +29,20 @@ public class FileDataAccessObject implements UserDataAccess, ApproveRecipeDataAc
 
     private String currentUsername;
 
+    private final FindInstructionsSpoonacular instructionsApi;
+    private final String apiKey;
+
     /**
      * Construct this DAO for saving to and reading from local files
      * @param csvPath the path of the file to save users to
      * @param userFactory factory for creating user objects
      * @throws RuntimeException if there is an IOException when accessing the file
      */
-    public FileDataAccessObject(String csvPath, UserFactory userFactory) throws RuntimeException {
+    public FileDataAccessObject(String csvPath, UserFactory userFactory, String apiKey) throws RuntimeException {
 
         usersCsv = new File(csvPath);
+        this.instructionsApi = new FindInstructionsSpoonacular();
+        this.apiKey = apiKey;
         headers.put("username", 0);
         headers.put("password", 1);
 
@@ -498,6 +503,11 @@ public class FileDataAccessObject implements UserDataAccess, ApproveRecipeDataAc
     public List<Recipe> getLikedRecipes(String username) {
         User user = users.get(username);
         return user != null ? user.getSavedRecipes() : new ArrayList<>();
+    }
+
+    @Override
+    public List<InstructionStep> getAnalyzedInstructions(int recipeId) {
+        return instructionsApi.getAnalyzedInstructions(recipeId, apiKey);
     }
 
     @Override

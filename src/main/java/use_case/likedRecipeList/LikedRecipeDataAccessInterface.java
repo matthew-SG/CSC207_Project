@@ -1,11 +1,15 @@
 package use_case.likedRecipeList;
 
+import entities.InstructionStep;
 import entities.Recipe;
-
 import java.util.List;
 
-
+/**
+ * Data Access Interface for the Liked Recipe use case.
+ * Handles persistence of user's liked recipes.
+ */
 public interface LikedRecipeDataAccessInterface {
+
     /**
      * Saves a recipe to the user's liked recipes list.
      * @param username the username of the current user
@@ -39,4 +43,11 @@ public interface LikedRecipeDataAccessInterface {
      * @return the current username
      */
     String getCurrentUsername();
+
+    /**
+     * Fetches analyzed instructions for a recipe from the API.
+     * @param recipeId the recipe ID
+     * @return list of instruction steps
+     */
+    List<InstructionStep> getAnalyzedInstructions(int recipeId);
 }
