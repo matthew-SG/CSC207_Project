@@ -4,7 +4,7 @@ import java.util.List;
 
 import entities.InstructionStep;
 import entities.Recipe;
-
+import entities.User;
 
 /**
  * Data Access Interface for the Liked Recipe use case.
@@ -52,4 +52,11 @@ public interface LikedRecipeDataAccessInterface {
      * @return list of instruction steps
      */
     List<InstructionStep> getAnalyzedInstructions(int recipeId);
+
+    /**
+     * Gets a user from the users map.
+     * @param username the username to retrieve
+     * @return the User object, or null if not found
+     */
+    User getUser(String username);
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import entities.User;
 import entities.InstructionStep;
 import entities.Recipe;
 import entities.Ingredient;
@@ -37,7 +38,22 @@ public class LikedRecipeInteractor implements LikedRecipeInputBoundary {
                 return;
             }
 
-            dataAccess.saveLikedRecipe(username, recipe);
+            // Get user from users map
+            User user = dataAccess.getUser(username);
+            if (user == null) {
+                presenter.prepareFailView("User not found: " + username);
+                return;
+            }
+
+            // Check if recipe already exists
+            boolean alreadySaved = user.getSavedRecipes().stream()
+                    .anyMatch(r -> r.getRecipeId() == recipe.getRecipeId());
+
+            if (!alreadySaved) {
+                user.getSavedRecipes().add(recipe);
+                // Persist changes to JSON file
+                dataAccess.saveLikedRecipe(username, recipe);
+            }
 
             // Reload the liked recipes list
             loadLikedRecipes();
@@ -51,6 +67,18 @@ public class LikedRecipeInteractor implements LikedRecipeInputBoundary {
     public void deleteLikedRecipe(LikedRecipeInputData inputData) {
         try {
             String username = dataAccess.getCurrentUsername();
+
+            // Get user from users map
+            User user = dataAccess.getUser(username);
+            if (user == null) {
+                presenter.prepareFailView("User not found: " + username);
+                return;
+            }
+
+            // Remove recipe from user's saved recipes
+            user.getSavedRecipes().removeIf(recipe -> recipe.getRecipeId() == inputData.getId());
+
+            // Persist changes to JSON file
             dataAccess.deleteLikedRecipe(username, inputData.getId());
 
             // Reload the liked recipes list

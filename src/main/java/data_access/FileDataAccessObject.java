@@ -36,6 +36,7 @@ public class FileDataAccessObject implements UserDataAccess, ApproveRecipeDataAc
      * Construct this DAO for saving to and reading from local files
      * @param csvPath the path of the file to save users to
      * @param userFactory factory for creating user objects
+     * @param apiKey factory stores the api key
      * @throws RuntimeException if there is an IOException when accessing the file
      */
     public FileDataAccessObject(String csvPath, UserFactory userFactory, String apiKey) throws RuntimeException {
