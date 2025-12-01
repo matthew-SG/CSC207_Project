@@ -14,7 +14,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class LoadMealPlanInteractorTest {
+class LoadMealPlanInteractorTests {
 
     /**
      * Tests the interactor when it is called
