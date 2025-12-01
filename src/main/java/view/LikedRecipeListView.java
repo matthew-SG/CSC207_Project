@@ -187,15 +187,18 @@ public class LikedRecipeListView extends JPanel {
         // Right: buttons
         JPanel right = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
         right.setOpaque(false);
-        right.setPreferredSize(new Dimension(360, 30));
+        right.setPreferredSize(new Dimension(460, 30));
 
         JButton stepBtn = createActionButton("Step by Step");
         JButton detailsBtn = createSecondaryButton("Show Details");
+        JButton addToGroceryBtn = createSecondaryButton("Add to Grocery");
         JButton delBtn = createDangerButton("Delete");
 
         stepBtn.addActionListener(e -> controller.startHandsfree(recipeId, recipeName));
 
         detailsBtn.addActionListener(e -> showDetailsFor(recipeId, recipeName));
+
+        addToGroceryBtn.addActionListener(e -> controller.addIngredientsToGrocery(recipeId, recipeName));
 
         delBtn.addActionListener(e -> {
             int ok = JOptionPane.showConfirmDialog(
@@ -212,6 +215,7 @@ public class LikedRecipeListView extends JPanel {
 
         right.add(stepBtn);
         right.add(detailsBtn);
+        right.add(addToGroceryBtn);
         right.add(delBtn);
 
         row.add(left, BorderLayout.CENTER);

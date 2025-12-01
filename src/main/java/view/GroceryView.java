@@ -1,6 +1,7 @@
 package view;
 
 import entities.Ingredient;
+import interface_adapter.ViewManagerModel;
 import interface_adapter.grocery_list.GroceryController;
 import interface_adapter.grocery_list.GroceryViewModel;
 import interface_adapter.grocery_list.GroceryState;
@@ -19,7 +20,6 @@ public class GroceryView extends JPanel implements PropertyChangeListener {
 
     private final transient GroceryController controller;
     private final transient GroceryViewModel viewModel;
-
     private final JPanel listPanel;
     private final JTextField nameField;
     private final JTextField qtyField;
@@ -30,10 +30,17 @@ public class GroceryView extends JPanel implements PropertyChangeListener {
     private static final Color EVEN_ROW_BG = new Color(248, 250, 252);
     private static final String MY_FONT = "SansSerif";
 
-
-    public GroceryView(GroceryController controller, GroceryViewModel viewModel) {
+    public GroceryView(GroceryController controller, GroceryViewModel viewModel, ViewManagerModel viewManagerModel) {
         this.controller = controller;
         this.viewModel = viewModel;
+
+        viewManagerModel.addPropertyChangeListener(evt -> {
+            SwingUtilities.invokeLater(() -> {
+                if (this.isShowing()) {
+                    controller.load();
+                }
+            });
+        });
 
         setLayout(new BorderLayout(10, 10));
         setBorder(new EmptyBorder(15, 15, 15, 15));

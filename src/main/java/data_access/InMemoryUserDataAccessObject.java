@@ -240,6 +240,46 @@ public class InMemoryUserDataAccessObject implements UserDataAccess {
 
             currentUser.setGroceryList(new GroceryList(list));
         }
+    }
 
+    @Override
+    public void addIngredientsToGroceryList(String username, List<Ingredient> ingredients) {
+        User user = users.get(username);
+        if (user == null) {
+            return;
+        }
+
+        GroceryList groceryList = user.getGroceryList();
+        if (groceryList == null) {
+            groceryList = new GroceryList(new ArrayList<>());
+            user.setGroceryList(groceryList);
+        }
+
+        List<Ingredient> items = groceryList.getItems();
+
+        for (Ingredient incoming : ingredients) {
+            boolean merged = false;
+
+            for (int i = 0; i < items.size(); i++) {
+                Ingredient existing = items.get(i);
+
+                if (existing.getName().equalsIgnoreCase(incoming.getName())
+                        && existing.getUnit().equalsIgnoreCase(incoming.getUnit())) {
+
+                    double newQty = existing.getQuantity() + incoming.getQuantity();
+                    items.set(i, new Ingredient(existing.getName(), newQty, existing.getUnit()));
+                    merged = true;
+                    break;
+                }
+            }
+
+            if (!merged) {
+                items.add(new Ingredient(
+                        incoming.getName(),
+                        incoming.getQuantity(),
+                        incoming.getUnit()
+                ));
+            }
+        }
     }
 }
