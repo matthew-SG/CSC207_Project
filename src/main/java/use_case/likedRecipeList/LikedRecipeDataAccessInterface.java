@@ -2,6 +2,7 @@ package use_case.likedRecipeList;
 
 import java.util.List;
 
+import entities.Ingredient;
 import entities.InstructionStep;
 import entities.Recipe;
 import entities.User;
@@ -59,4 +60,9 @@ public interface LikedRecipeDataAccessInterface {
      * @return the User object, or null if not found
      */
     User getUser(String username);
+
+    /**
+     * Adds the given ingredients to the user's grocery list and persists it.
+     */
+    void addIngredientsToGroceryList(String username, List<Ingredient> ingredients);
 }
