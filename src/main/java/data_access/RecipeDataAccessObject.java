@@ -19,6 +19,7 @@ import java.util.List;
 public class RecipeDataAccessObject implements RecipeDataAccessInterface {
     private static final String API_KEY = "5b07df6820b74cf1b2eae9c1b440f014";
     private static final String API_BASE_URL = "https://api.spoonacular.com/recipes/complexSearch";
+    private static final String NUTRITION = "nutrition";
 
     @Override
     public List<Recipe> getRecipes(DietaryRestriction dietaryRestriction,
@@ -91,6 +92,8 @@ public class RecipeDataAccessObject implements RecipeDataAccessInterface {
         if (maxCalories != null) url.append("&maxCalories=").append(maxCalories);
         if (minProtein != null) url.append("&minProtein=").append(minProtein);
         if (maxProtein != null) url.append("&maxProtein=").append(maxProtein);
+
+        url.append("&sort=random");
 
         return url.toString();
     }
@@ -167,19 +170,24 @@ public class RecipeDataAccessObject implements RecipeDataAccessInterface {
 
             Recipe recipe = new Recipe(id, title, image, "UNKNOWN");
 
-            // Extract calories and protein
-            if (json.has("nutrition")) {
-                JSONArray nutrients = json.getJSONObject("nutrition").getJSONArray("nutrients");
+            // Extract nutrients and ingredients
+            if (json.has(NUTRITION)) {
+                JSONArray nutrients = json.getJSONObject(NUTRITION).getJSONArray("nutrients");
                 for (int i = 0; i < nutrients.length(); i++) {
                     JSONObject nutrient = nutrients.getJSONObject(i);
                     String name = nutrient.getString("name");
                     double amount = nutrient.getDouble("amount");
 
-                    if (name.equalsIgnoreCase("Calories")) {
-                        recipe.getNutritionalValues().put("calories", amount);
-                    } else if (name.equalsIgnoreCase("Protein")) {
-                        recipe.getNutritionalValues().put("protein", amount);
-                    }
+                    recipe.getNutritionalValues().put(name, amount);
+                }
+
+                JSONArray ingredients = json.getJSONObject(NUTRITION).getJSONArray("ingredients");
+                for (int i = 0; i < ingredients.length(); i++) {
+                    JSONObject ingredient = ingredients.getJSONObject(i);
+                    String name = ingredient.getString("name");
+                    double amount = ingredient.getDouble("amount");
+                    String unit = ingredient.getString("unit");
+                    recipe.getIngredients().add(new Ingredient(name, amount, unit));
                 }
             }
 
