@@ -265,9 +265,8 @@ public class SearchByIngredientInteractor implements SearchByIngredientInputBoun
             JSONObject n = nutrients.getJSONObject(i);
             String name = n.optString("name", "");
             double amount = n.optDouble("amount", 0.0);
-            String unit = n.optString("unit", "");
             if (!name.isEmpty()) {
-                recipe.addNutritionalValue(name + " (" + unit + ")", amount);
+                recipe.addNutritionalValue(name, amount);
             }
         }
     }
