@@ -202,4 +202,10 @@ public class SpoonacularApproveRecipeDataAccessObject implements ApproveRecipeDa
             cachedRecipes.removeIf(r -> r.getRecipeId() == recipeId);
         }
     }
+
+    @Override
+    public void setAvailableRecipes(List<Recipe> recipes) {
+        // Set the cached recipes to the provided list
+        this.cachedRecipes = recipes != null ? new ArrayList<>(recipes) : new ArrayList<>();
+    }
 }

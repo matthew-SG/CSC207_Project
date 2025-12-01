@@ -6,16 +6,17 @@ import entities.DietaryRestriction;
 import entities.Intolerance;
 import  entities.Recipe;
 import java.util.List;
+import use_case.approve_recipe.ApproveRecipeDataAccessInterface;
 
 
 public class RecipeGeneratorInteractor implements RecipeGeneratorInputBoundary{
     private final RecipeDataAccessInterface userRecipeAccessObject;
     private final RecipeGeneratorOutputBoundary recipePresenter;
-    private final data_access.FileDataAccessObject approveRecipeDAO;
+    private final ApproveRecipeDataAccessInterface approveRecipeDAO;
 
-    public RecipeGeneratorInteractor(RecipeDataAccessInterface userRecipeAccessObject, 
+    public RecipeGeneratorInteractor(RecipeDataAccessInterface userRecipeAccessObject,
                                      RecipeGeneratorOutputBoundary recipePresenter,
-                                     data_access.FileDataAccessObject approveRecipeDAO) {
+                                     ApproveRecipeDataAccessInterface approveRecipeDAO) {
         this.userRecipeAccessObject = userRecipeAccessObject;
         this.recipePresenter = recipePresenter;
         this.approveRecipeDAO = approveRecipeDAO;

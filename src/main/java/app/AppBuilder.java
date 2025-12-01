@@ -256,10 +256,9 @@ public class AppBuilder {
         RecipeDataAccessInterface recipeGateway =
                 new RecipeDataAccessObject();
 
-        //interactor - pass FileDataAccessObject for approve recipe functionality
         RecipeGeneratorInputBoundary recipeGeneratorInteractor =
                 new RecipeGeneratorInteractor(recipeGateway, recipeGeneratorPresenter,
-                        (FileDataAccessObject) userDataAccessObject);
+                        approveRecipeDataAccessObject);
 
         //Controller
         RecipeGeneratorController recipeGeneratorController =
@@ -493,7 +492,7 @@ public class AppBuilder {
                 new SearchByIngredientInteractor(
                         searchByIngredientApi,
                         searchByIngredientPresenter,
-                        (FileDataAccessObject) userDataAccessObject
+                        approveRecipeDataAccessObject
                 );
 
         searchByIngredientController =
@@ -502,7 +501,6 @@ public class AppBuilder {
         searchByIngredientView =
                 new SearchByIngredientView(searchByIngredientViewModel,
                         searchByIngredientController,
-                        (FileDataAccessObject) userDataAccessObject,
                         viewManagerModel);
 
         // Set approve recipe controller if it exists

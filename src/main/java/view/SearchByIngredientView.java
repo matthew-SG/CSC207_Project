@@ -10,7 +10,6 @@ import java.util.List;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 
-import data_access.FileDataAccessObject;
 import entities.Ingredient;
 import entities.Recipe;
 import interface_adapter.search_by_ingr.SearchByIngredientController;
@@ -23,7 +22,6 @@ public class SearchByIngredientView extends JPanel implements PropertyChangeList
 
     private final SearchByIngredientController controller;
     private final SearchByIngredientViewModel searchByIngredientViewModel;
-    private final FileDataAccessObject fileDao;
     private interface_adapter.approve_recipe.ApproveRecipeController approveRecipeController;
     private interface_adapter.ViewManagerModel viewManagerModel;
 
@@ -42,11 +40,9 @@ public class SearchByIngredientView extends JPanel implements PropertyChangeList
 
     public SearchByIngredientView(SearchByIngredientViewModel viewModel,
                                   SearchByIngredientController controller,
-                                  FileDataAccessObject fileDao,
                                   interface_adapter.ViewManagerModel viewManagerModel) {
         this.searchByIngredientViewModel = viewModel;
         this.controller = controller;
-        this.fileDao = fileDao;
         this.viewManagerModel = viewManagerModel;
 
         this.searchByIngredientViewModel.addPropertyChangeListener(this);
