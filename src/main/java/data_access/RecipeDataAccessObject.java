@@ -17,13 +17,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.List;
-import java.util.ArrayList;
 
+
+// this class depends on a few things including Recipe entity cuisine Enum etc., it uses the org.json lib for parsing
 
 public class RecipeDataAccessObject implements RecipeDataAccessInterface {
     private static final String API_KEY = "7265c428408440ef96740ae1a4040acd";
-    private static final String API_BASE_URL = "https://api.spoonacular.com/recipes/complexSearch";
+    private static final String API_BASE_URL = "https://api.spoonacular.com/recipes/complexSearch"; // base URL which is built upon depending on selected filters
 
     @Override
     public List<Recipe> getRecipes(DietaryRestriction dietaryRestriction,
@@ -38,16 +38,17 @@ public class RecipeDataAccessObject implements RecipeDataAccessInterface {
         String apiUrl = buildApiUrl(dietaryRestriction, intolerances, cuisine,
                 minCalories, maxCalories, minProtein, maxProtein);
 
-        // this block is to log all the details in console it can be removed if needed
+        // this block is to log all the details in console its for testing purposes
         System.out.println("[RECIPE-GEN DAO] diet = " + dietaryRestriction);
         System.out.println("[RECIPE-GEN DAO] intolerances = " + intolerances);
         System.out.println("[RECIPE-GEN DAO] cuisine = " + cuisine);
         System.out.println("[RECIPE-GEN DAO] Spoonacular request URL: " + apiUrl);
 
 
-        // get the recipes from API
+        // get the recipes from API (we are actually calling the api)
         String jsonResponse = callSpoonacular(apiUrl);
 
+        // if the api call failed (non 200 or IO issue) raise exception as needed
         if (jsonResponse == null) {
             System.err.println("[RECIPE-GEN DAO] API call failed response was empty.");
             throw new RuntimeException("Recipe API call failed");
@@ -61,15 +62,15 @@ public class RecipeDataAccessObject implements RecipeDataAccessInterface {
 
     }
 
-    /**
-     * Builds the complete Spoonacular API URL with all query parameters
-     */
+
+     // this method is responsible for building the api url with all query parameters
+
     private String buildApiUrl(DietaryRestriction dietaryRestriction, List<Intolerance> intolerances,
                                Cuisine cuisine, Integer minCalories, Integer maxCalories,
                                Integer minProtein, Integer maxProtein) {
 
         StringBuilder url = new StringBuilder(API_BASE_URL);
-        url.append("?apiKey=").append(API_KEY);
+        url.append("?apiKey=").append(API_KEY); // translates the enums and lists into the query string format Spoonacular requires
         url.append("&number=10");
         url.append("&addRecipeNutrition=true");
         url.append("&addRecipeInformation=true");
@@ -100,10 +101,8 @@ public class RecipeDataAccessObject implements RecipeDataAccessInterface {
         return url.toString();
     }
 
-    /**
-     * Makes HTTP request to Spoonacular API.
-     * Returns the JSON body on success, or null if the call failed.
-     */
+    // this method is responsible for making the HTTP request (get request) to the API
+    // Returns the JSON body on success, or null if the call failed.
     private String callSpoonacular(String urlString) {
         HttpURLConnection connection = null;
         BufferedReader reader = null;
@@ -112,13 +111,14 @@ public class RecipeDataAccessObject implements RecipeDataAccessInterface {
             URL url = new URL(urlString);
             connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
+            // these time out bounds are here to prevent the UI from hanging when the API is un-reachable or slow after 5 seconds its treated as a failure
             connection.setConnectTimeout(5000);
             connection.setReadTimeout(5000);
 
             int status = connection.getResponseCode();
             System.out.println("[RECIPE-GEN DAO] HTTP status: " + status);
 
-            // Treat any non-2xx status as a failure: return null so upper layers
+            // Treat any non-2xx status as a failure (rate limit, server error etc.): return null so upper layers
             // can decide how to notify the user.
             if (status < 200 || status >= 300) {
                 System.err.println("[RECIPE-GEN DAO] Spoonacular call failed with status " + status);
@@ -150,9 +150,8 @@ public class RecipeDataAccessObject implements RecipeDataAccessInterface {
         }
     }
 
-    /**
-     * Converts the JSON response into Recipe objects
-     */
+    // this method is responsible for processing the Json returned by the API call and extracting the specific data we need
+    // to create a list of Recipe objects
     private List<Recipe> parseRecipesFromJson(String json) {
         List<Recipe> recipes = new ArrayList<>();
 
@@ -160,9 +159,9 @@ public class RecipeDataAccessObject implements RecipeDataAccessInterface {
             JSONArray results = new JSONObject(json).getJSONArray("results");
 
             for (int i = 0; i < results.length(); i++) {
-                Recipe recipe = parseRecipeFromJson(results.getJSONObject(i));
+                Recipe recipe = parseRecipeFromJson(results.getJSONObject(i)); // parseRecipeFromJson is called to handle whether a single recipe fails
                 if (recipe != null) recipes.add(recipe);
-            }
+            } // if the entire list fails (all recipes fail) then robust error handling happens (user is given error message)
         } catch (Exception e) {
             System.err.println("Error parsing JSON: " + e.getMessage());
         }
@@ -218,7 +217,7 @@ public class RecipeDataAccessObject implements RecipeDataAccessInterface {
         }
     }
 
-
+    // the calories and protein were filtered both locally and externally by the api for testing purposes for when the api fails
     /**
      * Filters recipes by calorie and protein bounds
      */
@@ -253,6 +252,8 @@ public class RecipeDataAccessObject implements RecipeDataAccessInterface {
         return true;
     }
 
+    // the following mapping methods are responsible for converting the enums I have stored locally to
+    // the exact strings spoonacular expects in the URL the empty string handles cases when there's no filter added
     private String mapDiet(DietaryRestriction dietaryRestriction) {
         if (dietaryRestriction == null || dietaryRestriction == DietaryRestriction.NONE) return "";
 
