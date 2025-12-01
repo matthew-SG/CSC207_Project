@@ -1,12 +1,11 @@
 package interface_adapter.likedRecipeList;
 
+import java.util.HashMap;
+
 import use_case.likedRecipeList.LikedRecipeInputBoundary;
 import use_case.likedRecipeList.LikedRecipeInputData;
 
-import java.util.HashMap;
-
 public class LikedRecipeListController {
-
     private final LikedRecipeInputBoundary interactor;
 
     public LikedRecipeListController(LikedRecipeInputBoundary interactor) {

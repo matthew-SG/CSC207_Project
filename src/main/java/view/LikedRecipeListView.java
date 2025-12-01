@@ -1,18 +1,19 @@
 package view;
 
-import interface_adapter.ViewManagerModel;
-import interface_adapter.likedRecipeList.LikedRecipeListController;
-import interface_adapter.likedRecipeList.LikedRecipeListState;
-import interface_adapter.likedRecipeList.LikedRecipeListViewModel;
-
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.MatteBorder;
 import java.awt.*;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.MatteBorder;
+
+import interface_adapter.ViewManagerModel;
+import interface_adapter.likedRecipeList.LikedRecipeListController;
+import interface_adapter.likedRecipeList.LikedRecipeListState;
+import interface_adapter.likedRecipeList.LikedRecipeListViewModel;
 
 /**
  * View for displaying the user's liked recipes.

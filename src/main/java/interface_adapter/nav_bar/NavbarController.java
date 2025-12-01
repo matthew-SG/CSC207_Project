@@ -41,7 +41,7 @@ public class NavbarController {
 
     public void switchToSearchByIngredients(){this.navbarInteractor.switchToSearchByIngredients();}
 
-    public void switchToLikedRecipeList(){
+    public void switchToLikedRecipeList() {
         this.navbarInteractor.switchToLikedRecipeList();
     }
 }

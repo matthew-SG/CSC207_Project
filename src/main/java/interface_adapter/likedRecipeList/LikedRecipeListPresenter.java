@@ -1,28 +1,30 @@
 package interface_adapter.likedRecipeList;
 
-import interface_adapter.ViewManagerModel;
-import interface_adapter.speech.SpeechService;
-import interface_adapter.step_by_step.StepByStepController;
-import interface_adapter.step_by_step.StepByStepPresenter;
-import interface_adapter.step_by_step.StepByStepViewModel;
-import use_case.likedRecipeList.LikedRecipeOutputBoundary;
-import use_case.likedRecipeList.LikedRecipeOutputData;
-import use_case.step_by_step.StepByStepInputData;
-import use_case.step_by_step.StepByStepInteractor;
-import view.StepByStepView;
-import speechapi.SystemTTS;
-
-import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class LikedRecipeListPresenter implements LikedRecipeOutputBoundary {
+import javax.swing.*;
 
+import interface_adapter.ViewManagerModel;
+import interface_adapter.speech.SpeechService;
+import interface_adapter.step_by_step.StepByStepController;
+import interface_adapter.step_by_step.StepByStepPresenter;
+import interface_adapter.step_by_step.StepByStepViewModel;
+
+import use_case.likedRecipeList.LikedRecipeOutputBoundary;
+import use_case.likedRecipeList.LikedRecipeOutputData;
+import use_case.step_by_step.StepByStepInputData;
+import use_case.step_by_step.StepByStepInteractor;
+
+import view.StepByStepView;
+
+import speechapi.SystemTTS;
+
+public class LikedRecipeListPresenter implements LikedRecipeOutputBoundary {
     private final LikedRecipeListViewModel viewModel;
     private final ViewManagerModel viewManagerModel;
-
 
     public LikedRecipeListPresenter(LikedRecipeListViewModel viewModel,
                                     ViewManagerModel viewManagerModel) {
@@ -34,7 +36,7 @@ public class LikedRecipeListPresenter implements LikedRecipeOutputBoundary {
     public void prepareLikedRecipeView(LikedRecipeOutputData likedRecipeOutputData) {
         int[] idsArray = likedRecipeOutputData.getRecipeIds();
         String[] namesArray = likedRecipeOutputData.getRecipeNames();
-        String[] imagesArray = likedRecipeOutputData.getRecipeImages(); // 👈
+        String[] imagesArray = likedRecipeOutputData.getRecipeImages();
 
         List<Integer> ids = new ArrayList<>();
         for (int id : idsArray) {

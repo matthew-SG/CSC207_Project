@@ -508,6 +508,12 @@ public class AppBuilder {
         return this;
     }
 
+    /**
+     * Build Liked Recipe List
+     * Sets up the navigation bar with its controller and presenter.
+     *
+     * @return this builder for method chaining
+     */
     public AppBuilder buildLikedRecipeList() {
         likedRecipeListViewModel = new LikedRecipeListViewModel();
 

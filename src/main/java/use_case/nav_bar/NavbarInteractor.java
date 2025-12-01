@@ -53,7 +53,7 @@ public class NavbarInteractor implements NavbarInputBoundary{
     }
 
     @Override
-    public void switchToLikedRecipeList(){
+    public void switchToLikedRecipeList() {
         this.navbarPresenter.switchToLikedRecipeList();
     }
 }
