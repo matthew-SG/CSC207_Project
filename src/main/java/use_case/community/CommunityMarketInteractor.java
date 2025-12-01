@@ -53,7 +53,7 @@ public class CommunityMarketInteractor implements CommunityInputBoundary {
             this.communityPresenter.prepareFailView("Rating not found");
             return;
         }
-        if (queriedRating == null || queriedRating.getDetailedRecipe() == null) {
+        if (queriedRating.getDetailedRecipe() == null) {
             this.communityPresenter.prepareFailView("Detailed recipe unavailable for this rating yet.");
             return;
         }
