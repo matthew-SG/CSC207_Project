@@ -1,17 +1,19 @@
 package use_case.grocery_list;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
+
 import data_access.InMemoryUserDataAccessObject;
 import entities.Ingredient;
-import org.junit.jupiter.api.Test;
 import use_case.grocery_list.add.AddInputData;
 import use_case.grocery_list.add.AddInteractor;
 import use_case.grocery_list.add.AddOutputBoundary;
 import use_case.grocery_list.add.AddOutputData;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class AddInteractorTest {
 
