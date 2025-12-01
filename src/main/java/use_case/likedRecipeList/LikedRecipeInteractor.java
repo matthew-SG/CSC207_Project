@@ -2,6 +2,7 @@ package use_case.likedRecipeList;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import entities.InstructionStep;
 import entities.Recipe;
@@ -68,6 +69,8 @@ public class LikedRecipeInteractor implements LikedRecipeInputBoundary {
 
             // Convert recipes to the output data format
             String[] recipeNames = new String[recipes.size()];
+            String[] recipeImages = new String[recipes.size()];
+            List<Map<String, Double>> recipeNutrition = new ArrayList<>();
             List<List<String[]>> recipeIngredients = new ArrayList<>();
             List<List<String[]>> recipeSteps = new ArrayList<>();
 
@@ -76,6 +79,12 @@ public class LikedRecipeInteractor implements LikedRecipeInputBoundary {
 
                 // Extract recipe name
                 recipeNames[i] = recipe.getRecipeName();
+
+                // Extract image
+                recipeImages[i] = recipe.getRecipeImage();
+
+                // Extract nutrition
+                recipeNutrition.add(recipe.getNutritionalValues());
 
                 // Extract ingredients
                 List<String[]> ingredientsList = new ArrayList<>();
@@ -95,6 +104,8 @@ public class LikedRecipeInteractor implements LikedRecipeInputBoundary {
 
             LikedRecipeOutputData outputData = new LikedRecipeOutputData(
                     recipeNames,
+                    recipeImages,
+                    recipeNutrition,
                     recipeIngredients,
                     recipeSteps
             );
