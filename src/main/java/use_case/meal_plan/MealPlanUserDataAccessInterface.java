@@ -1,13 +1,12 @@
 package use_case.meal_plan;
 
-import entities.MealPlan;
-import entities.Recipe;
-import entities.User;
-
 import java.util.List;
 
+import entities.MealPlan;
+import entities.Recipe;
+
 /**
- * DAO interface for the Meal Plan Use Case
+ * DAO interface for the Meal Plan Use Case.
  */
 public interface MealPlanUserDataAccessInterface {
 

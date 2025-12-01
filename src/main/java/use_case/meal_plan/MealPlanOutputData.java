@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Output Data for the Meal Plan Use Case
+ * Output Data for the Meal Plan Use Case.
  */
 public class MealPlanOutputData {
 
@@ -21,12 +21,20 @@ public class MealPlanOutputData {
         this.recipeNutritionalValues = recipeNutritionalValues;
     }
 
-    public String[] getRecipeNames() { return recipeNames; }
+    public String[] getRecipeNames() {
+        return recipeNames;
+    }
 
-    public String[] getRecipeImages() { return  recipeImages; }
+    public String[] getRecipeImages() {
+        return recipeImages;
+    }
 
-    public List<List<String[]>> getIngredients() { return  recipeIngredients; }
+    public List<List<String[]>> getIngredients() {
+        return recipeIngredients;
+    }
 
-    public List<Map<String, Double>> getNutritionalValues() { return  recipeNutritionalValues; }
+    public List<Map<String, Double>> getNutritionalValues() {
+        return recipeNutritionalValues;
+    }
 
 }
