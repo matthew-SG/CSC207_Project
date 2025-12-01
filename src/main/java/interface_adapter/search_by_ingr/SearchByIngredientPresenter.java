@@ -2,7 +2,6 @@ package interface_adapter.search_by_ingr;
 
 import interface_adapter.ViewManagerModel;
 import use_case.search_by_ingr.*;
-import view.SearchByIngredientView;
 
 public class SearchByIngredientPresenter implements SearchByIngredientOutputBoundary{
     private ViewManagerModel viewManagerModel;

@@ -22,6 +22,17 @@ public class StepByStepInteractor implements StepByStepInputBoundary {
     public void execute(StepByStepInputData inputData) {
         this.steps = inputData.instructions().steps();
         this.currentIndex = inputData.currentStepIndex();
+
+        if (steps == null || steps.isEmpty()) {
+            presenter.prepareFailView("There are no steps");
+            return;
+        }
+
+        if (currentIndex < 0 || currentIndex >= steps.size()) {
+            presenter.prepareFailView("Invalid step index");
+            return;
+        }
+
         showCurrentStep();
     }
 
@@ -30,9 +41,10 @@ public class StepByStepInteractor implements StepByStepInputBoundary {
      */
     @Override
     public void nextStep() {
-        if (steps == null || currentIndex >= steps.size() - 1) return;
-        currentIndex++;
-        showCurrentStep();
+        if (currentIndex < steps.size() - 1) {
+            currentIndex++;
+            showCurrentStep();
+        }
     }
 
     /**
@@ -40,9 +52,10 @@ public class StepByStepInteractor implements StepByStepInputBoundary {
      */
     @Override
     public void previousStep() {
-        if (steps == null || currentIndex <= 0) return;
-        currentIndex--;
-        showCurrentStep();
+        if (currentIndex > 0) {
+            currentIndex--;
+            showCurrentStep();
+        }
     }
 
     /**
@@ -55,7 +68,7 @@ public class StepByStepInteractor implements StepByStepInputBoundary {
 
         StepByStepOutputData outputData = new StepByStepOutputData(
                 currentStep.getStep(),
-                currentStep.getNumber(),
+                currentIndex + 1,
                 hasNext,
                 hasPrev
         );

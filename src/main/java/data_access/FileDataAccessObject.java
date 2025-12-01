@@ -13,7 +13,6 @@ import entities.*;
 import use_case.likedRecipeList.LikedRecipeDataAccessInterface;
 import use_case.login.LoginUserDataAccessInterface;
 import use_case.signup.SignupUserDataAccessInterface;
-import use_case.approve_recipe.ApproveRecipeDataAccessInterface;
 
 /**
  * DAO for all data, mainly user data, using a File to persist the data
@@ -23,7 +22,7 @@ public class FileDataAccessObject implements UserDataAccess, ApproveRecipeDataAc
     private final File usersCsv;
     private final Map<String, Integer> headers = new LinkedHashMap<>();
     private final Map<String, User> users = new HashMap<>();
-    
+
     // Temporary storage for recipes waiting to be approved
     private List<Recipe> pendingApprovalRecipes = new ArrayList<>();
 
@@ -427,7 +426,7 @@ public class FileDataAccessObject implements UserDataAccess, ApproveRecipeDataAc
 
     @Override
     public void logout() {
-
+        // Method has no current impact on application performance
     }
 
     @Override
@@ -462,6 +461,13 @@ public class FileDataAccessObject implements UserDataAccess, ApproveRecipeDataAc
     @Override
     public List<MealPlan> getMealPlans() {
         return users.get(currentUsername).getMealPlans();
+    }
+
+    @Override
+    public void deleteMealPlan(int index) {
+        User currentUser = users.get(currentUsername);
+        currentUser.getMealPlans().remove(index);
+        saveMealPlans(currentUser, USER_MEAL_PLANS_PATH);
     }
 
     // ApproveRecipeDataAccessInterface implementation
@@ -548,5 +554,16 @@ public class FileDataAccessObject implements UserDataAccess, ApproveRecipeDataAc
             // Persist changes to JSON file
             save();
         }
+
+        // Remove from pending approval list
+        removeFromPendingApproval(recipe.getRecipeId());
+    }
+
+    /**
+     * Remove a recipe from the pending approval list (after approve or decline)
+     * @param recipeId the ID of the recipe to remove
+     */
+    public void removeFromPendingApproval(int recipeId) {
+        pendingApprovalRecipes.removeIf(r -> r.getRecipeId() == recipeId);
     }
 }

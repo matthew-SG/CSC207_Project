@@ -1,22 +1,32 @@
 package view;
 
-import data_access.SearchByIngredientSpoonacular;
-import entities.*;
-import interface_adapter.search_by_ingr.*;
-import use_case.search_by_ingr.*;
+import java.awt.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
-import java.awt.*;
-import java.net.URL;
 
-public class SearchByIngredientView extends JPanel {
+import data_access.FileDataAccessObject;
+import entities.Ingredient;
+import entities.Recipe;
+import interface_adapter.search_by_ingr.SearchByIngredientController;
+import interface_adapter.search_by_ingr.SearchByIngredientState;
+import interface_adapter.search_by_ingr.SearchByIngredientViewModel;
+
+public class SearchByIngredientView extends JPanel implements PropertyChangeListener {
 
     public static final String VIEWNAME = "Search By Ingredient";
 
     private final SearchByIngredientController controller;
-    private final SearchByIngredientSpoonacular api;
+    private final SearchByIngredientViewModel searchByIngredientViewModel;
+    private final FileDataAccessObject fileDao;
+    private interface_adapter.approve_recipe.ApproveRecipeController approveRecipeController;
+    private interface_adapter.ViewManagerModel viewManagerModel;
+
     private final JTextField nameField = new JTextField();
     private final JTextField amountField = new JTextField();
     private final JSpinner maxMissingSpinner =
@@ -30,10 +40,16 @@ public class SearchByIngredientView extends JPanel {
 
     private final JLabel statusLabel = new JLabel(" ");
 
-    public SearchByIngredientView(SearchByIngredientController controller,
-                                  SearchByIngredientSpoonacular api) {
+    public SearchByIngredientView(SearchByIngredientViewModel viewModel,
+                                  SearchByIngredientController controller,
+                                  FileDataAccessObject fileDao,
+                                  interface_adapter.ViewManagerModel viewManagerModel) {
+        this.searchByIngredientViewModel = viewModel;
         this.controller = controller;
-        this.api = api;
+        this.fileDao = fileDao;
+        this.viewManagerModel = viewManagerModel;
+
+        this.searchByIngredientViewModel.addPropertyChangeListener(this);
 
         setLayout(new BorderLayout(10, 10));
         JPanel inputRow = new JPanel(new GridLayout(2, 5, 5, 5));
@@ -51,6 +67,7 @@ public class SearchByIngredientView extends JPanel {
         JButton addIngredientBtn = new JButton("Add ingredient");
         inputRow.add(addIngredientBtn);
         add(inputRow, BorderLayout.NORTH);
+
         ingredientList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         ingredientList.setCellRenderer(new DefaultListCellRenderer() {
             @Override
@@ -66,6 +83,7 @@ public class SearchByIngredientView extends JPanel {
                         isSelected, cellHasFocus);
             }
         });
+
         recipeList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         recipeList.setCellRenderer(new DefaultListCellRenderer() {
             @Override
@@ -98,10 +116,10 @@ public class SearchByIngredientView extends JPanel {
         rightPanel.add(new JScrollPane(recipeList), BorderLayout.CENTER);
 
         JButton searchBtn = new JButton("Search recipes");
-        JButton addLikedBtn = new JButton("Add to liked list");
+        JButton approveRecipesBtn = new JButton("Approve Recipes");
         JButton detailsBtn = new JButton("Show details");
         JPanel recipeButtonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 5));
-        recipeButtonPanel.add(addLikedBtn);
+        recipeButtonPanel.add(approveRecipesBtn);
         recipeButtonPanel.add(detailsBtn);
         JPanel rightBottom = new JPanel(new BorderLayout());
         rightBottom.add(searchBtn, BorderLayout.NORTH);
@@ -120,6 +138,8 @@ public class SearchByIngredientView extends JPanel {
         addIngredientBtn.addActionListener(e -> {
             String name = nameField.getText().trim();
             String amountStr = amountField.getText().trim();
+
+            // unitField is effectively final because we never reassign it
             String unit = unitField.getText().trim();
 
             if (name.isEmpty()) {
@@ -140,15 +160,6 @@ public class SearchByIngredientView extends JPanel {
                     return;
                 }
             }
-            deleteBtn.addActionListener(eDel -> {
-                int idx = ingredientList.getSelectedIndex();
-                if (idx < 0) {
-                    statusLabel.setText("Select an ingredient to delete.");
-                    return;
-                }
-                ingredientModel.remove(idx);
-                statusLabel.setText("Ingredient removed.");
-            });
 
             Ingredient ing = new Ingredient(name, qty, unit);
             ingredientModel.addElement(ing);
@@ -160,6 +171,16 @@ public class SearchByIngredientView extends JPanel {
             statusLabel.setText("Ingredient added.");
         });
 
+        deleteBtn.addActionListener(eDel -> {
+            int idx = ingredientList.getSelectedIndex();
+            if (idx < 0) {
+                statusLabel.setText("Select an ingredient to delete.");
+                return;
+            }
+            ingredientModel.remove(idx);
+            statusLabel.setText("Ingredient removed.");
+        });
+
         clearBtn.addActionListener(e -> {
             ingredientModel.clear();
             statusLabel.setText("Ingredients cleared.");
@@ -167,14 +188,22 @@ public class SearchByIngredientView extends JPanel {
 
         searchBtn.addActionListener(e -> performSearch());
 
-        addLikedBtn.addActionListener(e -> {
-            Recipe selected = recipeList.getSelectedValue();
-            if (selected == null) {
-                statusLabel.setText("Select a recipe first.");
+        approveRecipesBtn.addActionListener(e -> {
+            if (recipeModel.isEmpty()) {
+                statusLabel.setText("Search for recipes first.");
                 return;
             }
-            statusLabel.setText("Added to liked list (not implemented yet).");
+            
+            // Navigate to approve recipe view
+            if (approveRecipeController != null) {
+                approveRecipeController.loadRecipes();
+                viewManagerModel.getState().viewName = interface_adapter.approve_recipe.ApproveRecipeViewModel.viewName;
+                viewManagerModel.firePropertyChange();
+            } else {
+                statusLabel.setText("Approve recipe controller not initialized.");
+            }
         });
+
         detailsBtn.addActionListener(e -> viewDetails());
     }
 
@@ -190,13 +219,7 @@ public class SearchByIngredientView extends JPanel {
         }
 
         int maxMissing = (Integer) maxMissingSpinner.getValue();
-
-        SearchByIngredientOutputData out = controller.search(list, maxMissing);
-        recipeModel.clear();
-        for (Recipe r : out.getRecipes()) {
-            recipeModel.addElement(r);
-        }
-        statusLabel.setText(out.getMsg());
+        controller.search(list, maxMissing);
     }
 
     private void viewDetails() {
@@ -205,8 +228,6 @@ public class SearchByIngredientView extends JPanel {
             statusLabel.setText("Select a recipe first.");
             return;
         }
-
-        api.populateRecipeDetails(selected);
 
         StringBuilder ingText = new StringBuilder();
         for (Ingredient ing : selected.getIngredients()) {
@@ -270,5 +291,29 @@ public class SearchByIngredientView extends JPanel {
 
     public String getViewName() {
         return VIEWNAME;
+    }
+
+    public void setApproveRecipeController(interface_adapter.approve_recipe.ApproveRecipeController controller) {
+        this.approveRecipeController = controller;
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        SearchByIngredientState state = searchByIngredientViewModel.getState();
+
+        recipeModel.clear();
+        if (state.getRecipes() != null) {
+            for (Recipe r : state.getRecipes()) {
+                recipeModel.addElement(r);
+            }
+        }
+
+        if (state.getErrorMessage() != null) {
+            statusLabel.setText(state.getErrorMessage());
+        } else if (state.getStatusMessage() != null) {
+            statusLabel.setText(state.getStatusMessage());
+        } else {
+            statusLabel.setText(" ");
+        }
     }
 }

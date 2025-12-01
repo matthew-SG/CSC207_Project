@@ -1,13 +1,16 @@
 package interface_adapter.step_by_step;
 
+import interface_adapter.ViewManagerModel;
 import use_case.step_by_step.StepByStepOutputBoundary;
 import use_case.step_by_step.StepByStepOutputData;
 
 public class StepByStepPresenter implements StepByStepOutputBoundary {
     private final StepByStepViewModel viewModel;
+    private final ViewManagerModel viewManagerModel;
 
-    public StepByStepPresenter(StepByStepViewModel viewModel) {
+    public StepByStepPresenter(StepByStepViewModel viewModel, ViewManagerModel viewManagerModel) {
         this.viewModel = viewModel;
+        this.viewManagerModel = viewManagerModel;
     }
 
     @Override
@@ -20,5 +23,10 @@ public class StepByStepPresenter implements StepByStepOutputBoundary {
         newState.setCanGoPrevious(outputData.hasPrevious());
 
         viewModel.setState(newState);
+    }
+
+    @Override
+    public void prepareFailView(String error) {
+        this.viewManagerModel.showsErrorMessage(error);
     }
 }

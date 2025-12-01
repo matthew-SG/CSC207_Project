@@ -78,7 +78,7 @@ public class MealPlanInteractor implements MealPlanInputBoundary{
         try {
             Double.parseDouble(str);
             return true;
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException _) {
             return false;
         }
     }
@@ -153,7 +153,7 @@ public class MealPlanInteractor implements MealPlanInputBoundary{
                 currentCalories += recipeNutritionalValues.get("Calories");
                 currentProtein += recipeNutritionalValues.get("Protein");
                 currentCarbs += recipeNutritionalValues.get("Carbohydrates");
-                currentFats += recipeNutritionalValues.get("Fat");
+                currentFats += recipeNutritionalValues.get("Fats");
             }
             currentError = Math.abs(currentCalories - targetCalories) + Math.abs(currentProtein - targetProtein) + (
                     Math.abs(currentCarbs - targetCarbs) + Math.abs(currentFats - targetFats));
