@@ -539,8 +539,6 @@ public class FileDataAccessObject implements UserDataAccess {
         if (user != null) {
             user.setGroceryList(new GroceryList(list));
 
-            String jsonPath = String.format(USER_GROCERY_LIST_PATH, currentUsername);
-
             saveGroceryList(user, jsonPath);
         }
     }
