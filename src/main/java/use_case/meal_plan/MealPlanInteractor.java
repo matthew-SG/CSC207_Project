@@ -41,10 +41,10 @@ public class MealPlanInteractor implements MealPlanInputBoundary {
         if (savedRecipes.size() < MEAL_PLAN_SIZE) {
             mealPlanPresenter.prepareFailView(
                     "At least MEAL_PLAN_SIZE saved recipes must be saved for meal plan generation.", null);
-        } 
+        }
         else if (!isDouble(inputCalories) || !isDouble(inputProtein) || !isDouble(inputCarbs) || !isDouble(inputFats)) {
             mealPlanPresenter.prepareFailView(null, "All input values must be numerical.");
-        } 
+        }
         else {
             final double targetCalories = Double.parseDouble(inputCalories);
             final double targetProtein = Double.parseDouble(inputProtein);
@@ -52,7 +52,7 @@ public class MealPlanInteractor implements MealPlanInputBoundary {
             final double targetFats = Double.parseDouble(inputFats);
             if (targetCalories < 0 || targetProtein < 0 || targetCarbs < 0 || targetFats < 0) {
                 mealPlanPresenter.prepareFailView(null, "All input values must be non-negative.");
-            } 
+            }
             else {
                 final List<Recipe> mealPlanRecipes = computeBestFittingRecipes(savedRecipes, targetCalories,
                         targetProtein, targetCarbs, targetFats);
@@ -102,7 +102,7 @@ public class MealPlanInteractor implements MealPlanInputBoundary {
         try {
             Double.parseDouble(str);
             result = true;
-        } 
+        }
         catch (NumberFormatException ex) {
             result = false;
         }
@@ -176,7 +176,7 @@ public class MealPlanInteractor implements MealPlanInputBoundary {
                 currentCalories += recipeNutritionalValues.get("Calories");
                 currentProtein += recipeNutritionalValues.get("Protein");
                 currentCarbs += recipeNutritionalValues.get("Carbohydrates");
-                currentFats += recipeNutritionalValues.get("Fats");
+                currentFats += recipeNutritionalValues.get("Fat");
             }
             currentError = Math.abs(currentCalories - targetCalories) + Math.abs(currentProtein - targetProtein) + (
                     Math.abs(currentCarbs - targetCarbs) + Math.abs(currentFats - targetFats));
