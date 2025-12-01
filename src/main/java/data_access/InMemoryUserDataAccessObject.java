@@ -189,7 +189,6 @@ public class InMemoryUserDataAccessObject implements UserDataAccess {
         if (currentUser.getGroceryList() == null) {
             return new ArrayList<>();
         }
-
         return currentUser.getGroceryList().getItems();
     }
 

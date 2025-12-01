@@ -404,6 +404,11 @@ public class AppBuilder {
         return this;
     }
 
+    /**
+     * Builds and initializes the Grocery List feature module.
+     *
+     * @return the current AppBuilder instance, allowing for fluent method chaining.
+     */
     public AppBuilder buildGroceryList() {
 
         GroceryRepository repo = userDataAccessObject;
