@@ -7,7 +7,6 @@ import use_case.grocery_list.add.AddInputData;
 import use_case.grocery_list.add.AddInteractor;
 import use_case.grocery_list.add.AddOutputBoundary;
 import use_case.grocery_list.add.AddOutputData;
-import use_case.grocery_list.TestSetup;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,10 +21,12 @@ class MockAddPresenter implements AddOutputBoundary {
         this.success = true;
     }
 
-    public boolean isSuccess() { return success; }
+    public boolean isSuccess() {
+        return success;
+    }
 }
 
-public class AddInteractorTest {
+class AddInteractorTest {
 
     @Test
     void testAddSuccessNewItem() {
@@ -41,7 +42,7 @@ public class AddInteractorTest {
 
         List<Ingredient> items = dao.getUsers().get(TestSetup.TEST_USERNAME).getGroceryList().getItems();
         assertEquals(1, items.size());
-        Ingredient addedItem = items.get(0);
+        Ingredient addedItem = items.getFirst();
         assertEquals("Apple", addedItem.getName());
         assertEquals(3.0, addedItem.getQuantity());
     }

@@ -7,7 +7,6 @@ import use_case.grocery_list.edit.EditInputData;
 import use_case.grocery_list.edit.EditInteractor;
 import use_case.grocery_list.edit.EditOutputBoundary;
 import use_case.grocery_list.edit.EditOutputData;
-import use_case.grocery_list.TestSetup;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,19 +15,18 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class MockEditPresenter implements EditOutputBoundary {
     private boolean success = false;
-    private String message = null;
 
     @Override
-    public void present(EditOutputData outputData) { // 【修正】: 使用 present
+    public void present(EditOutputData outputData) {
         this.success = true;
     }
 
-
-    public boolean isSuccess() { return success; }
-    public String getMessage() { return message; }
+    public boolean isSuccess() {
+        return success;
+    }
 }
 
-public class EditInteractorTest {
+class EditInteractorTest {
 
     @Test
     void testEditSuccess() {
@@ -47,7 +45,7 @@ public class EditInteractorTest {
         assertTrue(presenter.isSuccess(), "edit");
         List<Ingredient> items = dao.getUsers().get(TestSetup.TEST_USERNAME).getGroceryList().getItems();
 
-        Ingredient editedItem = items.get(0);
+        Ingredient editedItem = items.getFirst();
         assertEquals("Bread", editedItem.getName());
         assertEquals(2.0, editedItem.getQuantity());
         assertEquals("Loaves", editedItem.getUnit());

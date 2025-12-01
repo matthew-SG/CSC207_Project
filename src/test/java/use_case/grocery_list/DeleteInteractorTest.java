@@ -7,7 +7,6 @@ import use_case.grocery_list.delete.DeleteInputData;
 import use_case.grocery_list.delete.DeleteInteractor;
 import use_case.grocery_list.delete.DeleteOutputBoundary;
 import use_case.grocery_list.delete.DeleteOutputData;
-import use_case.grocery_list.TestSetup;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,18 +15,18 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class MockDeletePresenter implements DeleteOutputBoundary {
     private boolean success = false;
-    private String message = null;
 
     @Override
     public void present(DeleteOutputData outputData) {
         this.success = true;
     }
 
-    public boolean isSuccess() { return success; }
-    public String getMessage() { return message; }
+    public boolean isSuccess() {
+        return success;
+    }
 }
 
-public class DeleteInteractorTest {
+class DeleteInteractorTest {
 
     @Test
     void testDeleteSuccess() {
@@ -47,6 +46,6 @@ public class DeleteInteractorTest {
         List<Ingredient> items = dao.getUsers().get(TestSetup.TEST_USERNAME).getGroceryList().getItems();
 
         assertEquals(1, items.size());
-        assertEquals("Eggs", items.get(0).getName());
+        assertEquals("Eggs", items.getFirst().getName());
     }
 }

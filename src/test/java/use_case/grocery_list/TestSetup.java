@@ -5,7 +5,6 @@ import entities.User;
 import entities.GroceryList;
 import entities.Ingredient;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 

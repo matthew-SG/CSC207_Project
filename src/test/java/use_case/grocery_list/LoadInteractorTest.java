@@ -19,10 +19,13 @@ class MockLoadPresenter implements LoadOutputBoundary {
     public void present(LoadOutputData outputData) {
         this.receivedItems = outputData.items;
     }
-    public List<Ingredient> getReceivedItems() { return receivedItems; }
+
+    public List<Ingredient> getReceivedItems() {
+        return receivedItems;
+    }
 }
 
-public class LoadInteractorTest {
+class LoadInteractorTest {
 
     @Test
     void testLoadSuccessNonEmpty() {
@@ -39,7 +42,7 @@ public class LoadInteractorTest {
         List<Ingredient> loadedList = presenter.getReceivedItems();
         assertNotNull(loadedList);
         assertEquals(1, loadedList.size());
-        assertEquals("Banana", loadedList.get(0).getName());
+        assertEquals("Banana", loadedList.getFirst().getName());
     }
 
     @Test
