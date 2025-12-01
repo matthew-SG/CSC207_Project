@@ -200,7 +200,7 @@ public class GroceryView extends JPanel implements PropertyChangeListener {
             String newName = JOptionPane.showInputDialog(this, "Edit Item name", g.getName());
             if (newName == null) return;
 
-            String newQty = JOptionPane.showInputDialog(this, "Edit Quantity",
+            final String newQty = JOptionPane.showInputDialog(this, "Edit Quantity",
                     String.valueOf(g.getQuantity()));
             if (newQty == null) return;
 
@@ -217,7 +217,7 @@ public class GroceryView extends JPanel implements PropertyChangeListener {
         });
 
         delBtn.addActionListener(e -> {
-            int ok = JOptionPane.showConfirmDialog(this, "Delete item?", "Confirm",
+            final int ok = JOptionPane.showConfirmDialog(this, "Delete item?", "Confirm",
                     JOptionPane.YES_NO_OPTION);
             if (ok == JOptionPane.YES_OPTION) {
                 controller.delete(index);
