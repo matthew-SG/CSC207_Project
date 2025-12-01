@@ -112,7 +112,7 @@ public class AppBuilder {
     // In Memory Data Access Object
     // private UserDataAccess userDataAccessObject = new InMemoryUserDataAccessObject();
     // Persistent File Data Access Object
-    private final FileDataAccessObject fileUserDataAccessObject = new FileDataAccessObject("data/users.csv", userFactory, apiKey);
+    private final FileDataAccessObject fileUserDataAccessObject = new FileDataAccessObject("data/users.csv", userFactory, API_KEY);
     private UserDataAccess userDataAccessObject = fileUserDataAccessObject;
     private CommunityDataAccessInterface communityDataAccessObject = new DBCommunityDataAccessObject(fileUserDataAccessObject);
     private ApproveRecipeDataAccessInterface approveRecipeDataAccessObject;

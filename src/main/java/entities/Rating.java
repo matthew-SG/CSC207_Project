@@ -12,6 +12,8 @@ public class Rating {
     private final String recipeName;
     private final String recipeImageUrl;
 
+    private Recipe detailedRecipe;
+
     public Rating(int ratingId, int recipeId, String username, int stars, String comment, String recipeName,
                   String recipeImageUrl) {
         this.ratingId = ratingId;
