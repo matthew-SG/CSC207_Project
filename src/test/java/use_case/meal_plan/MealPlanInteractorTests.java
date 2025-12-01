@@ -199,7 +199,105 @@ public class MealPlanInteractorTests {
         expectedNutritionalInfo.add(nutritionalInfo);
         expectedNutritionalInfo.add(nutritionalInfo);
 
-        // Presenter to see if use case works as expected
+        // Presenter to see if use case works as expected (returns correct names and images,
+        //      sizes of structures are correct)
+        MealPlanOutputBoundary presenter = new MealPlanOutputBoundary() {
+            @Override
+            public void prepareSuccessView(MealPlanOutputData mealPlanOutputData) {
+                assertEquals(mealPlanOutputData.getIngredients().size(), expectedIngredients.size());
+                assertArrayEquals(mealPlanOutputData.getRecipeImages(), expectedImages);
+                assertArrayEquals(mealPlanOutputData.getRecipeNames(), expectedNames);
+                assertEquals(mealPlanOutputData.getNutritionalValues().size(), expectedNutritionalInfo.size());
+            }
+
+            @Override
+            public void prepareFailView(String listError, String inputError) {
+                fail("Use case failure is unexpected");
+            }
+        };
+
+        MealPlanInputBoundary interactor = new MealPlanInteractor(userRepository, presenter);
+        interactor.execute(mealPlanInputData);
+    }
+
+    /**
+     * Test the interactor when the user has more than three recipes
+     */
+    @Test
+    public void successMoreThanThreeRecipes() {
+        // Values of non-negative input data do not matter as the returned meal plan should just be the three recipes
+        //      in the user's liked recipes, in the same order
+        MealPlanInputData mealPlanInputData = new MealPlanInputData("50", "50", "50", "50");
+        InMemoryUserDataAccessObject  userRepository = new InMemoryUserDataAccessObject();
+
+        // Creating a user to test the interactor on
+        userRepository.signupUser("Matthew", "password");
+        userRepository.login("Matthew", "password");
+
+        // Ingredients have no impact on the success
+        List<Ingredient> ingredients = new ArrayList<>();
+        ingredients.add(new Ingredient("salt", 100, "kg"));
+
+        // Four different nutritional infos for four different recipes
+        Map<String, Double> nutritionalInfo1 = new HashMap<>();
+        nutritionalInfo1.put("Calories", 5.0);
+        nutritionalInfo1.put("Carbohydrates", 5.0);
+        nutritionalInfo1.put("Fat", 5.0);
+        nutritionalInfo1.put("Protein", 5.0);
+
+        Map<String, Double> nutritionalInfo2 = new HashMap<>();
+        nutritionalInfo2.put("Calories", 15.0);
+        nutritionalInfo2.put("Carbohydrates", 15.0);
+        nutritionalInfo2.put("Fat", 15.0);
+        nutritionalInfo2.put("Protein", 15.0);
+
+        Map<String, Double> nutritionalInfo3 = new HashMap<>();
+        nutritionalInfo3.put("Calories", 15.0);
+        nutritionalInfo3.put("Carbohydrates", 15.0);
+        nutritionalInfo3.put("Fat", 15.0);
+        nutritionalInfo3.put("Protein", 15.0);
+
+        Map<String, Double> nutritionalInfo4 = new HashMap<>();
+        nutritionalInfo4.put("Calories", 20.0);
+        nutritionalInfo4.put("Carbohydrates", 20.0);
+        nutritionalInfo4.put("Fat", 20.0);
+        nutritionalInfo4.put("Protein", 20.0);
+
+        // 4 different recipes with 4 different nutritional compositions
+        Recipe recipe1 = new Recipe(1234, "spaghetti", "idontexist.jpg", ingredients,
+                "italian", nutritionalInfo1);
+        Recipe recipe2 = new Recipe(1324, "linguini", "idontexist.jpg", ingredients,
+                "italian", nutritionalInfo2);
+        Recipe recipe3 = new Recipe(3124, "fettuccine", "idontexist.jpg", ingredients,
+                "italian", nutritionalInfo3);
+        Recipe recipe4 = new Recipe(5678, "tortellini", "iDOexist.jpg", ingredients,
+                "italian", nutritionalInfo4);
+
+        List<Recipe> likedRecipes = userRepository.getSavedRecipes();
+        likedRecipes.add(recipe1);
+        likedRecipes.add(recipe2);
+        likedRecipes.add(recipe3);
+        likedRecipes.add(recipe4);
+
+        // The output recipes should be the last 3 as per the algorithm, in the order they appear in the user's
+        //      liked recipes
+        String[] expectedNames = {"linguini", "fettuccine", "tortellini"};
+        String[] expectedImages = {"idontexist.jpg", "idontexist.jpg", "iDOexist.jpg"};
+
+        List<List<String[]>> expectedIngredients = new ArrayList<>();
+        List<String[]> nestedIngredients = new ArrayList<>();
+        expectedIngredients.add(nestedIngredients);
+        expectedIngredients.add(nestedIngredients);
+        expectedIngredients.add(nestedIngredients);
+        nestedIngredients.add(new String[]{"salt","100.0","kg"});
+
+        List<Map<String, Double>> expectedNutritionalInfo = new ArrayList<>();
+        expectedNutritionalInfo.add(nutritionalInfo2);
+        expectedNutritionalInfo.add(nutritionalInfo3);
+        expectedNutritionalInfo.add(nutritionalInfo4);
+
+        // Presenter to see if use case works as expected (returns correct names and images,
+        //      sizes of structures are correct)
         MealPlanOutputBoundary presenter = new MealPlanOutputBoundary() {
             @Override
             public void prepareSuccessView(MealPlanOutputData mealPlanOutputData) {
