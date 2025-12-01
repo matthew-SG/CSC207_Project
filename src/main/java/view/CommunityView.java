@@ -28,6 +28,7 @@ public class CommunityView extends JPanel implements PropertyChangeListener {
     private final JScrollPane scrollPane;
     private final JLabel titleLabel;
     private final JButton postReviewButton;
+    private final JButton refreshReviewButton;
 
     public CommunityView(CommunityViewModel communityViewModel, ViewManagerModel viewManagerModel) {
         this.communityViewModel = communityViewModel;
@@ -56,9 +57,26 @@ public class CommunityView extends JPanel implements PropertyChangeListener {
                 communityController.viewToPost(viewManagerModel.getState().userName, viewManagerModel.getState().isLoggedIn);
             }
         });
+
+        refreshReviewButton = new JButton("Refresh Review");
+        refreshReviewButton.setPreferredSize(new Dimension(150, 40));
+        refreshReviewButton.setBackground(new Color(70, 130, 180));
+        refreshReviewButton.setForeground(Color.WHITE);
+        refreshReviewButton.setFocusPainted(false);
+        refreshReviewButton.addActionListener(e -> {
+            if (communityController != null) {
+                communityController.viewCommunity();
+            }
+        });
+
+
+
+
+
         
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttonPanel.add(postReviewButton);
+        buttonPanel.add(refreshReviewButton);
         topPanel.add(buttonPanel, BorderLayout.EAST);
         
         this.add(topPanel, BorderLayout.NORTH);
