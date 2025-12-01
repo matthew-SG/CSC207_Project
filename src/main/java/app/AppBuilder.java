@@ -49,6 +49,7 @@ import use_case.community.CommunityOutputBoundary;
 import use_case.delete_meal_plan.DeleteMealPlanInputBoundary;
 import use_case.delete_meal_plan.DeleteMealPlanInteractor;
 import use_case.delete_meal_plan.DeleteMealPlanOutputBoundary;
+import use_case.grocery_list.GroceryRepository;
 import use_case.grocery_list.add.AddInteractor;
 import use_case.grocery_list.delete.DeleteInteractor;
 import use_case.grocery_list.edit.EditInteractor;
@@ -349,7 +350,7 @@ public class AppBuilder {
         signupView.setSignupController(controller);
 
         final LoginOutputBoundary loginOutputBoundary = new LoginPresenter(viewManagerModel,
-                loggedInViewModel, loginViewModel, navbarManagerViewModel);
+                loggedInViewModel, loginViewModel, navbarManagerViewModel, this.groceryController);
         final LoginInputBoundary loginInteractor = new LoginInteractor(
                 userDataAccessObject, loginOutputBoundary);
 
@@ -404,8 +405,8 @@ public class AppBuilder {
     }
 
     public AppBuilder buildGroceryList() {
-        String jsonPath = "grocery_list.json";
-        JsonGroceryRepository repo = new JsonGroceryRepository(jsonPath);
+
+        GroceryRepository repo = userDataAccessObject;
 
         GroceryViewModel vm = new GroceryViewModel();
         GroceryPresenter presenter = new GroceryPresenter(vm);
@@ -416,6 +417,7 @@ public class AppBuilder {
         LoadInteractor loadUC = new LoadInteractor(repo, presenter);
 
         GroceryController controller = new GroceryController(addUC, editUC, deleteUC, loadUC);
+        this.groceryController = controller;
         contentPanel.add(new GroceryView(controller, vm), "Grocery_List");
         return this;
     }
