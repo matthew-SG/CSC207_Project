@@ -13,6 +13,8 @@ import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
+import static interface_adapter.grocery_list.InputValidator.isValidQuantity;
+
 public class GroceryView extends JPanel implements PropertyChangeListener {
 
     private final transient GroceryController controller;
@@ -28,23 +30,6 @@ public class GroceryView extends JPanel implements PropertyChangeListener {
     private static final Color EVEN_ROW_BG = new Color(248, 250, 252);
     private static final String MY_FONT = "SansSerif";
 
-    private boolean isValidQuantity(String qty) {
-        if (qty.trim().isEmpty()) {
-            return false;
-        }
-
-        try {
-            double quantity = Double.parseDouble(qty.trim());
-
-            if (quantity <= 0) {
-                return false;
-            }
-            return true;
-
-        } catch (NumberFormatException e) {
-            return false;
-        }
-    }
 
     public GroceryView(GroceryController controller, GroceryViewModel viewModel) {
         this.controller = controller;
