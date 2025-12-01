@@ -11,7 +11,7 @@ import java.util.List;
 public class InMemoryCommunityDataAccessObject implements CommunityDataAccessInterface {
 
     @Override
-    public List<Recipe> getLikedRecipes(User user) {
+    public List<Recipe> getLikedRecipes(String username) {
         return List.of();
     }
 

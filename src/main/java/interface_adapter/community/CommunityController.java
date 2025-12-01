@@ -1,6 +1,7 @@
 package interface_adapter.community;
 
 import use_case.community.CommunityInputBoundary;
+import use_case.community.input_data.CommunityLikeRecipeInputData;
 import use_case.community.input_data.CommunityPoseSelectionInputData;
 import use_case.community.input_data.CommunityPublishInputData;
 import use_case.community.input_data.CommunityRecipeSelectionInputData;
@@ -39,6 +40,12 @@ public class CommunityController {
                         recipeName,
                         recipeImageUrl
                 )
+        );
+    }
+
+    public void likeRecipe(int ratingId, String username) {
+        this.communityInteractor.likeRecipe(
+                new CommunityLikeRecipeInputData(username, ratingId)
         );
     }
 }

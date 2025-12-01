@@ -1,6 +1,7 @@
 package use_case.community;
 
 
+import use_case.community.input_data.CommunityLikeRecipeInputData;
 import use_case.community.input_data.CommunityPoseSelectionInputData;
 import use_case.community.input_data.CommunityPublishInputData;
 import use_case.community.input_data.CommunityRecipeSelectionInputData;
@@ -10,6 +11,11 @@ import use_case.community.input_data.CommunityRecipeSelectionInputData;
  */
 public interface CommunityInputBoundary {
     void viewCommunity();
+
+    /**
+     * Get
+     */
+    void likeRecipe(CommunityLikeRecipeInputData data);
 
     /**
      * Executes the view to view liked recipes.

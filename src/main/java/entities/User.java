@@ -71,6 +71,10 @@ public class User {
         this.groceryList = groceryList;
     }
 
+    public void setGroceryList(GroceryList groceryList) {
+        this.groceryList = groceryList;
+    }
+
     @Override
     public String toString() {
         return "User{" + "username='" + username + '\'' + ", savedRecipes=" + savedRecipes.size()

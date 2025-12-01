@@ -14,6 +14,8 @@ import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
+import static interface_adapter.grocery_list.InputValidator.isValidQuantity;
+
 public class GroceryView extends JPanel implements PropertyChangeListener {
 
     private final transient GroceryController controller;
@@ -115,7 +117,21 @@ public class GroceryView extends JPanel implements PropertyChangeListener {
             String name = nameField.getText().trim();
             String qty = qtyField.getText().trim();
             String units = unitsField.getText().trim();
-            if (name.isEmpty() || qty.isEmpty()) return;
+
+            if (name.isEmpty() || qty.isEmpty()) {
+                JOptionPane.showMessageDialog(this,
+                        "Item Name and Quantity cannot be empty.",
+                        "Input Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            if (!isValidQuantity(qty)) {
+                JOptionPane.showMessageDialog(this,
+                        "Quantity must be a valid number.", "Input Error", JOptionPane.ERROR_MESSAGE);
+                qtyField.requestFocusInWindow();
+                return;
+            }
+
             controller.add(name, qty, units);
             nameField.setText("");
             qtyField.setText("");
@@ -190,15 +206,26 @@ public class GroceryView extends JPanel implements PropertyChangeListener {
         editBtn.addActionListener(e -> {
             String newName = JOptionPane.showInputDialog(this, "Edit Item name", g.getName());
             if (newName == null) return;
-            String newQty = JOptionPane.showInputDialog(this, "Edit Quantity", String.valueOf(g.getQuantity()));
+
+            final String newQty = JOptionPane.showInputDialog(this, "Edit Quantity",
+                    String.valueOf(g.getQuantity()));
             if (newQty == null) return;
+
+            if (!isValidQuantity(newQty)) {
+                JOptionPane.showMessageDialog(this, "New Quantity must be a valid number.",
+                        "Input Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
             String newUnits = JOptionPane.showInputDialog(this, "Edit units", g.getUnit());
             if (newUnits == null) return;
+
             controller.edit(index, newName, newQty, newUnits);
         });
 
         delBtn.addActionListener(e -> {
-            int ok = JOptionPane.showConfirmDialog(this, "Delete item?", "Confirm", JOptionPane.YES_NO_OPTION);
+            final int ok = JOptionPane.showConfirmDialog(this, "Delete item?", "Confirm",
+                    JOptionPane.YES_NO_OPTION);
             if (ok == JOptionPane.YES_OPTION) {
                 controller.delete(index);
             }

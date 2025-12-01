@@ -11,7 +11,7 @@ import java.util.List;
  * DataAccessInterface for community
  */
 public interface CommunityDataAccessInterface {
-    List<Recipe> getLikedRecipes(User user);
+    List<Recipe> getLikedRecipes(String username);
     Recipe getSelectedRecipe(int recipeID);
 
     List<Rating> getCurrentRatings();
