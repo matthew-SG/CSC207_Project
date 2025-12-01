@@ -1,6 +1,5 @@
 package use_case.search_by_ingr;
 
-import data_access.SearchByIngredientSpoonacular;
 import entities.Ingredient;
 import entities.Recipe;
 import entities.unitConverter;
@@ -13,50 +12,74 @@ import java.util.List;
 public class SearchByIngredientInteractor implements SearchByIngredientInputBoundary {
 
     private static final int MAX_RECIPES = 10;
-    private final SearchByIngredientSpoonacular api;
+    private final SearchByIngredientGateway gateway;
+    private final SearchByIngredientOutputBoundary presenter;
     private final data_access.FileDataAccessObject approveRecipeDAO;
 
-    public SearchByIngredientInteractor(SearchByIngredientSpoonacular api, 
+    public SearchByIngredientInteractor(SearchByIngredientGateway gateway,
+                                        SearchByIngredientOutputBoundary presenter,
                                         data_access.FileDataAccessObject approveRecipeDAO) {
-        this.api = api;
+        this.gateway = gateway;
+        this.presenter = presenter;
         this.approveRecipeDAO = approveRecipeDAO;
     }
 
     @Override
-    public SearchByIngredientOutputData execute(SearchByIngredientInputData inputData) {
+    public void execute(SearchByIngredientInputData inputData) {
         List<Ingredient> ingredients = inputData.getIngredients();
 
         if (ingredients == null || ingredients.isEmpty()) {
-            return new SearchByIngredientOutputData(
-                    List.of(),
-                    "Enter at least one ingredient."
-            );
+            presenter.prepareFailView("Enter at least one ingredient.");
+            return;
         }
 
-        // Business rule: missing amount cannot be negative.
         int allowedMissing = Math.max(0, inputData.getAmountMissing());
 
-        JSONArray results = api.searchByIngredientSpoonacular(ingredients);
-        List<Recipe> recipes = new ArrayList<>();
+        JSONObject apiResult = gateway.searchByIngredients(ingredients);
 
-        for (int i = 0; i < results.length() && recipes.size() < MAX_RECIPES; i++) {
-            JSONObject recipeJson = results.getJSONObject(i);
+        if (apiResult == null) {
+            presenter.prepareFailView("Failed to call the API.");
+            return;
+        }
+
+        JSONArray findResults = apiResult.getJSONArray("findResults");
+        JSONArray bulkResults = apiResult.getJSONArray("bulkResults");
+        ArrayList<Integer> acceptedIds = new ArrayList<>();
+
+        for (int i = 0; i < findResults.length() && acceptedIds.size() < MAX_RECIPES; i++) {
+            JSONObject recipeJson = findResults.getJSONObject(i);
 
             if (shouldIncludeRecipe(recipeJson, ingredients, allowedMissing)) {
-                recipes.add(buildRecipe(recipeJson));
+                int id = recipeJson.getInt("id");
+                acceptedIds.add(id);
             }
         }
 
-        // Make recipes available for approval
+        if (acceptedIds.isEmpty()) {
+            presenter.prepareSuccessView(new SearchByIngredientOutputData(
+                    new ArrayList<>(),
+                    "No recipes found within the allowed missing ingredients."
+            ));
+            return;
+        }
+
+        List<Recipe> recipes = new ArrayList<>();
+        for (int i = 0; i < bulkResults.length(); i++) {
+            JSONObject recipeJson = bulkResults.getJSONObject(i);
+            int id = recipeJson.getInt("id");
+
+            if (!acceptedIds.contains(id)) {
+                continue;
+            }
+
+            Recipe recipe = buildFullRecipeFromBulk(recipeJson);
+            recipes.add(recipe);
+        }
         if (approveRecipeDAO != null) {
             approveRecipeDAO.setAvailableRecipes(recipes);
         }
-
-        String msg = recipes.isEmpty()
-                ? "No recipes found within the allowed missing ingredients."
-                : "Found " + recipes.size() + " recipes.";
-
-        return new SearchByIngredientOutputData(recipes, msg);
+        String message = "Found " + recipes.size() + " recipes.";
+        presenter.prepareSuccessView(new SearchByIngredientOutputData(recipes, message));
     }
 
     private boolean shouldIncludeRecipe(JSONObject recipeJson,
@@ -145,17 +168,109 @@ public class SearchByIngredientInteractor implements SearchByIngredientInputBoun
     private double convertUserToRecipeUnit(double userQuantity,
                                            String userUnit,
                                            String recipeUnit) {
-        // toTbsp + fromTbsp is your existing conversion API
         double asTbsp = unitConverter.toTbsp(userQuantity, userUnit);
         return unitConverter.fromTbsp(asTbsp, recipeUnit);
     }
 
-    private Recipe buildRecipe(JSONObject recipeJson) {
-        return new Recipe(
-                recipeJson.getInt("id"),
-                recipeJson.getString("title"),
-                recipeJson.getString("image"),
-                "N/A"
-        );
+    private Recipe buildFullRecipeFromBulk(JSONObject recipeJson) {
+        int id = recipeJson.getInt("id");
+        String title = recipeJson.optString("title", "");
+        String image = recipeJson.optString("image", "");
+        String mealType = extractMealType(recipeJson);
+
+        Recipe recipe = new Recipe(id, title, image, mealType);
+        recipe.setIngredients(extractIngredients(recipeJson));
+        recipe.setSteps(extractSteps(recipeJson));
+        addNutrition(recipe, recipeJson);
+
+        return recipe;
+    }
+
+    private String extractMealType(JSONObject recipeJson) {
+        if (!recipeJson.has("dishTypes")) {
+            return "N/A";
+        }
+
+        JSONArray dishTypes = recipeJson.optJSONArray("dishTypes");
+        if (dishTypes == null || dishTypes.length() == 0) {
+            return "N/A";
+        }
+
+        return dishTypes.optString(0, "N/A");
+    }
+
+    private List<Ingredient> extractIngredients(JSONObject recipeJson) {
+        List<Ingredient> ingredients = new ArrayList<>();
+
+        JSONArray extIngr = recipeJson.optJSONArray("extendedIngredients");
+        if (extIngr == null) {
+            return ingredients;
+        }
+
+        for (int i = 0; i < extIngr.length(); i++) {
+            JSONObject ingJson = extIngr.getJSONObject(i);
+            String name = ingJson.optString("name", "");
+            double amount = ingJson.optDouble("amount", 0.0);
+            String unit = ingJson.optString("unit", "");
+            ingredients.add(new Ingredient(name, amount, unit));
+        }
+
+        return ingredients;
+    }
+
+    private String extractSteps(JSONObject recipeJson) {
+        StringBuilder stepsBuilder = new StringBuilder();
+
+        JSONArray instructions = recipeJson.optJSONArray("analyzedInstructions");
+        if (instructions == null || instructions.length() == 0) {
+            return "";
+        }
+
+        JSONObject firstInstr = instructions.optJSONObject(0);
+        if (firstInstr == null) {
+            return "";
+        }
+
+        JSONArray steps = firstInstr.optJSONArray("steps");
+        if (steps == null) {
+            return "";
+        }
+
+        for (int i = 0; i < steps.length(); i++) {
+            JSONObject stepObj = steps.getJSONObject(i);
+            int number = stepObj.optInt("number", i + 1);
+            String stepText = stepObj.optString("step", "");
+            stepsBuilder
+                    .append(number)
+                    .append(". ")
+                    .append(stepText)
+                    .append("\n");
+        }
+
+        return stepsBuilder.toString().trim();
+    }
+
+    private void addNutrition(Recipe recipe, JSONObject recipeJson) {
+        JSONObject nutrition = recipeJson.optJSONObject("nutrition");
+        if (nutrition == null) {
+            return;
+        }
+
+        JSONArray nutrients = nutrition.optJSONArray("nutrients");
+        if (nutrients == null) {
+            return;
+        }
+
+        for (int i = 0; i < nutrients.length(); i++) {
+            JSONObject n = nutrients.getJSONObject(i);
+            String name = n.optString("name", "");
+            double amount = n.optDouble("amount", 0.0);
+            String unit = n.optString("unit", "");
+            if (!name.isEmpty()) {
+                recipe.addNutritionalValue(name + " (" + unit + ")", amount);
+            }
+        }
     }
 }
+
+

@@ -30,6 +30,8 @@ public class DeleteMealPlanInteractor implements DeleteMealPlanInputBoundary {
 
         if (mealPlans.size() == 1) {
             deleteMealPlanPresenter.prepareFailureView("Cannot delete only meal plan!");
+        } else if (index < 0 || index >= mealPlans.size()) {
+            deleteMealPlanPresenter.prepareFailureView("Error: Index out of bounds!");
         } else {
             dataAccessObject.deleteMealPlan(index);
             mealPlans = dataAccessObject.getMealPlans();

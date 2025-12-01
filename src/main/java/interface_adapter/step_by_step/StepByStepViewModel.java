@@ -14,6 +14,14 @@ public class StepByStepViewModel {
         pcs.firePropertyChange("state", oldState, newState);
     }
 
+    public String getViewName() {
+        return "step by step";
+    }
+
+    public void firePropertyChange() {
+        pcs.firePropertyChange(null, null, null);
+    }
+
     public StepByStepState getState() {
         return state;
     }

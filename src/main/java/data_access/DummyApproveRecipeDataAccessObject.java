@@ -91,4 +91,11 @@ public class DummyApproveRecipeDataAccessObject implements ApproveRecipeDataAcce
             }
         }
     }
+
+    @Override
+    public void removeFromPendingApproval(int recipeId) {
+        // Dummy implementation - this class uses static sample recipes
+        // so removing from pending list doesn't apply here
+        availableRecipes.removeIf(r -> r.getRecipeId() == recipeId);
+    }
 }
