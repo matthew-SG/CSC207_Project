@@ -20,8 +20,8 @@ import java.net.URL;
  * User data is stored locally in memory (not persisted to database).
  */
 public class SpoonacularApproveRecipeDataAccessObject implements ApproveRecipeDataAccessInterface {
-    private static final String API_KEY = "5b07df6820b74cf1b2eae9c1b440f014";
-    private static final String API_BASE_URL = "https://api.spoonacular.com/recipes";
+    private static final String API_KEY = Constants.SPOONACULAR_API_KEY;
+    private static final String API_BASE_URL = Constants.SPOONACULAR_BASE_URL;
 
     private final Map<String, User> users;
     private List<Recipe> cachedRecipes;
@@ -118,11 +118,13 @@ public class SpoonacularApproveRecipeDataAccessObject implements ApproveRecipeDa
     private int extractIntValue(String json, String key) {
         try {
             int start = json.indexOf(key);
-            if (start == -1) return -1;
+            if (start == -1)
+                return -1;
             start += key.length();
 
             int end = json.indexOf(",", start);
-            if (end == -1) end = json.length();
+            if (end == -1)
+                end = json.length();
 
             String valueStr = json.substring(start, end).trim();
             return Integer.parseInt(valueStr);
@@ -134,11 +136,13 @@ public class SpoonacularApproveRecipeDataAccessObject implements ApproveRecipeDa
     private String extractStringValue(String json, String key) {
         try {
             int start = json.indexOf(key);
-            if (start == -1) return "";
+            if (start == -1)
+                return "";
             start += key.length();
 
             int end = json.indexOf("\"", start);
-            if (end == -1) return "";
+            if (end == -1)
+                return "";
 
             return json.substring(start, end);
         } catch (Exception e) {
@@ -190,7 +194,8 @@ public class SpoonacularApproveRecipeDataAccessObject implements ApproveRecipeDa
 
             if (!alreadySaved) {
                 user.getSavedRecipes().add(recipe);
-                System.out.println("Recipe '" + recipe.getRecipeName() + "' added to " + username + "'s saved recipes!");
+                System.out
+                        .println("Recipe '" + recipe.getRecipeName() + "' added to " + username + "'s saved recipes!");
             }
         }
     }

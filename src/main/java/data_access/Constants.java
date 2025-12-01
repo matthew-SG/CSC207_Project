@@ -3,7 +3,20 @@ package data_access;
 public class Constants {
     // Constants for Community Use Case
     public static String WEBAPI_KEY = "AIzaSyDRtQtANy7zkSqpmO9CXQDiLFl7cU5uLeU";
-    public static String AUTH_ENDPOINT = "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyDRtQtANy7zkSqpmO9CXQDiLFl7cU5uLeU&";
+    public static String AUTH_ENDPOINT = "https://identitytoolkit.googleapis.com/v1/"
+            + "accounts:signInWithPassword?key=AIzaSyDRtQtANy7zkSqpmO9CXQDiLFl7cU5uLeU&";
+
+    /**
+     * Private constructor to prevent instantiation of utility class.
+     */
+    private Constants() {
+        throw new UnsupportedOperationException("Utility class cannot be instantiated");
+    }
+
+    // Constants for Spoonacular API
+    public static final String SPOONACULAR_API_KEY = "5b07df6820b74cf1b2eae9c1b440f014";
+    public static final String SPOONACULAR_BASE_URL = "https://api.spoonacular.com/recipes";
+    public static final String SPOONACULAR_SEARCH_KEY = "c175c29f3c7a45fab7d5357d0f9ed25e";
 
     // Constants for File DAO
     public static final String HEADER = "username,password";

@@ -17,17 +17,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RecipeDataAccessObject implements RecipeDataAccessInterface {
-    private static final String API_KEY = "5b07df6820b74cf1b2eae9c1b440f014";
+    private static final String API_KEY = Constants.SPOONACULAR_API_KEY;
     private static final String API_BASE_URL = "https://api.spoonacular.com/recipes/complexSearch";
 
     @Override
     public List<Recipe> getRecipes(DietaryRestriction dietaryRestriction,
-                                   List<Intolerance> intolerances,
-                                   Cuisine cuisine,
-                                   Integer minCalories,
-                                   Integer maxCalories,
-                                   Integer minProtein,
-                                   Integer maxProtein) {
+            List<Intolerance> intolerances,
+            Cuisine cuisine,
+            Integer minCalories,
+            Integer maxCalories,
+            Integer minProtein,
+            Integer maxProtein) {
 
         // first we have to build the api url with all the filters
         String apiUrl = buildApiUrl(dietaryRestriction, intolerances, cuisine,
@@ -38,7 +38,6 @@ public class RecipeDataAccessObject implements RecipeDataAccessInterface {
         System.out.println("[RECIPE-GEN DAO] intolerances = " + intolerances);
         System.out.println("[RECIPE-GEN DAO] cuisine = " + cuisine);
         System.out.println("[RECIPE-GEN DAO] Spoonacular request URL: " + apiUrl);
-
 
         // get the recipes from API
         String jsonResponse = callSpoonacular(apiUrl);
@@ -62,8 +61,8 @@ public class RecipeDataAccessObject implements RecipeDataAccessInterface {
      * Builds the complete Spoonacular API URL with all query parameters
      */
     private String buildApiUrl(DietaryRestriction dietaryRestriction, List<Intolerance> intolerances,
-                               Cuisine cuisine, Integer minCalories, Integer maxCalories,
-                               Integer minProtein, Integer maxProtein) {
+            Cuisine cuisine, Integer minCalories, Integer maxCalories,
+            Integer minProtein, Integer maxProtein) {
 
         StringBuilder url = new StringBuilder(API_BASE_URL);
         url.append("?apiKey=").append(API_KEY);
@@ -87,10 +86,14 @@ public class RecipeDataAccessObject implements RecipeDataAccessInterface {
         }
 
         // Add nutrition bounds for protein and calories
-        if (minCalories != null) url.append("&minCalories=").append(minCalories);
-        if (maxCalories != null) url.append("&maxCalories=").append(maxCalories);
-        if (minProtein != null) url.append("&minProtein=").append(minProtein);
-        if (maxProtein != null) url.append("&maxProtein=").append(maxProtein);
+        if (minCalories != null)
+            url.append("&minCalories=").append(minCalories);
+        if (maxCalories != null)
+            url.append("&maxCalories=").append(maxCalories);
+        if (minProtein != null)
+            url.append("&minProtein=").append(minProtein);
+        if (maxProtein != null)
+            url.append("&maxProtein=").append(maxProtein);
 
         return url.toString();
     }
@@ -114,8 +117,7 @@ public class RecipeDataAccessObject implements RecipeDataAccessInterface {
             reader = new BufferedReader(new InputStreamReader(
                     (status >= 200 && status < 300)
                             ? connection.getInputStream()
-                            : connection.getErrorStream()
-            ));
+                            : connection.getErrorStream()));
 
             StringBuilder response = new StringBuilder();
             String line;
@@ -130,9 +132,12 @@ public class RecipeDataAccessObject implements RecipeDataAccessInterface {
             return null;
         } finally {
             try {
-                if (reader != null) reader.close();
-                if (connection != null) connection.disconnect();
-            } catch (Exception ignored) {}
+                if (reader != null)
+                    reader.close();
+                if (connection != null)
+                    connection.disconnect();
+            } catch (Exception ignored) {
+            }
         }
     }
 
@@ -147,7 +152,8 @@ public class RecipeDataAccessObject implements RecipeDataAccessInterface {
 
             for (int i = 0; i < results.length(); i++) {
                 Recipe recipe = parseRecipeFromJson(results.getJSONObject(i));
-                if (recipe != null) recipes.add(recipe);
+                if (recipe != null)
+                    recipes.add(recipe);
             }
         } catch (Exception e) {
             System.err.println("Error parsing JSON: " + e.getMessage());
@@ -210,8 +216,8 @@ public class RecipeDataAccessObject implements RecipeDataAccessInterface {
      * Filters recipes by calorie and protein bounds
      */
     private List<Recipe> filterRecipesByNutrition(List<Recipe> recipes,
-                                                  Integer minCalories, Integer maxCalories,
-                                                  Integer minProtein, Integer maxProtein) {
+            Integer minCalories, Integer maxCalories,
+            Integer minProtein, Integer maxProtein) {
         List<Recipe> filtered = new ArrayList<>();
 
         for (Recipe recipe : recipes) {
@@ -227,21 +233,26 @@ public class RecipeDataAccessObject implements RecipeDataAccessInterface {
      * Checks if a recipe meets all nutrition requirements
      */
     private boolean meetsNutritionRequirements(Recipe recipe,
-                                               Integer minCalories, Integer maxCalories,
-                                               Integer minProtein, Integer maxProtein) {
+            Integer minCalories, Integer maxCalories,
+            Integer minProtein, Integer maxProtein) {
         Double calories = recipe.getNutritionalValues().get("calories");
         Double protein = recipe.getNutritionalValues().get("protein");
 
-        if (minCalories != null && calories != null && calories < minCalories) return false;
-        if (maxCalories != null && calories != null && calories > maxCalories) return false;
-        if (minProtein != null && protein != null && protein < minProtein) return false;
-        if (maxProtein != null && protein != null && protein > maxProtein) return false;
+        if (minCalories != null && calories != null && calories < minCalories)
+            return false;
+        if (maxCalories != null && calories != null && calories > maxCalories)
+            return false;
+        if (minProtein != null && protein != null && protein < minProtein)
+            return false;
+        if (maxProtein != null && protein != null && protein > maxProtein)
+            return false;
 
         return true;
     }
 
     private String mapDiet(DietaryRestriction dietaryRestriction) {
-        if (dietaryRestriction == null || dietaryRestriction == DietaryRestriction.NONE) return "";
+        if (dietaryRestriction == null || dietaryRestriction == DietaryRestriction.NONE)
+            return "";
 
         return switch (dietaryRestriction) {
             case VEGAN -> "vegan";
@@ -254,7 +265,8 @@ public class RecipeDataAccessObject implements RecipeDataAccessInterface {
     }
 
     private String mapCuisine(Cuisine cuisine) {
-        if (cuisine == null || cuisine == Cuisine.ANY) return "";
+        if (cuisine == null || cuisine == Cuisine.ANY)
+            return "";
 
         return switch (cuisine) {
             case MEXICAN -> "mexican";
@@ -266,12 +278,14 @@ public class RecipeDataAccessObject implements RecipeDataAccessInterface {
     }
 
     private String mapIntolerances(List<Intolerance> intolerances) {
-        if (intolerances == null || intolerances.isEmpty()) return "";
+        if (intolerances == null || intolerances.isEmpty())
+            return "";
 
         List<String> tokens = new ArrayList<>();
 
         for (Intolerance intolerance : intolerances) {
-            if (intolerance == null || intolerance == Intolerance.NONE) continue;
+            if (intolerance == null || intolerance == Intolerance.NONE)
+                continue;
 
             String token = switch (intolerance) {
                 case DAIRY -> "dairy";
@@ -284,7 +298,8 @@ public class RecipeDataAccessObject implements RecipeDataAccessInterface {
                 default -> null;
             };
 
-            if (token != null) tokens.add(token);
+            if (token != null)
+                tokens.add(token);
         }
 
         return String.join(",", tokens);
