@@ -192,7 +192,7 @@ public class AppBuilder {
         communityViewModel = new CommunityViewModel();
     }
 
-    public AppBuilder buildErrorPopUp(){
+    public AppBuilder buildErrorPopUp() {
         errorMessageView = new ErrorMessageView(viewManagerModel);
         return this;
     }
@@ -258,6 +258,11 @@ public class AppBuilder {
                         recipeGeneratorController,
                         viewManagerModel
                 );
+
+        // Set approve recipe controller if it exists
+        if (approveRecipeController != null) {
+            recipeGeneratorView.setApproveRecipeController(approveRecipeController);
+        }
 
         // register view with main content panel
         contentPanel.add(recipeGeneratorView, recipeGeneratorViewModel.getViewName());
@@ -393,7 +398,7 @@ public class AppBuilder {
         navBarContentPanel.add(navBarLoggedIn, NavbarManagerViewModel.LOGGED_IN);
 
         navbarManagerViewModel = new NavbarManagerViewModel();
-        navBarManagerView = new NavBarManagerView(navBarContentPanel, navBarCardLayout,navbarManagerViewModel);
+        navBarManagerView = new NavBarManagerView(navBarContentPanel, navBarCardLayout, navbarManagerViewModel);
 
         return this;
     }
@@ -477,7 +482,13 @@ public class AppBuilder {
         searchByIngredientView =
                 new SearchByIngredientView(searchByIngredientViewModel,
                         searchByIngredientController,
-                        (FileDataAccessObject) userDataAccessObject);
+                        (FileDataAccessObject) userDataAccessObject,
+                        viewManagerModel);
+
+        // Set approve recipe controller if it exists
+        if (approveRecipeController != null) {
+            searchByIngredientView.setApproveRecipeController(approveRecipeController);
+        }
 
         contentPanel.add(searchByIngredientView, SearchByIngredientView.VIEWNAME);
         return this;

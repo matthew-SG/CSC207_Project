@@ -26,7 +26,7 @@ public class SearchByIngredientSpoonacular implements SearchByIngredientGateway 
     }
 
     public SearchByIngredientSpoonacular() {
-        this.apiKey = "6e0b1d9ab8b94b9dbf723c0203286189";
+        this.apiKey = "c175c29f3c7a45fab7d5357d0f9ed25e";
     }
 
     @Override
@@ -71,7 +71,7 @@ public class SearchByIngredientSpoonacular implements SearchByIngredientGateway 
         ingredientsString = ingredientsString.replace(" ", "+");
 
         HttpUrl url = HttpUrl.parse(BYINGREDIENTSURL).newBuilder()
-                .addQueryParameter("apiKey", apiKey)
+                .addQueryParameter("apiKey", this.apiKey)
                 .addQueryParameter("ingredients", ingredientsString)
                 // returns 9 results
                 .addQueryParameter("number", "9")
@@ -90,17 +90,30 @@ public class SearchByIngredientSpoonacular implements SearchByIngredientGateway 
 
         try {
             Response response = client.newCall(request).execute();
+            if (!response.isSuccessful()) {
+                System.err.println("API request failed with code: " + response.code());
+                System.err.println("Response: " + response.body().string());
+                return null;
+            }
             String rspns = response.body().string();
             if (rspns.charAt(0) == '{') {
+                System.err.println("API returned error object: " + rspns);
                 return null;
             }
             final JSONArray responseBody = new JSONArray(rspns);
             if (responseBody.isEmpty()) {
-                throw new IOException("Empty response");
+                System.err.println("API returned empty array");
+                return null;
             }
             return responseBody;
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            System.err.println("IOException calling search API: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        } catch (Exception e) {
+            System.err.println("Unexpected error calling search API: " + e.getMessage());
+            e.printStackTrace();
+            return null;
         }
     }
 
@@ -123,7 +136,7 @@ public class SearchByIngredientSpoonacular implements SearchByIngredientGateway 
         String recipeIds = String.join(",", recIds);
 
         HttpUrl url = HttpUrl.parse(RECIPEINFOURL).newBuilder()
-                .addQueryParameter("apiKey", apiKey)
+                .addQueryParameter("apiKey", this.apiKey)
                 .addQueryParameter("ids", recipeIds)
                 .addQueryParameter("includeNutrition", "true")
                 .build();
@@ -138,14 +151,26 @@ public class SearchByIngredientSpoonacular implements SearchByIngredientGateway 
 
         try {
             Response response = client.newCall(request).execute();
+            if (!response.isSuccessful()) {
+                System.err.println("Bulk API request failed with code: " + response.code());
+                System.err.println("Response: " + response.body().string());
+                return new JSONArray();
+            }
             String rspns = response.body().string();
             final JSONArray responseBody = new JSONArray(rspns);
             if (responseBody.length() == 0) {
-                throw new IOException("Empty response");
+                System.err.println("Bulk API returned empty array");
+                return new JSONArray();
             }
             return responseBody;
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            System.err.println("IOException calling bulk info API: " + e.getMessage());
+            e.printStackTrace();
+            return new JSONArray();
+        } catch (Exception e) {
+            System.err.println("Unexpected error calling bulk info API: " + e.getMessage());
+            e.printStackTrace();
+            return new JSONArray();
         }
     }
 }

@@ -24,6 +24,8 @@ public class SearchByIngredientView extends JPanel implements PropertyChangeList
     private final SearchByIngredientController controller;
     private final SearchByIngredientViewModel searchByIngredientViewModel;
     private final FileDataAccessObject fileDao;
+    private interface_adapter.approve_recipe.ApproveRecipeController approveRecipeController;
+    private interface_adapter.ViewManagerModel viewManagerModel;
 
     private final JTextField nameField = new JTextField();
     private final JTextField amountField = new JTextField();
@@ -40,10 +42,12 @@ public class SearchByIngredientView extends JPanel implements PropertyChangeList
 
     public SearchByIngredientView(SearchByIngredientViewModel viewModel,
                                   SearchByIngredientController controller,
-                                  FileDataAccessObject fileDao) {
+                                  FileDataAccessObject fileDao,
+                                  interface_adapter.ViewManagerModel viewManagerModel) {
         this.searchByIngredientViewModel = viewModel;
         this.controller = controller;
         this.fileDao = fileDao;
+        this.viewManagerModel = viewManagerModel;
 
         this.searchByIngredientViewModel.addPropertyChangeListener(this);
 
@@ -112,10 +116,10 @@ public class SearchByIngredientView extends JPanel implements PropertyChangeList
         rightPanel.add(new JScrollPane(recipeList), BorderLayout.CENTER);
 
         JButton searchBtn = new JButton("Search recipes");
-        JButton addLikedBtn = new JButton("Add to liked list");
+        JButton approveRecipesBtn = new JButton("Approve Recipes");
         JButton detailsBtn = new JButton("Show details");
         JPanel recipeButtonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 5));
-        recipeButtonPanel.add(addLikedBtn);
+        recipeButtonPanel.add(approveRecipesBtn);
         recipeButtonPanel.add(detailsBtn);
         JPanel rightBottom = new JPanel(new BorderLayout());
         rightBottom.add(searchBtn, BorderLayout.NORTH);
@@ -184,20 +188,20 @@ public class SearchByIngredientView extends JPanel implements PropertyChangeList
 
         searchBtn.addActionListener(e -> performSearch());
 
-        addLikedBtn.addActionListener(e -> {
-            Recipe selected = recipeList.getSelectedValue();
-            if (selected == null) {
-                statusLabel.setText("Select a recipe first.");
+        approveRecipesBtn.addActionListener(e -> {
+            if (recipeModel.isEmpty()) {
+                statusLabel.setText("Search for recipes first.");
                 return;
             }
-            String username = fileDao.getCurrentUsername();
-            if (username == null || username.isEmpty()) {
-                statusLabel.setText("You must be logged in to save recipes.");
-                return;
+            
+            // Navigate to approve recipe view
+            if (approveRecipeController != null) {
+                approveRecipeController.loadRecipes();
+                viewManagerModel.getState().viewName = interface_adapter.approve_recipe.ApproveRecipeViewModel.viewName;
+                viewManagerModel.firePropertyChange();
+            } else {
+                statusLabel.setText("Approve recipe controller not initialized.");
             }
-
-            fileDao.saveRecipeToUser(username, selected);
-            statusLabel.setText("Recipe added to your liked list.");
         });
 
         detailsBtn.addActionListener(e -> viewDetails());
@@ -287,6 +291,10 @@ public class SearchByIngredientView extends JPanel implements PropertyChangeList
 
     public String getViewName() {
         return VIEWNAME;
+    }
+
+    public void setApproveRecipeController(interface_adapter.approve_recipe.ApproveRecipeController controller) {
+        this.approveRecipeController = controller;
     }
 
     @Override
