@@ -14,6 +14,7 @@ import java.io.BufferedReader;
 
 import entities.*;
 import use_case.community.CommunityUserRecipeDataAccessInterface;
+import use_case.likedRecipeList.LikedRecipeDataAccessInterface;
 import use_case.login.LoginUserDataAccessInterface;
 import use_case.signup.SignupUserDataAccessInterface;
 import use_case.approve_recipe.ApproveRecipeDataAccessInterface;
@@ -21,8 +22,7 @@ import use_case.approve_recipe.ApproveRecipeDataAccessInterface;
 /**
  * DAO for all data, mainly user data, using a File to persist the data
  */
-public class FileDataAccessObject implements UserDataAccess, CommunityUserRecipeDataAccessInterface,
-        ApproveRecipeDataAccessInterface {
+public class FileDataAccessObject implements UserDataAccess, ApproveRecipeDataAccessInterface, CommunityUserRecipeDataAccessInterface, LikedRecipeDataAccessInterface {
 
     private final File usersCsv;
     private final Map<String, Integer> headers = new LinkedHashMap<>();
@@ -33,15 +33,21 @@ public class FileDataAccessObject implements UserDataAccess, CommunityUserRecipe
 
     private String currentUsername;
 
+    private final FindInstructionsSpoonacular instructionsApi;
+    private final String apiKey;
+
     /**
      * Construct this DAO for saving to and reading from local files
      * @param csvPath the path of the file to save users to
      * @param userFactory factory for creating user objects
+     * @param apiKey factory stores the api key
      * @throws RuntimeException if there is an IOException when accessing the file
      */
-    public FileDataAccessObject(String csvPath, UserFactory userFactory) throws RuntimeException {
+    public FileDataAccessObject(String csvPath, UserFactory userFactory, String apiKey) throws RuntimeException {
 
         usersCsv = new File(csvPath);
+        this.instructionsApi = new FindInstructionsSpoonacular();
+        this.apiKey = apiKey;
         headers.put("username", 0);
         headers.put("password", 1);
 
@@ -572,6 +578,34 @@ public class FileDataAccessObject implements UserDataAccess, CommunityUserRecipe
      */
     public void setAvailableRecipes(List<Recipe> recipes) {
         this.pendingApprovalRecipes = recipes != null ? new ArrayList<>(recipes) : new ArrayList<>();
+    }
+
+    @Override
+    public void saveLikedRecipe(String username, Recipe recipe) {
+        saveRecipeToUser(username, recipe);
+    }
+
+    @Override
+    public void deleteLikedRecipe(String username, int recipeId) {
+        User user = users.get(username);
+        if (user == null) {
+            System.err.println("User not found: " + username);
+            return;
+        }
+
+        user.getSavedRecipes().removeIf(recipe -> recipe.getRecipeId() == recipeId);
+        save();
+    }
+
+    @Override
+    public List<Recipe> getLikedRecipes(String username) {
+        User user = users.get(username);
+        return user != null ? user.getSavedRecipes() : new ArrayList<>();
+    }
+
+    @Override
+    public List<InstructionStep> getAnalyzedInstructions(int recipeId) {
+        return instructionsApi.getAnalyzedInstructions(recipeId, apiKey);
     }
 
     @Override
