@@ -208,8 +208,11 @@ public class InMemoryUserDataAccessObject implements UserDataAccess {
         // This is a no-op since in-memory DAO doesn't manage pending recipes
     }
 
-
-
+    @Override
+    public void setAvailableRecipes(List<Recipe> recipes) {
+        // In-memory implementation - no pending approval list to maintain
+        // This is a no-op since in-memory DAO doesn't manage pending recipes
+    }
 
     @Override
     public List<Ingredient> load() {

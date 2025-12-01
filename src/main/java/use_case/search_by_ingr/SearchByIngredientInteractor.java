@@ -9,6 +9,7 @@ import org.json.JSONObject;
 import entities.Ingredient;
 import entities.Recipe;
 import entities.UnitConverter;
+import use_case.approve_recipe.ApproveRecipeDataAccessInterface;
 
 /**
  * Interactor for the search by ingredient use case.
@@ -24,11 +25,11 @@ public class SearchByIngredientInteractor implements SearchByIngredientInputBoun
 
     private final SearchByIngredientGateway gateway;
     private final SearchByIngredientOutputBoundary presenter;
-    private final data_access.FileDataAccessObject approveRecipeDataAccessObject;
+    private final ApproveRecipeDataAccessInterface approveRecipeDataAccessObject;
 
     public SearchByIngredientInteractor(SearchByIngredientGateway gateway,
                                         SearchByIngredientOutputBoundary presenter,
-                                        data_access.FileDataAccessObject approveRecipeDataAccessObject) {
+                                        ApproveRecipeDataAccessInterface approveRecipeDataAccessObject) {
         this.gateway = gateway;
         this.presenter = presenter;
         this.approveRecipeDataAccessObject = approveRecipeDataAccessObject;
