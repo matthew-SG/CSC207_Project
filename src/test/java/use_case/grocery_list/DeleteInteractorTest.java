@@ -13,20 +13,20 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class MockDeletePresenter implements DeleteOutputBoundary {
-    private boolean success = false;
-
-    @Override
-    public void present(DeleteOutputData outputData) {
-        this.success = true;
-    }
-
-    public boolean isSuccess() {
-        return success;
-    }
-}
-
 class DeleteInteractorTest {
+
+    private static class MockDeletePresenter implements DeleteOutputBoundary {
+        private boolean success = false;
+
+        @Override
+        public void present(DeleteOutputData outputData) {
+            this.success = true;
+        }
+
+        public boolean isSuccess() {
+            return success;
+        }
+    }
 
     @Test
     void testDeleteSuccess() {

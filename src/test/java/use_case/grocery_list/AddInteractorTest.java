@@ -13,20 +13,20 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class MockAddPresenter implements AddOutputBoundary {
-    private boolean success = false;
-
-    @Override
-    public void present(AddOutputData outputData) {
-        this.success = true;
-    }
-
-    public boolean isSuccess() {
-        return success;
-    }
-}
-
 class AddInteractorTest {
+
+    private static class MockAddPresenter implements AddOutputBoundary {
+        private boolean success = false;
+
+        @Override
+        public void present(AddOutputData outputData) {
+            this.success = true;
+        }
+
+        public boolean isSuccess() {
+            return success;
+        }
+    }
 
     @Test
     void testAddSuccessNewItem() {

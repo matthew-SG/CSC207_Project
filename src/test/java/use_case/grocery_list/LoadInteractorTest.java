@@ -12,20 +12,20 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class MockLoadPresenter implements LoadOutputBoundary {
-    private List<Ingredient> receivedItems = null;
-
-    @Override
-    public void present(LoadOutputData outputData) {
-        this.receivedItems = outputData.items;
-    }
-
-    public List<Ingredient> getReceivedItems() {
-        return receivedItems;
-    }
-}
-
 class LoadInteractorTest {
+
+    private static class MockLoadPresenter implements LoadOutputBoundary {
+        private List<Ingredient> receivedItems = null;
+
+        @Override
+        public void present(LoadOutputData outputData) {
+            this.receivedItems = outputData.items;
+        }
+
+        public List<Ingredient> getReceivedItems() {
+            return receivedItems;
+        }
+    }
 
     @Test
     void testLoadSuccessNonEmpty() {
