@@ -1,0 +1,59 @@
+package use_case.grocery_list;
+
+import data_access.InMemoryUserDataAccessObject;
+import entities.Ingredient;
+import org.junit.jupiter.api.Test;
+import use_case.grocery_list.load.LoadInteractor;
+import use_case.grocery_list.load.LoadOutputBoundary;
+import use_case.grocery_list.load.LoadOutputData;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+class MockLoadPresenter implements LoadOutputBoundary {
+    private List<Ingredient> receivedItems = null;
+
+    @Override
+    public void present(LoadOutputData outputData) {
+        this.receivedItems = outputData.items;
+    }
+    public List<Ingredient> getReceivedItems() { return receivedItems; }
+}
+
+public class LoadInteractorTest {
+
+    @Test
+    void testLoadSuccessNonEmpty() {
+
+        Ingredient banana = new Ingredient("Banana", 5, "pcs");
+        List<Ingredient> initialList = new ArrayList<>(List.of(banana));
+
+        InMemoryUserDataAccessObject dao = TestSetup.setupLoggedInUser(initialList);
+        MockLoadPresenter presenter = new MockLoadPresenter();
+        LoadInteractor interactor = new LoadInteractor(dao, presenter);
+
+        interactor.execute();
+
+        List<Ingredient> loadedList = presenter.getReceivedItems();
+        assertNotNull(loadedList);
+        assertEquals(1, loadedList.size());
+        assertEquals("Banana", loadedList.get(0).getName());
+    }
+
+    @Test
+    void testLoadSuccessEmptyList() {
+        List<Ingredient> initialList = new ArrayList<>();
+
+        InMemoryUserDataAccessObject dao = TestSetup.setupLoggedInUser(initialList);
+        MockLoadPresenter presenter = new MockLoadPresenter();
+        LoadInteractor interactor = new LoadInteractor(dao, presenter);
+
+        interactor.execute();
+
+        List<Ingredient> loadedList = presenter.getReceivedItems();
+        assertNotNull(loadedList);
+        assertTrue(loadedList.isEmpty());
+    }
+}
