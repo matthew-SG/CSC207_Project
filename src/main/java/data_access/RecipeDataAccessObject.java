@@ -219,6 +219,23 @@ public class RecipeDataAccessObject implements RecipeDataAccessInterface {
         }
     }
 
+    /**
+     * Returns default dummy recipe (fallback if API fails)
+     */
+    private List<Recipe> getDefaultRecipes() {
+        List<Recipe> recipes = new ArrayList<>();
+
+        Recipe veggieTacos = new Recipe(1, "Veggie Tacos", "https://example.com/tacos.jpg", "DINNER");
+        veggieTacos.getIngredients().add(new Ingredient("Tortilla", 2, "pieces"));
+        veggieTacos.getIngredients().add(new Ingredient("Black beans", 100, "g"));
+        veggieTacos.getIngredients().add(new Ingredient("Cheddar cheese", 30, "g"));
+        veggieTacos.getNutritionalValues().put("calories", 450.0);
+        veggieTacos.getNutritionalValues().put("protein", 18.0);
+
+        recipes.add(veggieTacos);
+        return recipes;
+    }
+
     // the calories and protein were filtered both locally and externally by the api for testing purposes for when the api fails
     /**
      * Filters recipes by calorie and protein bounds
