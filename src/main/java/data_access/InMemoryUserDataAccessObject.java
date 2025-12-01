@@ -175,4 +175,31 @@ public class InMemoryUserDataAccessObject implements UserDataAccess {
         // In-memory implementation - no pending approval list to maintain
         // This is a no-op since in-memory DAO doesn't manage pending recipes
     }
+
+
+
+
+    @Override
+    public List<Ingredient> load() {
+        if (this.currentUsername == null || !this.users.containsKey(this.currentUsername)) {
+            return new ArrayList<>();
+        }
+
+        User currentUser = this.users.get(this.currentUsername);
+        if (currentUser.getGroceryList() == null) {
+            return new ArrayList<>();
+        }
+        return currentUser.getGroceryList().getItems();
+    }
+
+
+    @Override
+    public void save(List<Ingredient> list) {
+        if (this.currentUsername != null && this.users.containsKey(this.currentUsername)) {
+            User currentUser = this.users.get(this.currentUsername);
+
+            currentUser.setGroceryList(new GroceryList(list));
+        }
+
+    }
 }
