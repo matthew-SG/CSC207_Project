@@ -4,11 +4,13 @@ import entities.Intolerance; // import Intolerance, Cuisine, dietary Restriction
 import entities.DietaryRestriction;
 import entities.Cuisine;
 import java.util.List;
+// the controller converts validated UI values into a GenerateRecipeDataInputData
 // model of what use case 1 needs as an input
 // set filters ie dietary restrictions, intolerances etc.
+// Clean Architecture: The UI builds an instance of this and hands it over to the interactor, prevents use case from seeing raw Swing fields
 public class GenerateRecipeInputData {
-    private final DietaryRestriction dietaryRestriction;
-    private final List<Intolerance> intolerances;
+    private final DietaryRestriction dietaryRestriction; // one enum value
+    private final List<Intolerance> intolerances; // list of enum values
     private final Cuisine cuisine;
     private final Integer minCalories;
     private final Integer maxCalories;
