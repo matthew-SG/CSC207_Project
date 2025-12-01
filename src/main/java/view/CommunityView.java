@@ -33,7 +33,7 @@ public class CommunityView extends JPanel implements PropertyChangeListener {
     public CommunityView(CommunityViewModel communityViewModel, ViewManagerModel viewManagerModel) {
         this.communityViewModel = communityViewModel;
         this.viewManagerModel = viewManagerModel;
-        this.communityViewModel.addPropertyChangeListener(this);
+        this.communityViewModel.addPropertyChangeListener(this);;
 
         this.setLayout(new BorderLayout(10, 10));
         this.setBorder(new EmptyBorder(20, 20, 20, 20));
@@ -258,7 +258,7 @@ public class CommunityView extends JPanel implements PropertyChangeListener {
             return;
         }
 
-    ViewManagerState managerState = viewManagerModel.getState();
+        ViewManagerState managerState = viewManagerModel.getState();
         if (managerState == null || !managerState.isLoggedIn) {
             JOptionPane.showMessageDialog(this,
                     "Log in to add recipes to your liked list.",
@@ -303,20 +303,21 @@ public class CommunityView extends JPanel implements PropertyChangeListener {
             // Only update if this is the viewing state
             if (CommunityViewModel.VIEWING.equals(state.getSubviewName()) || 
                 CommunityViewModel.PUB_SUCC.equals(state.getSubviewName())) {
-                updateView(state);
+                // Ensure UI updates happen on EDT
+                SwingUtilities.invokeLater(() -> updateView(state));
             }
         }
     }
 
     private void updateView(CommunityState state) {
-    List<String> recipeNames = state.getRecipeNames();
-    List<Integer> stars = state.getStars();
-    List<String> comments = state.getComments();
-    List<String> recipeImages = state.getRecipeImages();
-    List<String> usernames = state.getUsernames();
-    List<Integer> ratingIds = state.getRatingIds();
+        List<String> recipeNames = state.getRecipeNames();
+        List<Integer> stars = state.getStars();
+        List<String> comments = state.getComments();
+        List<String> recipeImages = state.getRecipeImages();
+        List<String> usernames = state.getUsernames();
+        List<Integer> ratingIds = state.getRatingIds();
         
-    displayReviews(recipeNames, stars, comments, recipeImages, usernames, ratingIds);
+        displayReviews(recipeNames, stars, comments, recipeImages, usernames, ratingIds);
         
         // Update title if there's a prompt
         if (state.getPrompt() != null && !state.getPrompt().isEmpty()) {
