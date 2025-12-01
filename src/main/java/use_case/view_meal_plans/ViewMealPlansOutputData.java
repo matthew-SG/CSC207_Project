@@ -3,7 +3,7 @@ package use_case.view_meal_plans;
 import java.util.List;
 
 /**
- * Output Data for the View Meal Plans Use Case
+ * Output Data for the View Meal Plans Use Case.
  */
 public class ViewMealPlansOutputData {
 
@@ -13,8 +13,8 @@ public class ViewMealPlansOutputData {
     private final List<Double> targetCarbs;
     private final List<Double> targetFats;
 
-    public ViewMealPlansOutputData(List<String> firstRecipeName, List<Double> targetCalories, List<Double> targetProtein,
-                                   List<Double> targetCarbs, List<Double> targetFats) {
+    public ViewMealPlansOutputData(List<String> firstRecipeName, List<Double> targetCalories,
+                                   List<Double> targetProtein, List<Double> targetCarbs, List<Double> targetFats) {
         this.firstRecipeNames = firstRecipeName;
         this.targetCalories = targetCalories;
         this.targetProtein = targetProtein;

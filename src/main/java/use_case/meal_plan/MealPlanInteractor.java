@@ -40,10 +40,10 @@ public class MealPlanInteractor implements MealPlanInputBoundary {
 
         if (savedRecipes.size() < MEAL_PLAN_SIZE) {
             mealPlanPresenter.prepareFailView(
-                    "At least MEAL_PLAN_SIZE saved recipes must be saved for meal plan generation.", null);
+                    "At least 3 saved recipes must be saved for meal plan generation!", null);
         }
         else if (!isDouble(inputCalories) || !isDouble(inputProtein) || !isDouble(inputCarbs) || !isDouble(inputFats)) {
-            mealPlanPresenter.prepareFailView(null, "All input values must be numerical.");
+            mealPlanPresenter.prepareFailView(null, "All input values must be numerical!");
         }
         else {
             final double targetCalories = Double.parseDouble(inputCalories);
@@ -51,7 +51,7 @@ public class MealPlanInteractor implements MealPlanInputBoundary {
             final double targetCarbs = Double.parseDouble(inputCarbs);
             final double targetFats = Double.parseDouble(inputFats);
             if (targetCalories < 0 || targetProtein < 0 || targetCarbs < 0 || targetFats < 0) {
-                mealPlanPresenter.prepareFailView(null, "All input values must be non-negative.");
+                mealPlanPresenter.prepareFailView(null, "All input values must be non-negative!");
             }
             else {
                 final List<Recipe> mealPlanRecipes = computeBestFittingRecipes(savedRecipes, targetCalories,
