@@ -435,7 +435,7 @@ public class AppBuilder {
 
         GroceryController controller = new GroceryController(addUC, editUC, deleteUC, loadUC);
         this.groceryController = controller;
-        contentPanel.add(new GroceryView(controller, vm), "Grocery_List");
+        contentPanel.add(new GroceryView(controller, vm, viewManagerModel), "Grocery_List");
         return this;
     }
 
