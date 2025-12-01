@@ -1,5 +1,8 @@
 package entities;
 
+/**
+ * Enumerable representing possible intolerances.
+ */
 public enum Intolerance {
     DAIRY,
     NUTS,

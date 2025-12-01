@@ -20,7 +20,7 @@ import use_case.community.output_data.CommunityRatingsOutputData;
 import use_case.community.output_data.CommunitySelectedRecipeOutputData;
 
 
-public class CommunityInteractorTests {
+class CommunityInteractorTests {
     @Test
     void successPublish() {
         CommunityPublishInputData inputData = new CommunityPublishInputData("Grace",
@@ -237,7 +237,7 @@ public class CommunityInteractorTests {
     @Test
     void daoReturnsAllLikedRecipes() {
         DummyCommunityDataAccessObject dao = new DummyCommunityDataAccessObject();
-        User user = new User("Grace", "pw", null);
+        User user = new User("Grace", "pw", new ArrayList<>(), new ArrayList<>(), null);
 
         List<Recipe> likedRecipes = dao.getLikedRecipes(user);
 

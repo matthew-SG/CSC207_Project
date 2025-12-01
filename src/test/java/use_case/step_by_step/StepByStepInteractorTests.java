@@ -24,10 +24,10 @@ class StepByStepInteractorTest {
 
         // Create sample steps for testing
         sampleSteps = List.of(
-                new InstructionStep(1, "Heat the oven to 350°F", List.of(), List.of()),
-                new InstructionStep(2, "Mix the ingredients", List.of(), List.of()),
-                new InstructionStep(3, "Pour into pan", List.of(), List.of()),
-                new InstructionStep(4, "Bake for 30 minutes", List.of(), List.of())
+                new InstructionStep(1, "Heat the oven to 350°F"),
+                new InstructionStep(2, "Mix the ingredients"),
+                new InstructionStep(3, "Pour into pan"),
+                new InstructionStep(4, "Bake for 30 minutes")
         );
     }
 
@@ -363,7 +363,7 @@ class StepByStepInteractorTest {
     void testSingleStepRecipe() {
         // Arrange
         List<InstructionStep> singleStep = List.of(
-                new InstructionStep(1, "Only step", List.of(), List.of())
+                new InstructionStep(1, "Only step")
         );
         RecipeInstructions instructions = new RecipeInstructions(singleStep);
         StepByStepInputData inputData = new StepByStepInputData(instructions, 0);
@@ -385,7 +385,7 @@ class StepByStepInteractorTest {
     void testSingleStepRecipeNextButton() {
         // Arrange
         List<InstructionStep> singleStep = List.of(
-                new InstructionStep(1, "Only step", List.of(), List.of())
+                new InstructionStep(1, "Only step")
         );
         RecipeInstructions instructions = new RecipeInstructions(singleStep);
         StepByStepInputData inputData = new StepByStepInputData(instructions, 0);
@@ -403,7 +403,7 @@ class StepByStepInteractorTest {
     void testSingleStepRecipePreviousButton() {
         // Arrange
         List<InstructionStep> singleStep = List.of(
-                new InstructionStep(1, "Only step", List.of(), List.of())
+                new InstructionStep(1, "Only step")
         );
         RecipeInstructions instructions = new RecipeInstructions(singleStep);
         StepByStepInputData inputData = new StepByStepInputData(instructions, 0);
@@ -423,8 +423,8 @@ class StepByStepInteractorTest {
     void testTwoStepRecipeNavigation() {
         // Arrange
         List<InstructionStep> twoSteps = List.of(
-                new InstructionStep(1, "First step", List.of(), List.of()),
-                new InstructionStep(2, "Second step", List.of(), List.of())
+                new InstructionStep(1, "First step"),
+                new InstructionStep(2, "Second step")
         );
         RecipeInstructions instructions = new RecipeInstructions(twoSteps);
         StepByStepInputData inputData = new StepByStepInputData(instructions, 0);

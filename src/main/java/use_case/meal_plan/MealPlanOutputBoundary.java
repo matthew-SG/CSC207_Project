@@ -12,7 +12,7 @@ public interface MealPlanOutputBoundary {
     void prepareSuccessView(MealPlanOutputData mealPlanOutputData);
 
     /**
-     * Prepares the fail view for the Meal Plan Use Case
+     * Prepares the fail view for the Meal Plan Use Case.
      * @param listError the error to be displayed due to the saved recipes
      * @param inputError the error to be displayed due to the input
      */

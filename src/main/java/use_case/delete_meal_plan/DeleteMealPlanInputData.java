@@ -1,7 +1,7 @@
 package use_case.delete_meal_plan;
 
 /**
- * Input data for the delete meal plan use case
+ * Input data for the delete meal plan use case.
  */
 public class DeleteMealPlanInputData {
     private final int index;

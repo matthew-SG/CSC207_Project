@@ -8,7 +8,7 @@ import use_case.view_meal_plans.ViewMealPlansOutputBoundary;
 import use_case.view_meal_plans.ViewMealPlansOutputData;
 
 /**
- * Interactor for the delete meal plan use case
+ * Interactor for the delete meal plan use case.
  */
 public class DeleteMealPlanInteractor implements DeleteMealPlanInputBoundary {
     private final DeleteMealPlanDataAccessInterface dataAccessObject;
@@ -30,9 +30,11 @@ public class DeleteMealPlanInteractor implements DeleteMealPlanInputBoundary {
 
         if (mealPlans.size() == 1) {
             deleteMealPlanPresenter.prepareFailureView("Cannot delete only meal plan!");
-        } else if (index < 0 || index >= mealPlans.size()) {
+        }
+        else if (index < 0 || index >= mealPlans.size()) {
             deleteMealPlanPresenter.prepareFailureView("Error: Index out of bounds!");
-        } else {
+        }
+        else {
             dataAccessObject.deleteMealPlan(index);
             mealPlans = dataAccessObject.getMealPlans();
 
@@ -42,7 +44,7 @@ public class DeleteMealPlanInteractor implements DeleteMealPlanInputBoundary {
             final List<Double> targetCarbs = getTargetCarbs(mealPlans);
             final List<Double> targetFats = getTargetFats(mealPlans);
 
-            ViewMealPlansOutputData viewMealPlansOutputData = new ViewMealPlansOutputData(firstRecipeNames,
+            final ViewMealPlansOutputData viewMealPlansOutputData = new ViewMealPlansOutputData(firstRecipeNames,
                     targetCalories, targetProtein, targetCarbs, targetFats);
 
             viewMealPlansPresenter.prepareSuccessView(viewMealPlansOutputData);
@@ -50,12 +52,12 @@ public class DeleteMealPlanInteractor implements DeleteMealPlanInputBoundary {
     }
 
     /**
-     * Returns a list of the target carbs of every Meal Plan in mealPlans
+     * Returns a list of the target carbs of every Meal Plan in mealPlans.
      * @param mealPlans the list of MealPlans
      * @return the list of the target fats for each MealPlan in mealPlans
      */
     private static List<Double> getTargetFats(List<MealPlan> mealPlans) {
-        List<Double> result = new ArrayList<>();
+        final List<Double> result = new ArrayList<>();
         for (MealPlan mealPlan : mealPlans) {
             result.add(mealPlan.getTargetFats());
         }
@@ -63,12 +65,12 @@ public class DeleteMealPlanInteractor implements DeleteMealPlanInputBoundary {
     }
 
     /**
-     * Returns a list of the target carbs of every Meal Plan in mealPlans
+     * Returns a list of the target carbs of every Meal Plan in mealPlans.
      * @param mealPlans the list of MealPlans
      * @return  the list of the target carbs for each MealPlan in mealPlans
      */
     private static List<Double> getTargetCarbs(List<MealPlan> mealPlans) {
-        List<Double> result = new ArrayList<>();
+        final List<Double> result = new ArrayList<>();
         for (MealPlan mealPlan : mealPlans) {
             result.add(mealPlan.getTargetCarbs());
         }
@@ -76,12 +78,12 @@ public class DeleteMealPlanInteractor implements DeleteMealPlanInputBoundary {
     }
 
     /**
-     * Returns a list of the target calories of every Meal Plan in mealPlans
+     * Returns a list of the target calories of every Meal Plan in mealPlans.
      * @param mealPlans the list of MealPlans
      * @return the list of the target calories for each MealPlan in mealPlans
      */
     private static List<Double> getTargetProtein(List<MealPlan> mealPlans) {
-        List<Double> result = new ArrayList<>();
+        final List<Double> result = new ArrayList<>();
         for (MealPlan mealPlan : mealPlans) {
             result.add(mealPlan.getTargetProtein());
         }
@@ -89,12 +91,12 @@ public class DeleteMealPlanInteractor implements DeleteMealPlanInputBoundary {
     }
 
     /**
-     * Retrieves a list of all the target calories of each meal plan in mealPlans
+     * Retrieves a list of all the target calories of each meal plan in mealPlans.
      * @param mealPlans the list of MealPlans to be iterated over
      * @return the list of the target calories for each MealPlan
      */
     private static List<Double> getTargetCalories(List<MealPlan> mealPlans) {
-        List<Double> result = new ArrayList<>();
+        final List<Double> result = new ArrayList<>();
         for (MealPlan mealPlan : mealPlans) {
             result.add(mealPlan.getTargetCalories());
         }
@@ -103,12 +105,12 @@ public class DeleteMealPlanInteractor implements DeleteMealPlanInputBoundary {
     }
 
     /**
-     * Retrieves the name of the first recipe of each meal plan in mealPlans
+     * Retrieves the name of the first recipe of each meal plan in mealPlans.
      * @param mealPlans the list of MealPlans to be iterated over
      * @return the list of the names of first recipes of each MealPlan
      */
     private static List<String> getFirstRecipeNames(List<MealPlan> mealPlans) {
-        List<String> result = new ArrayList<>();
+        final List<String> result = new ArrayList<>();
         for (MealPlan mealPlan : mealPlans) {
             result.add(mealPlan.getRecipes().get(0).getRecipeName());
         }
