@@ -1,7 +1,7 @@
 package use_case.meal_plan;
 
 /**
- * The Input Data for the Meal Plan Use Case
+ * The Input Data for the Meal Plan Use Case.
  */
 public class MealPlanInputData {
 
@@ -17,11 +17,19 @@ public class MealPlanInputData {
         this.targetFats = targetFats;
     }
 
-    String getTargetCalories() {return  targetCalories;}
+    String getTargetCalories() {
+        return targetCalories;
+    }
 
-    String getTargetProtein() {return  targetProtein;}
+    String getTargetProtein() {
+        return targetProtein;
+    }
 
-    String getTargetCarbs() {return  targetCarbs;}
+    String getTargetCarbs() {
+        return targetCarbs;
+    }
 
-    String getTargetFats() {return  targetFats;}
+    String getTargetFats() {
+        return targetFats;
+    }
 }

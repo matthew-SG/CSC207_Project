@@ -2,6 +2,9 @@ package entities;
 
 import java.util.List;
 
+/**
+ * Class representing the Meal Plan entity.
+ */
 public class MealPlan {
 
     private final List<Recipe> recipes;
@@ -27,9 +30,15 @@ public class MealPlan {
         return this.targetProtein;
     }
 
-    public double getTargetCarbs() { return this.targetCarbs; }
+    public double getTargetCarbs() {
+        return this.targetCarbs;
+    }
 
-    public double getTargetFats() { return this.targetFats; }
+    public double getTargetFats() {
+        return this.targetFats;
+    }
 
-    public List<Recipe> getRecipes() { return this.recipes; }
+    public List<Recipe> getRecipes() {
+        return this.recipes;
+    }
 }

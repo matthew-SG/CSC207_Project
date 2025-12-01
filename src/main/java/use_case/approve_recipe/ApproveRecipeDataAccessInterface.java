@@ -41,4 +41,10 @@ public interface ApproveRecipeDataAccessInterface {
      * @param recipeId the ID of the recipe to remove
      */
     void removeFromPendingApproval(int recipeId);
+
+    /**
+     * Set recipes that should be available for approval.
+     * @param recipes the recipes from recipe generator or search
+     */
+    void setAvailableRecipes(List<Recipe> recipes);
 }

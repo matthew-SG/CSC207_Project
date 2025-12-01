@@ -7,24 +7,22 @@ import entities.Cuisine;
 import entities.DietaryRestriction;
 import entities.Intolerance;
 import entities.Recipe;
+import use_case.approve_recipe.ApproveRecipeDataAccessInterface;
 
-/**
- * Clean Architecture: this class implements the business logic for generating recipes
- * based on user-selected filters. It depends only on the input/output boundaries and
- * entities, not on Swing or Spoonacular-specific code.
- */
-public class RecipeGeneratorInteractor implements RecipeGeneratorInputBoundary {
-
-    private final RecipeDataAccessInterface userRecipeAccessObject; // DAO via interface
-    private final RecipeGeneratorOutputBoundary recipePresenter; // Presenter via interface
-    private final data_access.FileDataAccessObject approveRecipeDAO; // For storing available recipes for approval
+public class RecipeGeneratorInteractor implements RecipeGeneratorInputBoundary{
+    // DAI for Recipe Data
+    private final RecipeDataAccessInterface userRecipeAccessObject;
+    // Output Boundary for sending outputs to presenter
+    private final RecipeGeneratorOutputBoundary recipePresenter;
+    // DAI for storing avaialbe recipes for approval
+    private final ApproveRecipeDataAccessInterface approveRecipeDataAccess;
 
     public RecipeGeneratorInteractor(RecipeDataAccessInterface userRecipeAccessObject,
                                      RecipeGeneratorOutputBoundary recipePresenter,
-                                     data_access.FileDataAccessObject approveRecipeDAO) {
+                                     ApproveRecipeDataAccessInterface approveRecipeDataAccess) {
         this.userRecipeAccessObject = userRecipeAccessObject;
         this.recipePresenter = recipePresenter;
-        this.approveRecipeDAO = approveRecipeDAO;
+        this.approveRecipeDataAccess = approveRecipeDataAccess;
     }
 
     @Override
@@ -51,7 +49,7 @@ public class RecipeGeneratorInteractor implements RecipeGeneratorInputBoundary {
                     minProtein,
                     maxProtein
             );
-        } catch (Exception _) {
+        } catch (Exception ex) {
             // Conversion of technical error → user-friendly UI message
             List<RecipeSummary> emptySummaries = new ArrayList<>();
             String errorMessage = "Could not load recipes right now. Please try again later.";

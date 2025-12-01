@@ -1,16 +1,17 @@
 package view;
 
-import interface_adapter.meal_plan.MealPlanController;
-import interface_adapter.meal_plan.MealPlanGeneratorState;
-import interface_adapter.meal_plan.MealPlanGeneratorViewModel;
-import interface_adapter.view_meal_plans.ViewMealPlansController;
+import java.awt.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import java.awt.*;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
+
+import interface_adapter.meal_plan.MealPlanController;
+import interface_adapter.meal_plan.MealPlanGeneratorState;
+import interface_adapter.meal_plan.MealPlanGeneratorViewModel;
+import interface_adapter.view_meal_plans.ViewMealPlansController;
 
 /**
  * The View for when the user wants to generate a Meal Plan for the day.
@@ -18,7 +19,7 @@ import java.beans.PropertyChangeListener;
 public class MealPlanGeneratorView extends JPanel implements PropertyChangeListener {
 
     private static final String VIEW_NAME = "meal plan generator";
-    private final MealPlanGeneratorViewModel mealPlanGeneratorViewModel;
+    private final transient MealPlanGeneratorViewModel mealPlanGeneratorViewModel;
 
     private final JTextField targetCaloriesInputField = new JTextField(15);
 
@@ -34,8 +35,8 @@ public class MealPlanGeneratorView extends JPanel implements PropertyChangeListe
 
     private final JButton viewMealPlans;
     private final JButton generate;
-    private MealPlanController mealPlanController = null;
-    private ViewMealPlansController viewMealPlansController = null;
+    private MealPlanController mealPlanController;
+    private ViewMealPlansController viewMealPlansController;
 
     public MealPlanGeneratorView(MealPlanGeneratorViewModel mealPlanGeneratorViewModel) {
 
@@ -91,18 +92,24 @@ public class MealPlanGeneratorView extends JPanel implements PropertyChangeListe
                 mealPlanGeneratorViewModel.setState(currentState);
             }
 
-            @Override public void insertUpdate(DocumentEvent e) { documentListenerHelper(); }
+            @Override public void insertUpdate(DocumentEvent e) {
+                documentListenerHelper();
+            }
 
-            @Override public void removeUpdate(DocumentEvent e) { documentListenerHelper(); }
+            @Override public void removeUpdate(DocumentEvent e) {
+                documentListenerHelper();
+            }
 
-            @Override public void changedUpdate(DocumentEvent e) { documentListenerHelper(); }
+            @Override public void changedUpdate(DocumentEvent e) {
+                documentListenerHelper();
+            }
         });
 
         this.setLayout(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
+        final GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
-        gbc.anchor =  GridBagConstraints.CENTER;
+        gbc.anchor = GridBagConstraints.CENTER;
         targetCaloriesPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
         targetProteinPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
         targetCarbsPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -119,13 +126,19 @@ public class MealPlanGeneratorView extends JPanel implements PropertyChangeListe
             }
 
             @Override
-            public void insertUpdate(DocumentEvent e) { documentListenerHelper(); }
+            public void insertUpdate(DocumentEvent e) {
+                documentListenerHelper();
+            }
 
             @Override
-            public void removeUpdate(DocumentEvent e) { documentListenerHelper(); }
+            public void removeUpdate(DocumentEvent e) {
+                documentListenerHelper();
+            }
 
             @Override
-            public void changedUpdate(DocumentEvent e) { documentListenerHelper(); }
+            public void changedUpdate(DocumentEvent e) {
+                documentListenerHelper();
+            }
         });
 
         targetCarbsInputField.getDocument().addDocumentListener(new DocumentListener() {
@@ -136,13 +149,19 @@ public class MealPlanGeneratorView extends JPanel implements PropertyChangeListe
             }
 
             @Override
-            public void insertUpdate(DocumentEvent e) { documentListenerHelper(); }
+            public void insertUpdate(DocumentEvent e) {
+                documentListenerHelper();
+            }
 
             @Override
-            public void removeUpdate(DocumentEvent e) { documentListenerHelper(); }
+            public void removeUpdate(DocumentEvent e) {
+                documentListenerHelper();
+            }
 
             @Override
-            public void changedUpdate(DocumentEvent e) { documentListenerHelper(); }
+            public void changedUpdate(DocumentEvent e) {
+                documentListenerHelper();
+            }
         });
 
         targetFatsInputField.getDocument().addDocumentListener(new DocumentListener() {
@@ -153,17 +172,22 @@ public class MealPlanGeneratorView extends JPanel implements PropertyChangeListe
             }
 
             @Override
-            public void insertUpdate(DocumentEvent e) { documentListenerHelper(); }
+            public void insertUpdate(DocumentEvent e) {
+                documentListenerHelper();
+            }
 
             @Override
-            public void removeUpdate(DocumentEvent e) { documentListenerHelper(); }
+            public void removeUpdate(DocumentEvent e) {
+                documentListenerHelper();
+            }
 
             @Override
-            public void changedUpdate(DocumentEvent e) { documentListenerHelper(); }
+            public void changedUpdate(DocumentEvent e) {
+                documentListenerHelper();
+            }
         });
 
-
-        JPanel formPanel = new JPanel();
+        final JPanel formPanel = new JPanel();
         formPanel.setLayout(new BoxLayout(formPanel, BoxLayout.Y_AXIS));
         formPanel.add(title);
         formPanel.add(targetCaloriesPanel);
@@ -194,7 +218,9 @@ public class MealPlanGeneratorView extends JPanel implements PropertyChangeListe
         targetFatsInputField.setText(state.getTargetFats());
     }
 
-    public static String getViewName() { return VIEW_NAME; }
+    public static String getViewName() {
+        return VIEW_NAME;
+    }
 
     public void setMealPlanController(MealPlanController mealPlanController) {
         this.mealPlanController = mealPlanController;

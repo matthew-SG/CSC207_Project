@@ -27,15 +27,21 @@ public class FileDataAccessObject implements UserDataAccess {
 
     private String currentUsername;
 
+    private final FindInstructionsSpoonacular instructionsApi;
+    private final String apiKey;
+
     /**
      * Construct this DAO for saving to and reading from local files
      * @param csvPath the path of the file to save users to
      * @param userFactory factory for creating user objects
+     * @param apiKey factory stores the api key
      * @throws RuntimeException if there is an IOException when accessing the file
      */
-    public FileDataAccessObject(String csvPath, UserFactory userFactory) throws RuntimeException {
+    public FileDataAccessObject(String csvPath, UserFactory userFactory, String apiKey) throws RuntimeException {
 
         usersCsv = new File(csvPath);
+        this.instructionsApi = new FindInstructionsSpoonacular();
+        this.apiKey = apiKey;
         headers.put("username", 0);
         headers.put("password", 1);
 
@@ -460,7 +466,8 @@ public class FileDataAccessObject implements UserDataAccess {
     public void deleteMealPlan(int index) {
         User currentUser = users.get(currentUsername);
         currentUser.getMealPlans().remove(index);
-        saveMealPlans(currentUser, USER_MEAL_PLANS_PATH);
+        String jsonPath = String.format(USER_MEAL_PLANS_PATH, currentUsername);
+        saveMealPlans(currentUser, jsonPath);
     }
 
     // ApproveRecipeDataAccessInterface implementation
@@ -480,6 +487,35 @@ public class FileDataAccessObject implements UserDataAccess {
      */
     public void setAvailableRecipes(List<Recipe> recipes) {
         this.pendingApprovalRecipes = recipes != null ? new ArrayList<>(recipes) : new ArrayList<>();
+    }
+
+    @Override
+    public void saveLikedRecipe(String username, Recipe recipe) {
+        saveRecipeToUser(username, recipe);
+    }
+
+    @Override
+    public void deleteLikedRecipe(String username, int recipeId) {
+        User user = users.get(username);
+        if (user == null) {
+            System.err.println("User not found: " + username);
+            return;
+        }
+
+        user.getSavedRecipes().removeIf(recipe -> recipe.getRecipeId() == recipeId);
+        String jsonPath = String.format(USER_LIKED_RECIPES_PATH, username);
+        saveLikedRecipes(users.get(currentUsername), jsonPath);
+    }
+
+    @Override
+    public List<Recipe> getLikedRecipes(String username) {
+        User user = users.get(username);
+        return user != null ? user.getSavedRecipes() : new ArrayList<>();
+    }
+
+    @Override
+    public List<InstructionStep> getAnalyzedInstructions(int recipeId) {
+        return instructionsApi.getAnalyzedInstructions(recipeId, apiKey);
     }
 
     @Override
@@ -517,7 +553,8 @@ public class FileDataAccessObject implements UserDataAccess {
         if (!alreadySaved) {
             user.getSavedRecipes().add(recipe);
             // Persist changes to JSON file
-            save();
+            String jsonPath = String.format(USER_LIKED_RECIPES_PATH, currentUsername);
+            saveLikedRecipes(user, jsonPath);
         }
 
         // Remove from pending approval list
@@ -530,5 +567,29 @@ public class FileDataAccessObject implements UserDataAccess {
      */
     public void removeFromPendingApproval(int recipeId) {
         pendingApprovalRecipes.removeIf(r -> r.getRecipeId() == recipeId);
+    }
+
+    @Override
+    public void save(List<Ingredient> list) {
+        User user = users.get(currentUsername);
+
+        if (user != null) {
+            user.setGroceryList(new GroceryList(list));
+
+            String jsonPath = String.format(USER_GROCERY_LIST_PATH, currentUsername);
+            
+            saveGroceryList(user, jsonPath);
+        }
+    }
+
+    @Override
+    public List<Ingredient> load() {
+        User user = users.get(currentUsername);
+
+        if (user != null && user.getGroceryList() != null) {
+            return user.getGroceryList().getItems();
+        }
+
+        return new ArrayList<>();
     }
 }

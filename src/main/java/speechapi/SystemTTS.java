@@ -26,8 +26,6 @@ public class SystemTTS implements SpeechService {
                 System.err.println("TTS not supported on this OS: " + os);
                 return;
             }
-            // Optional: wait for the speech process to finish
-            // process.waitFor();
         } catch (Exception e) {
             e.printStackTrace();
         }
