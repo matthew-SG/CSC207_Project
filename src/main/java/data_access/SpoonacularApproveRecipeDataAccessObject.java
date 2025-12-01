@@ -206,6 +206,11 @@ public class SpoonacularApproveRecipeDataAccessObject implements ApproveRecipeDa
     @Override
     public void setAvailableRecipes(List<Recipe> recipes) {
         // Set the cached recipes to the provided list
-        this.cachedRecipes = recipes != null ? new ArrayList<>(recipes) : new ArrayList<>();
+        if (recipes != null) {
+            this.cachedRecipes = new ArrayList<>(recipes);
+        }
+        else {
+            this.cachedRecipes = new ArrayList<>();
+        }
     }
 }

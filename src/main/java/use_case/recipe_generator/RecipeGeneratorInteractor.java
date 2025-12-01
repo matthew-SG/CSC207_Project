@@ -1,25 +1,25 @@
 package use_case.recipe_generator;
+
 import java.util.ArrayList;
+import java.util.List;
 
 import entities.Cuisine;
 import entities.DietaryRestriction;
 import entities.Intolerance;
-import  entities.Recipe;
-import java.util.List;
+import entities.Recipe;
 import use_case.approve_recipe.ApproveRecipeDataAccessInterface;
-
 
 public class RecipeGeneratorInteractor implements RecipeGeneratorInputBoundary{
     private final RecipeDataAccessInterface userRecipeAccessObject;
     private final RecipeGeneratorOutputBoundary recipePresenter;
-    private final ApproveRecipeDataAccessInterface approveRecipeDAO;
+    private final ApproveRecipeDataAccessInterface approveRecipeDataAccess;
 
     public RecipeGeneratorInteractor(RecipeDataAccessInterface userRecipeAccessObject,
                                      RecipeGeneratorOutputBoundary recipePresenter,
-                                     ApproveRecipeDataAccessInterface approveRecipeDAO) {
+                                     ApproveRecipeDataAccessInterface approveRecipeDataAccess) {
         this.userRecipeAccessObject = userRecipeAccessObject;
         this.recipePresenter = recipePresenter;
-        this.approveRecipeDAO = approveRecipeDAO;
+        this.approveRecipeDataAccess = approveRecipeDataAccess;
     }
 
     @Override
@@ -32,10 +32,10 @@ public class RecipeGeneratorInteractor implements RecipeGeneratorInputBoundary{
         Integer minProtein = inputData.getMinProtein();
         Integer maxProtein = inputData.getMaxProtein();
         List<Recipe> recipes = userRecipeAccessObject.getRecipes(dietRestriction, intolerances, cuisine, minCalories, maxCalories, minProtein, maxProtein);
-        
+
         // Make recipes available for approval
-        if (approveRecipeDAO != null) {
-            approveRecipeDAO.setAvailableRecipes(recipes);
+        if (approveRecipeDataAccess != null) {
+            approveRecipeDataAccess.setAvailableRecipes(recipes);
         }
         
         List<RecipeSummary>  recipeSummaryList = new ArrayList<>();
