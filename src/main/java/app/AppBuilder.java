@@ -20,6 +20,9 @@ import interface_adapter.grocery_list.*;
 import interface_adapter.grocery_list.GroceryController;
 import interface_adapter.grocery_list.GroceryPresenter;
 import interface_adapter.grocery_list.GroceryViewModel;
+import interface_adapter.likedRecipeList.LikedRecipeListController;
+import interface_adapter.likedRecipeList.LikedRecipeListPresenter;
+import interface_adapter.likedRecipeList.LikedRecipeListViewModel;
 import interface_adapter.load_meal_plan.LoadMealPlanController;
 import interface_adapter.load_meal_plan.LoadMealPlanPresenter;
 import interface_adapter.logged_in.LoggedInViewModel;
@@ -63,6 +66,10 @@ import use_case.grocery_list.add.AddInteractor;
 import use_case.grocery_list.delete.DeleteInteractor;
 import use_case.grocery_list.edit.EditInteractor;
 import use_case.grocery_list.load.LoadInteractor;
+import use_case.likedRecipeList.LikedRecipeDataAccessInterface;
+import use_case.likedRecipeList.LikedRecipeInputBoundary;
+import use_case.likedRecipeList.LikedRecipeInteractor;
+import use_case.likedRecipeList.LikedRecipeOutputBoundary;
 import use_case.load_meal_plan.LoadMealPlanInputBoundary;
 import use_case.load_meal_plan.LoadMealPlanInteractor;
 import use_case.load_meal_plan.LoadMealPlanOutputBoundary;
@@ -167,6 +174,11 @@ public class AppBuilder {
     private SearchByIngredientView searchByIngredientView;
     private SearchByIngredientController searchByIngredientController;
     private SearchByIngredientSpoonacular searchByIngredientApi;
+
+    //like recipe list
+    private LikedRecipeListViewModel likedRecipeListViewModel;
+    private LikedRecipeListView likedRecipeListView;
+    private LikedRecipeListController likedRecipeListController;
 
     /**
      * Initialize the builder with default setup.
@@ -501,6 +513,36 @@ public class AppBuilder {
         contentPanel.add(searchByIngredientView, SearchByIngredientView.VIEWNAME);
         return this;
     }
+
+    /**
+     * Build Liked Recipe List
+     * Sets up the navigation bar with its controller and presenter.
+     *
+     * @return this builder for method chaining
+     */
+    public AppBuilder buildLikedRecipeList() {
+        likedRecipeListViewModel = new LikedRecipeListViewModel();
+
+        LikedRecipeDataAccessInterface likedDao =
+                (LikedRecipeDataAccessInterface) userDataAccessObject;
+
+        LikedRecipeOutputBoundary likedPresenter =
+                new LikedRecipeListPresenter(likedRecipeListViewModel, viewManagerModel);
+
+        LikedRecipeInputBoundary likedInteractor =
+                new LikedRecipeInteractor(likedDao, likedPresenter);
+
+        likedRecipeListController =
+                new LikedRecipeListController(likedInteractor);
+
+        likedRecipeListView =
+                new LikedRecipeListView(likedRecipeListViewModel, likedRecipeListController, viewManagerModel);
+
+        contentPanel.add(likedRecipeListView, likedRecipeListView.getViewName());
+
+        return this;
+    }
+
 
     /**
      * Build and display the application window.
