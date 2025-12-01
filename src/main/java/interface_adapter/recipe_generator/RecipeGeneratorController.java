@@ -25,23 +25,27 @@ public class RecipeGeneratorController {
         Integer maxCalories = null;
         Integer minProtein = null;
         Integer maxProtein = null;
-
-        // no need to worry about invalid inputs (ie alphabetical inputs as that is already processed in RecipeGeneratorView
-        // convert from strings to Integers (the type GenerateRecipeInputData expects)
-            if (minCaloriesText != null && !minCaloriesText.isEmpty()) {
-                minCalories = Integer.parseInt(minCaloriesText); // only parse if the field actually has something in it
+        /**
+         * catch handles if user inputs alphabetical values into the calories or protein field
+         */
+        try {
+            if (minCaloriesText != null && !minCaloriesText.trim().isEmpty()) {
+                minCalories = Integer.parseInt(minCaloriesText.trim());
             }
-            if (maxCaloriesText != null && !maxCaloriesText.isEmpty()) {
-                maxCalories = Integer.parseInt(maxCaloriesText);
+            if (maxCaloriesText != null && !maxCaloriesText.trim().isEmpty()) {
+                maxCalories = Integer.parseInt(maxCaloriesText.trim());
             }
-            if (minProteinText != null && !minProteinText.isEmpty()) {
-                minProtein = Integer.parseInt(minProteinText);
+            if (minProteinText != null && !minProteinText.trim().isEmpty()) {
+                minProtein = Integer.parseInt(minProteinText.trim());
             }
-            if (maxProteinText != null && !maxProteinText.isEmpty()) {
-                maxProtein = Integer.parseInt(maxProteinText);
+            if (maxProteinText != null && !maxProteinText.trim().isEmpty()) {
+                maxProtein = Integer.parseInt(maxProteinText.trim());
             }
-
-        // after parsing to identify invalid inputs create an input DTO that the interactor expects (a GenerateRecipeInputData object)
+        } catch (NumberFormatException e) {
+            // Ideally notify user, but for now just return to avoid crash
+            System.out.println("Invalid number format: " + e.getMessage());
+            return;
+        }
         GenerateRecipeInputData inputData = new GenerateRecipeInputData(dietaryRestriction, intolerances, cuisine, minCalories, maxCalories, minProtein,  maxProtein);
         recipeUseCaseInteractor.generateRecipes(inputData); // this now actually calls the interactor with the processed input data as needed (lets the interactor/presenter handle view model updates
 

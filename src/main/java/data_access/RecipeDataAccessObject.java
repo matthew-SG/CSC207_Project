@@ -22,8 +22,8 @@ import java.util.Map;
 // this class depends on a few things including Recipe entity cuisine Enum etc., it uses the org.json lib for parsing
 
 public class RecipeDataAccessObject implements RecipeDataAccessInterface {
-    private static final String API_KEY = "7265c428408440ef96740ae1a4040acd";
-    private static final String API_BASE_URL = "https://api.spoonacular.com/recipes/complexSearch"; // base URL which is built upon depending on selected filters
+    private static final String API_KEY = "5b07df6820b74cf1b2eae9c1b440f014";
+    private static final String API_BASE_URL = "https://api.spoonacular.com/recipes/complexSearch";
 
     @Override
     public List<Recipe> getRecipes(DietaryRestriction dietaryRestriction,
@@ -48,14 +48,16 @@ public class RecipeDataAccessObject implements RecipeDataAccessInterface {
         // get the recipes from API (we are actually calling the api)
         String jsonResponse = callSpoonacular(apiUrl);
 
-        // if the api call failed (non 200 or IO issue) raise exception as needed
-        if (jsonResponse == null) {
-            System.err.println("[RECIPE-GEN DAO] API call failed response was empty.");
-            throw new RuntimeException("Recipe API call failed");
+        // then Parse JSON into Recipe objects
+        List<Recipe> recipes = null;
+        if (jsonResponse != null) {
+            recipes = parseRecipesFromJson(jsonResponse);
         }
 
-// Parse JSON into Recipe objects
-        List<Recipe> recipes = parseRecipesFromJson(jsonResponse);
+        if (recipes == null || recipes.isEmpty()) {
+            System.out.println("[RECIPE-GEN DAO] No recipes found from API or parsing error. Using default fallback.");
+            recipes = getDefaultRecipes();
+        }
 
 // Filter by calorie and protein min / max
         return filterRecipesByNutrition(recipes, minCalories, maxCalories, minProtein, maxProtein);

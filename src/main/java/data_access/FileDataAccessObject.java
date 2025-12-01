@@ -22,6 +22,9 @@ public class FileDataAccessObject implements UserDataAccess {
     private final Map<String, Integer> headers = new LinkedHashMap<>();
     private final Map<String, User> users = new HashMap<>();
 
+    // Temporary storage for recipes waiting to be approved
+    private List<Recipe> pendingApprovalRecipes = new ArrayList<>();
+
     private String currentUsername;
 
     /**
@@ -416,7 +419,7 @@ public class FileDataAccessObject implements UserDataAccess {
 
     @Override
     public void logout() {
-
+        // Method has no current impact on application performance
     }
 
     @Override
@@ -451,5 +454,81 @@ public class FileDataAccessObject implements UserDataAccess {
     @Override
     public List<MealPlan> getMealPlans() {
         return users.get(currentUsername).getMealPlans();
+    }
+
+    @Override
+    public void deleteMealPlan(int index) {
+        User currentUser = users.get(currentUsername);
+        currentUser.getMealPlans().remove(index);
+        saveMealPlans(currentUser, USER_MEAL_PLANS_PATH);
+    }
+
+    // ApproveRecipeDataAccessInterface implementation
+
+    /**
+     * Get recipes that are pending approval
+     * @return list of recipes waiting to be approved
+     */
+    @Override
+    public List<Recipe> getAvailableRecipes() {
+        return new ArrayList<>(pendingApprovalRecipes);
+    }
+
+    /**
+     * Set recipes that should be available for approval
+     * @param recipes the recipes from recipe generator or search
+     */
+    public void setAvailableRecipes(List<Recipe> recipes) {
+        this.pendingApprovalRecipes = recipes != null ? new ArrayList<>(recipes) : new ArrayList<>();
+    }
+
+    @Override
+    public Recipe getRecipeById(int recipeId) {
+        for (Recipe recipe : pendingApprovalRecipes) {
+            if (recipe.getRecipeId() == recipeId) {
+                return recipe;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public User getUser(String username) {
+        return users.get(username);
+    }
+
+    /**
+     * Save an approved recipe to the user's saved recipes and persist to JSON
+     * @param username the username
+     * @param recipe the recipe to save
+     */
+    @Override
+    public void saveRecipeToUser(String username, Recipe recipe) {
+        User user = users.get(username);
+        if (user == null) {
+            System.err.println("User not found: " + username);
+            return;
+        }
+
+        // Check if recipe already exists
+        boolean alreadySaved = user.getSavedRecipes().stream()
+                .anyMatch(r -> r.getRecipeId() == recipe.getRecipeId());
+
+        if (!alreadySaved) {
+            user.getSavedRecipes().add(recipe);
+            // Persist changes to JSON file
+            save();
+        }
+
+        // Remove from pending approval list
+        removeFromPendingApproval(recipe.getRecipeId());
+    }
+
+    /**
+     * Remove a recipe from the pending approval list (after approve or decline)
+     * @param recipeId the ID of the recipe to remove
+     */
+    public void removeFromPendingApproval(int recipeId) {
+        pendingApprovalRecipes.removeIf(r -> r.getRecipeId() == recipeId);
     }
 }

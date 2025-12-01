@@ -12,6 +12,7 @@ public class ViewMealPlansState {
     private List<Double> targetProtein = new ArrayList<>();
     private List<Double> targetCarbs = new ArrayList<>();
     private List<Double> targetFats = new ArrayList<>();
+    private String oneMealPlanError;
 
     public List<String> getFirstRecipeNames() {
         return firstRecipeNames;
@@ -51,5 +52,13 @@ public class ViewMealPlansState {
 
     public void setTargetFats(List<Double> targetFats) {
         this.targetFats = targetFats;
+    }
+
+    public String getOneMealPlanError() {
+        return oneMealPlanError;
+    }
+
+    public void setOneMealPlanError(String oneMealPlanError) {
+        this.oneMealPlanError = oneMealPlanError;
     }
 }

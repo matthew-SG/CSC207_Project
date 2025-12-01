@@ -1,5 +1,4 @@
 package use_case.search_by_ingr;
-import entities.Ingredient;
 import entities.Recipe;
 
 import java.util.List;
