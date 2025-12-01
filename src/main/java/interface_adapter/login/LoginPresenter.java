@@ -1,6 +1,7 @@
 package interface_adapter.login;
 
 import interface_adapter.ViewManagerModel;
+import interface_adapter.grocery_list.GroceryController;
 import interface_adapter.logged_in.LoggedInState;
 import interface_adapter.logged_in.LoggedInViewModel;
 import interface_adapter.nav_bar.NavbarManagerViewModel;
@@ -16,14 +17,17 @@ public class LoginPresenter implements LoginOutputBoundary {
     private final LoggedInViewModel loggedInViewModel;
     private final ViewManagerModel viewManagerModel;
     private final NavbarManagerViewModel navbarManagerViewModel;
+    private final GroceryController groceryController;
 
     public LoginPresenter(ViewManagerModel viewManagerModel,
                           LoggedInViewModel loggedInViewModel,
-                          LoginViewModel loginViewModel, NavbarManagerViewModel navbarManagerViewModel) {
+                          LoginViewModel loginViewModel, NavbarManagerViewModel navbarManagerViewModel,
+                          GroceryController groceryController) {
         this.viewManagerModel = viewManagerModel;
         this.loggedInViewModel = loggedInViewModel;
         this.loginViewModel = loginViewModel;
         this.navbarManagerViewModel = navbarManagerViewModel;
+        this.groceryController = groceryController;
     }
 
     @Override
@@ -43,6 +47,7 @@ public class LoginPresenter implements LoginOutputBoundary {
         this.viewManagerModel.getState().isLoggedIn = true;
         this.viewManagerModel.getState().userName = response.getUsername();
         this.viewManagerModel.firePropertyChange();
+        this.groceryController.load();
     }
 
     @Override

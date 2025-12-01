@@ -58,6 +58,10 @@ public class User {
 
     public void saveMealPlan(MealPlan mealPlan) { mealPlans.add(mealPlan); }
 
+    public void setGroceryList(GroceryList groceryList) {
+        this.groceryList = groceryList;
+    }
+
     @Override
     public String toString() {
         return "User{" +

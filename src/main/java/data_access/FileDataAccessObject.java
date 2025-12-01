@@ -568,4 +568,28 @@ public class FileDataAccessObject implements UserDataAccess {
     public void removeFromPendingApproval(int recipeId) {
         pendingApprovalRecipes.removeIf(r -> r.getRecipeId() == recipeId);
     }
+
+    @Override
+    public void save(List<Ingredient> list) {
+        User user = users.get(currentUsername);
+
+        if (user != null) {
+            user.setGroceryList(new GroceryList(list));
+
+            String jsonPath = String.format(USER_GROCERY_LIST_PATH, currentUsername);
+            
+            saveGroceryList(user, jsonPath);
+        }
+    }
+
+    @Override
+    public List<Ingredient> load() {
+        User user = users.get(currentUsername);
+
+        if (user != null && user.getGroceryList() != null) {
+            return user.getGroceryList().getItems();
+        }
+
+        return new ArrayList<>();
+    }
 }
