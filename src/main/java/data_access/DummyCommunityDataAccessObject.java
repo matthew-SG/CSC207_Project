@@ -25,7 +25,7 @@ public class DummyCommunityDataAccessObject implements CommunityDataAccessInterf
         ratings.add(new Rating(2, 2, "test@1.ca", 4, "good","pizza", "https://www.tasteofhome.com/wp-content/uploads/2018/01/Homemade-Pizza_EXPS_FT23_376_EC_120123_3.jpg"));
     }
     @Override
-    public List<Recipe> getLikedRecipes(User user) {
+    public List<Recipe> getLikedRecipes(String username) {
         return new ArrayList<>(likedRecipes.values());
     }
 

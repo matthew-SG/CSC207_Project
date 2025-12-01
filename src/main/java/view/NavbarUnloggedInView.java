@@ -11,7 +11,6 @@ public class NavbarUnloggedInView extends JPanel {
     private JButton communityButton;
     private JButton signUpButton;
     private JButton loginButton;
-    private JButton generateRecipe;
     private NavbarController navbarController = null;
 
     public NavbarUnloggedInView(){
@@ -19,12 +18,9 @@ public class NavbarUnloggedInView extends JPanel {
         communityButton = new JButton("community");
         signUpButton = new JButton("sign up");
         loginButton = new JButton("log in");
-        generateRecipe = new JButton("generate recipe");
-        generateRecipe = new JButton("generate recipe");
         add(communityButton);
         add(signUpButton);
         add(loginButton);
-        add(generateRecipe);
 
         loginButton.addActionListener(new ActionListener() {
             @Override
@@ -46,12 +42,6 @@ public class NavbarUnloggedInView extends JPanel {
                 navbarController.switchToCommunity();
             }
         });
-
-        generateRecipe.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {navbarController.switchToGenerateRecipe(); }
-        });
-
     }
 
     public void setNavbarController(NavbarController navbarController) {

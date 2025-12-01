@@ -34,10 +34,26 @@ public class SelectLikedRecipeView extends JPanel implements PropertyChangeListe
         this.setLayout(new BorderLayout(10, 10));
         this.setBorder(new EmptyBorder(20, 20, 20, 20));
 
-        // Title
+        // Top panel with title and cancel button
+        JPanel topPanel = new JPanel(new BorderLayout(10, 10));
+
         titleLabel = new JLabel("Select a Recipe to Review", SwingConstants.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
-        this.add(titleLabel, BorderLayout.NORTH);
+        topPanel.add(titleLabel, BorderLayout.CENTER);
+
+        JButton cancelButton = new JButton("Cancel");
+        cancelButton.setFont(new Font("Arial", Font.PLAIN, 14));
+        cancelButton.setPreferredSize(new Dimension(100, 35));
+        cancelButton.addActionListener(e -> {
+            if (communityController != null) {
+                communityController.viewCommunity();
+            }
+        });
+        JPanel cancelPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        cancelPanel.add(cancelButton);
+        topPanel.add(cancelPanel, BorderLayout.WEST);
+
+        this.add(topPanel, BorderLayout.NORTH);
 
         // Recipe list panel
         recipeListPanel = new JPanel();
