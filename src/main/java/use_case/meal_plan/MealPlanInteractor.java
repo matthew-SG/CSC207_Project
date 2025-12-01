@@ -132,7 +132,7 @@ public class MealPlanInteractor implements MealPlanInputBoundary{
      */
     private static List<Recipe> computeLowestNutritionalError(List<List<Recipe>> recipeTriplets, double targetCalories,
                                                               double targetProtein, double targetCarbs, double targetFats) {
-        assert recipeTriplets.size() > 1;
+        assert !recipeTriplets.isEmpty();
         double currentCalories;
         double currentProtein;
         double currentCarbs;
@@ -153,7 +153,7 @@ public class MealPlanInteractor implements MealPlanInputBoundary{
                 currentCalories += recipeNutritionalValues.get("Calories");
                 currentProtein += recipeNutritionalValues.get("Protein");
                 currentCarbs += recipeNutritionalValues.get("Carbohydrates");
-                currentFats += recipeNutritionalValues.get("Fats");
+                currentFats += recipeNutritionalValues.get("Fat");
             }
             currentError = Math.abs(currentCalories - targetCalories) + Math.abs(currentProtein - targetProtein) + (
                     Math.abs(currentCarbs - targetCarbs) + Math.abs(currentFats - targetFats));
