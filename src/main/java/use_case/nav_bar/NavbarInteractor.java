@@ -51,4 +51,9 @@ public class NavbarInteractor implements NavbarInputBoundary{
     public void switchToSearchByIngredients(){
         this.navbarPresenter.switchToSearchByIngredients();
     }
+
+    @Override
+    public void switchToLikedRecipeList(){
+        this.navbarPresenter.switchToLikedRecipeList();
+    }
 }

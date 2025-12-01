@@ -11,4 +11,5 @@ public interface NavbarOutputBoundary {
     public void switchToGroceryList();
     public void switchToMealPlan();
     public void switchToSearchByIngredients();
+    public void switchToLikedRecipeList();
 }
