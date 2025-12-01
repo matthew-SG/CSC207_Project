@@ -34,17 +34,17 @@ public class MealPlanInteractor implements MealPlanInputBoundary{
         List<Map<String, Double>> recipeNutritionalValues = new ArrayList<>();
 
         if (savedRecipes.size() < 3) {
-            mealPlanPresenter.prepareFailView("At least 3 saved recipes must be saved for meal plan generation.",
+            mealPlanPresenter.prepareFailView("At least 3 saved recipes must be saved for meal plan generation!",
                     null);
         } else if (!isDouble(inputCalories) || !isDouble(inputProtein) || !isDouble(inputCarbs) || !isDouble(inputFats)) {
-            mealPlanPresenter.prepareFailView(null, "All input values must be numerical.");
+            mealPlanPresenter.prepareFailView(null, "All input values must be numerical!");
         } else {
             double targetCalories = Double.parseDouble(inputCalories);
             double targetProtein = Double.parseDouble(inputProtein);
             double targetCarbs = Double.parseDouble(inputCarbs);
             double targetFats = Double.parseDouble(inputFats);
             if (targetCalories < 0 || targetProtein < 0 || targetCarbs < 0 || targetFats < 0) {
-                mealPlanPresenter.prepareFailView(null, "All input values must be non-negative.");
+                mealPlanPresenter.prepareFailView(null, "All input values must be non-negative!");
             } else {
                 List<Recipe> mealPlanRecipes = computeBestFittingRecipes(savedRecipes, targetCalories, targetProtein,
                         targetCarbs, targetFats);
@@ -132,7 +132,7 @@ public class MealPlanInteractor implements MealPlanInputBoundary{
      */
     private static List<Recipe> computeLowestNutritionalError(List<List<Recipe>> recipeTriplets, double targetCalories,
                                                               double targetProtein, double targetCarbs, double targetFats) {
-        assert recipeTriplets.size() > 1;
+        assert !recipeTriplets.isEmpty();
         double currentCalories;
         double currentProtein;
         double currentCarbs;
@@ -153,7 +153,7 @@ public class MealPlanInteractor implements MealPlanInputBoundary{
                 currentCalories += recipeNutritionalValues.get("Calories");
                 currentProtein += recipeNutritionalValues.get("Protein");
                 currentCarbs += recipeNutritionalValues.get("Carbohydrates");
-                currentFats += recipeNutritionalValues.get("Fats");
+                currentFats += recipeNutritionalValues.get("Fat");
             }
             currentError = Math.abs(currentCalories - targetCalories) + Math.abs(currentProtein - targetProtein) + (
                     Math.abs(currentCarbs - targetCarbs) + Math.abs(currentFats - targetFats));

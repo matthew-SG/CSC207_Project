@@ -10,14 +10,13 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import entities.*;
-import use_case.likedRecipeList.LikedRecipeDataAccessInterface;
 import use_case.login.LoginUserDataAccessInterface;
 import use_case.signup.SignupUserDataAccessInterface;
 
 /**
  * DAO for all data, mainly user data, using a File to persist the data
  */
-public class FileDataAccessObject implements UserDataAccess, ApproveRecipeDataAccessInterface, LikedRecipeDataAccessInterface {
+public class FileDataAccessObject implements UserDataAccess {
 
     private final File usersCsv;
     private final Map<String, Integer> headers = new LinkedHashMap<>();
@@ -467,7 +466,8 @@ public class FileDataAccessObject implements UserDataAccess, ApproveRecipeDataAc
     public void deleteMealPlan(int index) {
         User currentUser = users.get(currentUsername);
         currentUser.getMealPlans().remove(index);
-        saveMealPlans(currentUser, USER_MEAL_PLANS_PATH);
+        String jsonPath = String.format(USER_MEAL_PLANS_PATH, currentUsername);
+        saveMealPlans(currentUser, jsonPath);
     }
 
     // ApproveRecipeDataAccessInterface implementation
@@ -503,7 +503,8 @@ public class FileDataAccessObject implements UserDataAccess, ApproveRecipeDataAc
         }
 
         user.getSavedRecipes().removeIf(recipe -> recipe.getRecipeId() == recipeId);
-        save();
+        String jsonPath = String.format(USER_LIKED_RECIPES_PATH, username);
+        saveLikedRecipes(users.get(currentUsername), jsonPath);
     }
 
     @Override
@@ -552,7 +553,8 @@ public class FileDataAccessObject implements UserDataAccess, ApproveRecipeDataAc
         if (!alreadySaved) {
             user.getSavedRecipes().add(recipe);
             // Persist changes to JSON file
-            save();
+            String jsonPath = String.format(USER_LIKED_RECIPES_PATH, currentUsername);
+            saveLikedRecipes(user, jsonPath);
         }
 
         // Remove from pending approval list
