@@ -1,9 +1,13 @@
 package entities;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Class for the Recipe entity.
+ */
 public class Recipe {
     private int recipeId;
     private String recipeName;
@@ -32,25 +36,59 @@ public class Recipe {
         this.nutritionalValues = new HashMap<>();
     }
 
-    public int getRecipeId() { return recipeId; }
+    public int getRecipeId() {
+        return recipeId;
+    }
 
-    public String getRecipeName() { return recipeName; }
+    public String getRecipeName() {
+        return recipeName;
+    }
 
-    public String getRecipeImage() { return recipeImage; }
+    public String getRecipeImage() {
+        return recipeImage;
+    }
 
-    public List<Ingredient> getIngredients() { return ingredients; }
+    public List<Ingredient> getIngredients() {
+        return ingredients;
+    }
 
-    public void addIngredient(Ingredient ingredient) { ingredients.add(ingredient); }
+    /**
+     * Adds an ingredient to the recipe's list of ingredients.
+     * @param ingredient the ingredient to be added
+     */
+    public void addIngredient(Ingredient ingredient) {
+        ingredients.add(ingredient);
+    }
 
-    public Map<String, Double> getNutritionalValues() { return nutritionalValues; }
+    public Map<String, Double> getNutritionalValues() {
+        return nutritionalValues;
+    }
 
-    public void addNutritionalValue(String name, double value) { nutritionalValues.put(name, value); }
+    /**
+     * Adds a nutrient to the recipe's collection of nutritional values.
+     * @param name the name of the nutrient
+     * @param value the amount of the nutrient
+     */
+    public void addNutritionalValue(String name, double value) {
+        nutritionalValues.put(name, value);
+    }
 
-    public String getMealType() { return mealType; }
+    public String getMealType() {
+        return mealType;
+    }
 
-    public String getSteps() { return steps; }
-    public void setIngredients(List<Ingredient> ingredients) { this.ingredients = ingredients; }
-    public void setSteps(String steps) { this.steps = steps; }
+    public String getSteps() {
+        return steps;
+    }
+
+    public void setIngredients(List<Ingredient> ingredients) {
+        this.ingredients = ingredients;
+    }
+
+    public void setSteps(String steps) {
+        this.steps = steps;
+    }
+
     @Override
     public String toString() {
         return recipeName;

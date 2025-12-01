@@ -1,15 +1,19 @@
 package entities;
 
+/**
+ * Class representing the rating entity.
+ */
 public class Rating {
-    private int ratingId;
-    private int recipeId;
-    private String username;
-    private int stars;
-    private String comment;
-    private String recipeName;
-    private String recipeImageUrl;
-    private Recipe detailedRecipe;
-    public Rating(int ratingId, int recipeId, String username, int stars, String comment, String recipeName, String recipeImageUrl) {
+    private final int ratingId;
+    private final int recipeId;
+    private final String username;
+    private final int stars;
+    private final String comment;
+    private final String recipeName;
+    private final String recipeImageUrl;
+
+    public Rating(int ratingId, int recipeId, String username, int stars, String comment, String recipeName,
+                  String recipeImageUrl) {
         this.ratingId = ratingId;
         this.recipeId = recipeId;
         this.username = username;
@@ -38,7 +42,6 @@ public class Rating {
     public String getRecipeName() {
         return recipeName;
     }
-
 
     public String getRecipeImageUrl() {
         return recipeImageUrl;

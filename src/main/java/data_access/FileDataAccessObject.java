@@ -23,7 +23,6 @@ import use_case.approve_recipe.ApproveRecipeDataAccessInterface;
  * DAO for all data, mainly user data, using a File to persist the data
  */
 public class FileDataAccessObject implements UserDataAccess, ApproveRecipeDataAccessInterface, CommunityUserRecipeDataAccessInterface, LikedRecipeDataAccessInterface {
-
     private final File usersCsv;
     private final Map<String, Integer> headers = new LinkedHashMap<>();
     private final Map<String, User> users = new HashMap<>();
@@ -558,7 +557,8 @@ public class FileDataAccessObject implements UserDataAccess, ApproveRecipeDataAc
     public void deleteMealPlan(int index) {
         User currentUser = users.get(currentUsername);
         currentUser.getMealPlans().remove(index);
-        saveMealPlans(currentUser, USER_MEAL_PLANS_PATH);
+        String jsonPath = String.format(USER_MEAL_PLANS_PATH, currentUsername);
+        saveMealPlans(currentUser, jsonPath);
     }
 
     // ApproveRecipeDataAccessInterface implementation
@@ -594,7 +594,8 @@ public class FileDataAccessObject implements UserDataAccess, ApproveRecipeDataAc
         }
 
         user.getSavedRecipes().removeIf(recipe -> recipe.getRecipeId() == recipeId);
-        save();
+        String jsonPath = String.format(USER_LIKED_RECIPES_PATH, username);
+        saveLikedRecipes(users.get(currentUsername), jsonPath);
     }
 
     @Override
@@ -643,7 +644,8 @@ public class FileDataAccessObject implements UserDataAccess, ApproveRecipeDataAc
         if (!alreadySaved) {
             user.getSavedRecipes().add(recipe);
             // Persist changes to JSON file
-            save();
+            String jsonPath = String.format(USER_LIKED_RECIPES_PATH, currentUsername);
+            saveLikedRecipes(user, jsonPath);
         }
 
         // Remove from pending approval list
@@ -656,5 +658,29 @@ public class FileDataAccessObject implements UserDataAccess, ApproveRecipeDataAc
      */
     public void removeFromPendingApproval(int recipeId) {
         pendingApprovalRecipes.removeIf(r -> r.getRecipeId() == recipeId);
+    }
+
+    @Override
+    public void save(List<Ingredient> list) {
+        User user = users.get(currentUsername);
+
+        if (user != null) {
+            user.setGroceryList(new GroceryList(list));
+
+            String jsonPath = String.format(USER_GROCERY_LIST_PATH, currentUsername);
+            
+            saveGroceryList(user, jsonPath);
+        }
+    }
+
+    @Override
+    public List<Ingredient> load() {
+        User user = users.get(currentUsername);
+
+        if (user != null && user.getGroceryList() != null) {
+            return user.getGroceryList().getItems();
+        }
+
+        return new ArrayList<>();
     }
 }

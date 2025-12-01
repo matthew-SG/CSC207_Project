@@ -96,6 +96,7 @@ public class LikedRecipeInteractor implements LikedRecipeInputBoundary {
             List<Recipe> recipes = dataAccess.getLikedRecipes(username);
 
             // Convert recipes to the output data format
+            int[] recipeIds = new int[recipes.size()];
             String[] recipeNames = new String[recipes.size()];
             String[] recipeImages = new String[recipes.size()];
             List<Map<String, Double>> recipeNutrition = new ArrayList<>();
@@ -104,6 +105,9 @@ public class LikedRecipeInteractor implements LikedRecipeInputBoundary {
 
             for (int i = 0; i < recipes.size(); i++) {
                 Recipe recipe = recipes.get(i);
+
+                // extracts recipe ids
+                recipeIds[i] = recipe.getRecipeId();
 
                 // Extract recipe name
                 recipeNames[i] = recipe.getRecipeName();
@@ -131,6 +135,7 @@ public class LikedRecipeInteractor implements LikedRecipeInputBoundary {
             }
 
             LikedRecipeOutputData outputData = new LikedRecipeOutputData(
+                    recipeIds,
                     recipeNames,
                     recipeImages,
                     recipeNutrition,

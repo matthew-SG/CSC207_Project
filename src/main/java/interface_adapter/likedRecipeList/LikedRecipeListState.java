@@ -1,6 +1,7 @@
 package interface_adapter.likedRecipeList;
 
 import java.util.List;
+import java.util.Map;
 
 public class LikedRecipeListState {
 
@@ -9,6 +10,10 @@ public class LikedRecipeListState {
 
     private int selectedRecipe;
     private String selectedRecipeName;
+
+    private List<List<String[]>> recipeIngredients;
+    private List<Map<String, Double>> recipeNutrition;
+    private List<String> recipeImages;
 
     public List<Integer> getRecipeIds() {
         return recipeIds;
@@ -40,5 +45,29 @@ public class LikedRecipeListState {
 
     public void setSelectedRecipeName(String recipeName) {
         this.selectedRecipeName = recipeName;
+    }
+
+    public List<List<String[]>> getRecipeIngredients() {
+        return recipeIngredients;
+    }
+
+    public void setRecipeIngredients(List<List<String[]>> recipeIngredients) {
+        this.recipeIngredients = recipeIngredients;
+    }
+
+    public List<Map<String, Double>> getRecipeNutrition() {
+        return recipeNutrition;
+    }
+
+    public void setRecipeNutrition(List<Map<String, Double>> recipeNutrition) {
+        this.recipeNutrition = recipeNutrition;
+    }
+
+    public List<String> getRecipeImages() {
+        return recipeImages;
+    }
+
+    public void setRecipeImages(List<String> recipeImages) {
+        this.recipeImages = recipeImages;
     }
 }

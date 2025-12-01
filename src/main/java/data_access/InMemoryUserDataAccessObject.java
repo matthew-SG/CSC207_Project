@@ -87,6 +87,11 @@ public class InMemoryUserDataAccessObject implements UserDataAccess {
     }
 
     @Override
+    public List<InstructionStep> getAnalyzedInstructions(int recipeId) {
+        return List.of();
+    }
+
+    @Override
     public void logout() {
         // Unsure if we actually need it to run
     }
@@ -147,13 +152,40 @@ public class InMemoryUserDataAccessObject implements UserDataAccess {
     }
 
     @Override
+    public void saveLikedRecipe(String username, Recipe recipe) {
+        users.get(username).getSavedRecipes().add(recipe);
+    }
+
+    @Override
+    public void deleteLikedRecipe(String username, int recipeId) {
+        List<Recipe> likedRecipes = users.get(username).getSavedRecipes();
+        for (Recipe recipe : likedRecipes) {
+            if (recipe.getRecipeId() == recipeId) {
+                users.get(username).getSavedRecipes().remove(recipe);
+                return;
+            }
+        }
+    }
+
+    @Override
+    public List<Recipe> getLikedRecipes(String username) {
+        return users.get(username).getSavedRecipes();
+    }
+
+    @Override
     public Recipe getRecipeById(int recipeId) {
+        List<Recipe> likedRecipes =  users.get(currentUsername).getSavedRecipes();
+        for (Recipe recipe : likedRecipes) {
+            if (recipe.getRecipeId() == recipeId) {
+                return recipe;
+            }
+        }
         return null;
     }
 
     @Override
     public User getUser(String username) {
-        return null;
+        return users.get(username);
     }
 
     @Override
@@ -174,5 +206,32 @@ public class InMemoryUserDataAccessObject implements UserDataAccess {
     public void removeFromPendingApproval(int recipeId) {
         // In-memory implementation - no pending approval list to maintain
         // This is a no-op since in-memory DAO doesn't manage pending recipes
+    }
+
+
+
+
+    @Override
+    public List<Ingredient> load() {
+        if (this.currentUsername == null || !this.users.containsKey(this.currentUsername)) {
+            return new ArrayList<>();
+        }
+
+        User currentUser = this.users.get(this.currentUsername);
+        if (currentUser.getGroceryList() == null) {
+            return new ArrayList<>();
+        }
+        return currentUser.getGroceryList().getItems();
+    }
+
+
+    @Override
+    public void save(List<Ingredient> list) {
+        if (this.currentUsername != null && this.users.containsKey(this.currentUsername)) {
+            User currentUser = this.users.get(this.currentUsername);
+
+            currentUser.setGroceryList(new GroceryList(list));
+        }
+
     }
 }

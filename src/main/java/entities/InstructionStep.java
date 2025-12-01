@@ -1,6 +1,8 @@
 package entities;
-import java.util.List;
 
+/**
+ * Class representing a step in a recipe's instruction.
+ */
 public class InstructionStep {
     private int number;
     private String step;
@@ -10,8 +12,13 @@ public class InstructionStep {
         this.step = step;
     }
 
-    public int getNumber() { return number; }
-    public String getStep() { return step; }
+    public int getNumber() {
+        return number;
+    }
+
+    public String getStep() {
+        return step;
+    }
 
     public void setNumber(int number) {
         this.number = number;

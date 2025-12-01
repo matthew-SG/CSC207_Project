@@ -16,6 +16,7 @@ public class NavbarLoggedInView extends JPanel {
     private JButton searchByIngredientsButton;
     private JButton groceryButton;
     private NavbarController navbarController = null;
+    private JButton likeRecipeButton;
 
     public NavbarLoggedInView(){
         setBackground(Color.PINK);
@@ -26,6 +27,7 @@ public class NavbarLoggedInView extends JPanel {
         groceryButton = new JButton("grocery list");
         mealPlanButton = new JButton("Meal Plan Generator");
         searchByIngredientsButton = new JButton("search by ingredients");
+        likeRecipeButton = new JButton("Like Recipe List");
         add(communityButton);
         add(generateRecipe);
         add(approveRecipeButton);
@@ -33,6 +35,7 @@ public class NavbarLoggedInView extends JPanel {
         add(groceryButton);
         add(mealPlanButton);
         add(searchByIngredientsButton);
+        add(likeRecipeButton);
 
         communityButton.addActionListener(new ActionListener() {
             @Override
@@ -79,6 +82,13 @@ public class NavbarLoggedInView extends JPanel {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 navbarController.switchToGroceryList();
+            }
+        });
+
+        likeRecipeButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                navbarController.switchToLikedRecipeList();
             }
         });
     }
