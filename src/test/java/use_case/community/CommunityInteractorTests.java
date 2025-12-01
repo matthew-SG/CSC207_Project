@@ -8,10 +8,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import data_access.DummyCommunityDataAccessObject;
+import entities.Rating;
 import entities.Recipe;
-import entities.User;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
+import use_case.community.input_data.CommunityLikeRecipeInputData;
 import use_case.community.input_data.CommunityPoseSelectionInputData;
 import use_case.community.input_data.CommunityPublishInputData;
 import use_case.community.input_data.CommunityRecipeSelectionInputData;
@@ -21,6 +22,36 @@ import use_case.community.output_data.CommunitySelectedRecipeOutputData;
 
 
 public class CommunityInteractorTests {
+
+    // Stub implementation of CommunityUserRecipeDataAccessInterface for testing
+    private static class StubUserRecipeDAO implements CommunityUserRecipeDataAccessInterface {
+        private final Map<String, List<Recipe>> savedRecipes = new HashMap<>();
+
+        @Override
+        public List<Recipe> getLikedRecipesForUser(String username) {
+            return savedRecipes.getOrDefault(username, new ArrayList<>());
+        }
+
+        @Override
+        public void saveRecipeToUser(String username, Recipe recipe) {
+            savedRecipes.computeIfAbsent(username, k -> new ArrayList<>()).add(recipe);
+        }
+
+        @Override
+        public Optional<Recipe> getCurrentUserLikedRecipe(int recipeId) {
+            return Optional.empty();
+        }
+
+        @Override
+        public String getCurrentUsername() {
+            return null;
+        }
+
+        public List<Recipe> getSavedRecipesForUser(String username) {
+            return savedRecipes.getOrDefault(username, new ArrayList<>());
+        }
+    }
+
     @Test
     void successPublish() {
         CommunityPublishInputData inputData = new CommunityPublishInputData("Grace",
@@ -61,9 +92,15 @@ public class CommunityInteractorTests {
                 assertEquals(response.getRecipeNames().get(idx), inputData.getRecipeName());
                 assertEquals(response.getRecipeImageUrls().get(idx), inputData.getRecipeImageURL());
             }
+
+            @Override
+            public void prepareAddSucc(CommunityRatingsOutputData response) {
+                fail("Unexpected UI pathway");
+            }
         };
 
-        CommunityInputBoundary interactor = new CommunityMarketInteractor(testDAO, successPresenter);
+        StubUserRecipeDAO stubUserRecipeDAO = new StubUserRecipeDAO();
+        CommunityInputBoundary interactor = new CommunityMarketInteractor(testDAO, successPresenter, stubUserRecipeDAO);
         interactor.publish(inputData);
     }
 
@@ -102,9 +139,15 @@ public class CommunityInteractorTests {
             public void preparePublishSucc(CommunityRatingsOutputData response) {
                 fail("Unexpected UI pathway");
             }
+
+            @Override
+            public void prepareAddSucc(CommunityRatingsOutputData response) {
+                fail("Unexpected UI pathway");
+            }
         };
 
-        CommunityInputBoundary interactor = new CommunityMarketInteractor(testDAO, presenter);
+        StubUserRecipeDAO stubUserRecipeDAO = new StubUserRecipeDAO();
+        CommunityInputBoundary interactor = new CommunityMarketInteractor(testDAO, presenter, stubUserRecipeDAO);
         interactor.viewCommunity();
         assertTrue(viewRatingsCalled[0]);
     }
@@ -130,6 +173,10 @@ public class CommunityInteractorTests {
             public void prepareRecipeSelection(CommunityLikedRecipesOutputData response) {
                 fail("Unexpected UI pathway");
             }
+            @Override
+            public void prepareAddSucc(CommunityRatingsOutputData response) {
+                fail("Unexpected UI pathway");
+            }
 
             @Override
             public void prepareCommentWriting(CommunitySelectedRecipeOutputData response) {
@@ -142,7 +189,8 @@ public class CommunityInteractorTests {
             }
         };
 
-        CommunityInputBoundary interactor = new CommunityMarketInteractor(testDAO, presenter);
+        StubUserRecipeDAO stubUserRecipeDAO = new StubUserRecipeDAO();
+        CommunityInputBoundary interactor = new CommunityMarketInteractor(testDAO, presenter, stubUserRecipeDAO);
         interactor.viewToPost(new CommunityPoseSelectionInputData(false, "Guest"));
         assertTrue(failCalled[0]);
     }
@@ -179,12 +227,18 @@ public class CommunityInteractorTests {
             }
 
             @Override
+            public void prepareAddSucc(CommunityRatingsOutputData response) {
+                fail("Unexpected UI pathway");
+            }
+
+            @Override
             public void preparePublishSucc(CommunityRatingsOutputData response) {
                 fail("Unexpected UI pathway");
             }
         };
 
-        CommunityInputBoundary interactor = new CommunityMarketInteractor(testDAO, presenter);
+        StubUserRecipeDAO stubUserRecipeDAO = new StubUserRecipeDAO();
+        CommunityInputBoundary interactor = new CommunityMarketInteractor(testDAO, presenter, stubUserRecipeDAO);
         interactor.viewToPost(new CommunityPoseSelectionInputData(true, "Grace"));
         assertTrue(selectionCalled[0]);
     }
@@ -211,6 +265,11 @@ public class CommunityInteractorTests {
             }
 
             @Override
+            public void prepareAddSucc(CommunityRatingsOutputData response) {
+                fail("Unexpected UI pathway");
+            }
+
+            @Override
             public void prepareCommentWriting(CommunitySelectedRecipeOutputData response) {
                 commentWritingCalled[0] = true;
                 assertEquals(1, response.getSelectedRecipeId());
@@ -224,7 +283,8 @@ public class CommunityInteractorTests {
             }
         };
 
-        CommunityInputBoundary interactor = new CommunityMarketInteractor(testDAO, presenter);
+        StubUserRecipeDAO stubUserRecipeDAO = new StubUserRecipeDAO();
+        CommunityInputBoundary interactor = new CommunityMarketInteractor(testDAO, presenter, stubUserRecipeDAO);
         CommunityRecipeSelectionInputData inputData = new CommunityRecipeSelectionInputData(
                 1,
                 "Homemade Pizza",
@@ -237,9 +297,8 @@ public class CommunityInteractorTests {
     @Test
     void daoReturnsAllLikedRecipes() {
         DummyCommunityDataAccessObject dao = new DummyCommunityDataAccessObject();
-        User user = new User("Grace", "pw", null);
 
-        List<Recipe> likedRecipes = dao.getLikedRecipes(user);
+        List<Recipe> likedRecipes = dao.getLikedRecipes("Grace");
 
         assertEquals(2, likedRecipes.size());
         assertTrue(likedRecipes.stream().map(Recipe::getRecipeName)
@@ -247,5 +306,159 @@ public class CommunityInteractorTests {
                 .containsAll(List.of("pizza", "hamburger")));
         assertTrue(likedRecipes.stream().allMatch(recipe ->
                 recipe.getRecipeImage() != null && !recipe.getRecipeImage().isEmpty()));
+    }
+
+    @Test
+    void likeRecipeSuccessAddsRecipeToUser() {
+        // Create DAO with a rating that has a detailed recipe
+        DummyCommunityDataAccessObject testDAO = new DummyCommunityDataAccessObject();
+        // Set a detailed recipe on an existing rating
+        Rating ratingWithRecipe = testDAO.getCurrentRatings().get(0);
+        Recipe detailedRecipe = new Recipe(ratingWithRecipe.getRecipeId(), ratingWithRecipe.getRecipeName(),
+                ratingWithRecipe.getRecipeImageUrl(), new ArrayList<>(), "american", new HashMap<>());
+        ratingWithRecipe.setDetailedRecipe(detailedRecipe);
+
+        final boolean[] addSuccCalled = {false};
+        StubUserRecipeDAO stubUserRecipeDAO = new StubUserRecipeDAO();
+
+        CommunityOutputBoundary presenter = new CommunityOutputBoundary() {
+            @Override
+            public void prepareFailView(String error) {
+                fail("Unexpected failure pathway: " + error);
+            }
+
+            @Override
+            public void prepareViewRating(CommunityRatingsOutputData response) {
+                fail("Unexpected UI pathway");
+            }
+
+            @Override
+            public void prepareRecipeSelection(CommunityLikedRecipesOutputData response) {
+                fail("Unexpected UI pathway");
+            }
+
+            @Override
+            public void prepareCommentWriting(CommunitySelectedRecipeOutputData response) {
+                fail("Unexpected UI pathway");
+            }
+
+            @Override
+            public void preparePublishSucc(CommunityRatingsOutputData response) {
+                fail("Unexpected UI pathway");
+            }
+
+            @Override
+            public void prepareAddSucc(CommunityRatingsOutputData response) {
+                addSuccCalled[0] = true;
+                assertNotNull(response);
+            }
+        };
+
+        CommunityInputBoundary interactor = new CommunityMarketInteractor(testDAO, presenter, stubUserRecipeDAO);
+        CommunityLikeRecipeInputData inputData = new CommunityLikeRecipeInputData("Grace", ratingWithRecipe.getRatingId());
+        interactor.likeRecipe(inputData);
+
+        assertTrue(addSuccCalled[0]);
+        List<Recipe> savedRecipes = stubUserRecipeDAO.getSavedRecipesForUser("Grace");
+        assertEquals(1, savedRecipes.size());
+        assertEquals(detailedRecipe.getRecipeId(), savedRecipes.get(0).getRecipeId());
+    }
+
+    @Test
+    void likeRecipeFailsWhenRatingNotFound() {
+        DummyCommunityDataAccessObject testDAO = new DummyCommunityDataAccessObject();
+        final boolean[] failCalled = {false};
+        StubUserRecipeDAO stubUserRecipeDAO = new StubUserRecipeDAO();
+
+        CommunityOutputBoundary presenter = new CommunityOutputBoundary() {
+            @Override
+            public void prepareFailView(String error) {
+                failCalled[0] = true;
+                assertEquals("Rating not found", error);
+            }
+
+            @Override
+            public void prepareViewRating(CommunityRatingsOutputData response) {
+                fail("Unexpected UI pathway");
+            }
+
+            @Override
+            public void prepareRecipeSelection(CommunityLikedRecipesOutputData response) {
+                fail("Unexpected UI pathway");
+            }
+
+            @Override
+            public void prepareCommentWriting(CommunitySelectedRecipeOutputData response) {
+                fail("Unexpected UI pathway");
+            }
+
+            @Override
+            public void preparePublishSucc(CommunityRatingsOutputData response) {
+                fail("Unexpected UI pathway");
+            }
+
+            @Override
+            public void prepareAddSucc(CommunityRatingsOutputData response) {
+                fail("Unexpected UI pathway");
+            }
+        };
+
+        CommunityInputBoundary interactor = new CommunityMarketInteractor(testDAO, presenter, stubUserRecipeDAO);
+        // Use a non-existent rating ID
+        CommunityLikeRecipeInputData inputData = new CommunityLikeRecipeInputData("Grace", 9999);
+        interactor.likeRecipe(inputData);
+
+        assertTrue(failCalled[0]);
+    }
+
+    @Test
+    void likeRecipeFailsWhenDetailedRecipeUnavailable() {
+        DummyCommunityDataAccessObject testDAO = new DummyCommunityDataAccessObject();
+        // Ratings in DummyCommunityDataAccessObject don't have detailedRecipe set by default
+        Rating ratingWithoutRecipe = testDAO.getCurrentRatings().get(0);
+        // Ensure detailedRecipe is null (default)
+        assertNull(ratingWithoutRecipe.getDetailedRecipe());
+
+        final boolean[] failCalled = {false};
+        StubUserRecipeDAO stubUserRecipeDAO = new StubUserRecipeDAO();
+
+        CommunityOutputBoundary presenter = new CommunityOutputBoundary() {
+            @Override
+            public void prepareFailView(String error) {
+                failCalled[0] = true;
+                assertEquals("Detailed recipe unavailable for this rating yet.", error);
+            }
+
+            @Override
+            public void prepareViewRating(CommunityRatingsOutputData response) {
+                fail("Unexpected UI pathway");
+            }
+
+            @Override
+            public void prepareRecipeSelection(CommunityLikedRecipesOutputData response) {
+                fail("Unexpected UI pathway");
+            }
+
+            @Override
+            public void prepareCommentWriting(CommunitySelectedRecipeOutputData response) {
+                fail("Unexpected UI pathway");
+            }
+
+            @Override
+            public void preparePublishSucc(CommunityRatingsOutputData response) {
+                fail("Unexpected UI pathway");
+            }
+
+            @Override
+            public void prepareAddSucc(CommunityRatingsOutputData response) {
+                fail("Unexpected UI pathway");
+            }
+        };
+
+        CommunityInputBoundary interactor = new CommunityMarketInteractor(testDAO, presenter, stubUserRecipeDAO);
+        CommunityLikeRecipeInputData inputData = new CommunityLikeRecipeInputData("Grace", ratingWithoutRecipe.getRatingId());
+        interactor.likeRecipe(inputData);
+
+        assertTrue(failCalled[0]);
     }
 }
