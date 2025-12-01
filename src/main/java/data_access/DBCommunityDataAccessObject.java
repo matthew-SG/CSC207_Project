@@ -1,5 +1,12 @@
 package data_access;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import entities.Ingredient;
 import entities.Rating;
 import entities.Recipe;
@@ -11,13 +18,7 @@ import use_case.community.CommunityDataAccessInterface;
 import use_case.community.CommunityUserRecipeDataAccessInterface;
 import use_case.community.input_data.CommunityPublishInputData;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+
 
 /**
  * Data Access Object for Community features using Firestore REST API.
@@ -133,30 +134,30 @@ public class DBCommunityDataAccessObject implements CommunityDataAccessInterface
             // Get the next available rating ID
             int nextRatingId = getNextRatingId();
 
-        // Resolve recipe details with fallbacks
-        Recipe recipeDetails = resolveRecipeDetails(data);
-        String resolvedRecipeName = coalesce(
-            recipeDetails.getRecipeName(),
-            data.getRecipeName(),
-            "Unnamed Recipe"
-        );
-        String resolvedRecipeImage = coalesce(
-            recipeDetails.getRecipeImage(),
-            data.getRecipeImageURL(),
-            ""
-        );
-        int resolvedRecipeId = recipeDetails.getRecipeId() != 0 ? recipeDetails.getRecipeId() : data.getRecipeID();
-    String resolvedUserName = coalesce(data.getUserName(), userRecipeDataAccess.getCurrentUsername(), "Anonymous");
-            
+            // Resolve recipe details with fallbacks
+            Recipe recipeDetails = resolveRecipeDetails(data);
+            String resolvedRecipeName = coalesce(
+                recipeDetails.getRecipeName(),
+                data.getRecipeName(),
+                "Unnamed Recipe"
+            );
+            String resolvedRecipeImage = coalesce(
+                recipeDetails.getRecipeImage(),
+                data.getRecipeImageURL(),
+                ""
+            );
+            int resolvedRecipeId = recipeDetails.getRecipeId() != 0 ? recipeDetails.getRecipeId() : data.getRecipeID();
+            String resolvedUserName = coalesce(data.getUserName(), userRecipeDataAccess.getCurrentUsername(), "Anonymous");
+
             // Create Firestore document structure
             JSONObject fields = new JSONObject();
-        fields.put("stars", createIntegerValue(sanitizeRating(data.getRating())));
-        fields.put("comment", createStringValue(coalesce(data.getComment(), "")));
-        fields.put("userName", createStringValue(resolvedUserName));
-        fields.put("recipeName", createStringValue(resolvedRecipeName));
-        fields.put("recipeId", createIntegerValue(resolvedRecipeId));
-        fields.put("recipeImageUrl", createStringValue(resolvedRecipeImage));
-        fields.put("recipeDetails", buildRecipeDetailsValue(recipeDetails));
+            fields.put("stars", createIntegerValue(sanitizeRating(data.getRating())));
+            fields.put("comment", createStringValue(coalesce(data.getComment(), "")));
+            fields.put("userName", createStringValue(resolvedUserName));
+            fields.put("recipeName", createStringValue(resolvedRecipeName));
+            fields.put("recipeId", createIntegerValue(resolvedRecipeId));
+            fields.put("recipeImageUrl", createStringValue(resolvedRecipeImage));
+            fields.put("recipeDetails", buildRecipeDetailsValue(recipeDetails));
             
             JSONObject document = new JSONObject();
             document.put("fields", fields);
