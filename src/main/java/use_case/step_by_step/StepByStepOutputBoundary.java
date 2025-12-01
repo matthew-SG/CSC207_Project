@@ -10,4 +10,6 @@ public interface StepByStepOutputBoundary {
      * @param outputData output data for this use case
      */
     void present(StepByStepOutputData outputData);
+
+    void prepareFailView(String error);
 }

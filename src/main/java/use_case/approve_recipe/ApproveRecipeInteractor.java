@@ -96,6 +96,11 @@ public class ApproveRecipeInteractor implements ApproveRecipeInputBoundary {
                 return;
             }
 
+            Recipe recipe = currentRecipes.get(currentIndex);
+
+            // Remove from pending approval list
+            dataAccess.removeFromPendingApproval(recipe.getRecipeId());
+
             // Move to next recipe
             currentIndex++;
             showCurrentRecipe();
