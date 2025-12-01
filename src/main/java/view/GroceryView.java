@@ -32,9 +32,15 @@ public class GroceryView extends JPanel implements PropertyChangeListener {
         if (qty.trim().isEmpty()) {
             return false;
         }
+
         try {
-            Double.parseDouble(qty.trim());
+            double quantity = Double.parseDouble(qty.trim());
+
+            if (quantity <= 0) {
+                return false;
+            }
             return true;
+
         } catch (NumberFormatException e) {
             return false;
         }

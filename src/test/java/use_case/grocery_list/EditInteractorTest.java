@@ -32,20 +32,20 @@ class EditInteractorTest {
 
     @Test
     void testEditSuccess() {
-        Ingredient oldMilk = new Ingredient("Milk", 1, "L");
-        Ingredient eggs = new Ingredient("Eggs", 12, "pcs");
-        List<Ingredient> initialList = new ArrayList<>(List.of(oldMilk, eggs));
+        final Ingredient oldMilk = new Ingredient("Milk", 1, "L");
+        final Ingredient eggs = new Ingredient("Eggs", 12, "pcs");
+        final List<Ingredient> initialList = new ArrayList<>(List.of(oldMilk, eggs));
 
-        InMemoryUserDataAccessObject dao = TestSetup.setupLoggedInUser(initialList);
-        MockEditPresenter presenter = new MockEditPresenter();
-        EditInteractor interactor = new EditInteractor(dao, presenter);
+        final InMemoryUserDataAccessObject dao = TestSetup.setupLoggedInUser(initialList);
+        final MockEditPresenter presenter = new MockEditPresenter();
+        final EditInteractor interactor = new EditInteractor(dao, presenter);
 
-        EditInputData inputData = new EditInputData(0, "Bread", "2", "Loaves");
+        final EditInputData inputData = new EditInputData(0, "Bread", "2", "Loaves");
 
         interactor.execute(inputData);
 
         assertTrue(presenter.isSuccess(), "edit");
-        List<Ingredient> items = dao.getUsers().get(TestSetup.TEST_USERNAME).getGroceryList().getItems();
+        final List<Ingredient> items = dao.getUsers().get(TestSetup.TEST_USERNAME).getGroceryList().getItems();
 
         Ingredient editedItem = items.getFirst();
         assertEquals("Bread", editedItem.getName());

@@ -32,20 +32,20 @@ class DeleteInteractorTest {
 
     @Test
     void testDeleteSuccess() {
-        Ingredient milk = new Ingredient("Milk", 1, "L");
-        Ingredient eggs = new Ingredient("Eggs", 12, "pcs");
-        List<Ingredient> initialList = new ArrayList<>(List.of(milk, eggs));
+        final Ingredient milk = new Ingredient("Milk", 1, "L");
+        final Ingredient eggs = new Ingredient("Eggs", 12, "pcs");
+        final List<Ingredient> initialList = new ArrayList<>(List.of(milk, eggs));
 
-        InMemoryUserDataAccessObject dao = TestSetup.setupLoggedInUser(initialList);
-        MockDeletePresenter presenter = new MockDeletePresenter();
-        DeleteInteractor interactor = new DeleteInteractor(dao, presenter);
+        final InMemoryUserDataAccessObject dao = TestSetup.setupLoggedInUser(initialList);
+        final MockDeletePresenter presenter = new MockDeletePresenter();
+        final DeleteInteractor interactor = new DeleteInteractor(dao, presenter);
 
-        DeleteInputData inputData = new DeleteInputData(0);
+        final DeleteInputData inputData = new DeleteInputData(0);
 
         interactor.execute(inputData);
 
         assertTrue(presenter.isSuccess(), "delete");
-        List<Ingredient> items = dao.getUsers().get(TestSetup.TEST_USERNAME).getGroceryList().getItems();
+        final List<Ingredient> items = dao.getUsers().get(TestSetup.TEST_USERNAME).getGroceryList().getItems();
 
         assertEquals(1, items.size());
         assertEquals("Eggs", items.getFirst().getName());

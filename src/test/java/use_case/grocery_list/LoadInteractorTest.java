@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class LoadInteractorTest {
+final class LoadInteractorTest {
 
     private static class MockLoadPresenter implements LoadOutputBoundary {
         private List<Ingredient> receivedItems = null;
@@ -33,16 +33,16 @@ class LoadInteractorTest {
     @Test
     void testLoadSuccessNonEmpty() {
 
-        Ingredient banana = new Ingredient("Banana", 5, "pcs");
-        List<Ingredient> initialList = new ArrayList<>(List.of(banana));
+        final Ingredient banana = new Ingredient("Banana", 5, "pcs");
+        final List<Ingredient> initialList = new ArrayList<>(List.of(banana));
 
-        InMemoryUserDataAccessObject dao = TestSetup.setupLoggedInUser(initialList);
-        MockLoadPresenter presenter = new MockLoadPresenter();
-        LoadInteractor interactor = new LoadInteractor(dao, presenter);
+        final InMemoryUserDataAccessObject dao = TestSetup.setupLoggedInUser(initialList);
+        final MockLoadPresenter presenter = new MockLoadPresenter();
+        final LoadInteractor interactor = new LoadInteractor(dao, presenter);
 
         interactor.execute();
 
-        List<Ingredient> loadedList = presenter.getReceivedItems();
+        final List<Ingredient> loadedList = presenter.getReceivedItems();
         assertNotNull(loadedList);
         assertEquals(1, loadedList.size());
         assertEquals("Banana", loadedList.getFirst().getName());
@@ -50,15 +50,15 @@ class LoadInteractorTest {
 
     @Test
     void testLoadSuccessEmptyList() {
-        List<Ingredient> initialList = new ArrayList<>();
+        final List<Ingredient> initialList = new ArrayList<>();
 
-        InMemoryUserDataAccessObject dao = TestSetup.setupLoggedInUser(initialList);
-        MockLoadPresenter presenter = new MockLoadPresenter();
-        LoadInteractor interactor = new LoadInteractor(dao, presenter);
+        final InMemoryUserDataAccessObject dao = TestSetup.setupLoggedInUser(initialList);
+        final MockLoadPresenter presenter = new MockLoadPresenter();
+        final LoadInteractor interactor = new LoadInteractor(dao, presenter);
 
         interactor.execute();
 
-        List<Ingredient> loadedList = presenter.getReceivedItems();
+        final List<Ingredient> loadedList = presenter.getReceivedItems();
         assertNotNull(loadedList);
         assertTrue(loadedList.isEmpty());
     }

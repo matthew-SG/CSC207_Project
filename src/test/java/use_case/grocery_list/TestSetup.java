@@ -15,7 +15,7 @@ public class TestSetup {
 
     public static InMemoryUserDataAccessObject setupLoggedInUser(List<Ingredient> initialGroceryList) {
 
-        InMemoryUserDataAccessObject dao = new InMemoryUserDataAccessObject();
+        final InMemoryUserDataAccessObject dao = new InMemoryUserDataAccessObject();
 
         dao.signupUser(TEST_USERNAME, TEST_PASSWORD);
         dao.login(TEST_USERNAME, TEST_PASSWORD);

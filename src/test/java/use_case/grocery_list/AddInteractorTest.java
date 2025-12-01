@@ -32,17 +32,17 @@ class AddInteractorTest {
 
     @Test
     void testAddSuccessNewItem() {
-        InMemoryUserDataAccessObject dao = TestSetup.setupLoggedInUser(new ArrayList<>());
-        MockAddPresenter presenter = new MockAddPresenter();
-        AddInteractor interactor = new AddInteractor(dao, presenter);
+        final InMemoryUserDataAccessObject dao = TestSetup.setupLoggedInUser(new ArrayList<>());
+        final MockAddPresenter presenter = new MockAddPresenter();
+        final AddInteractor interactor = new AddInteractor(dao, presenter);
 
-        AddInputData inputData = new AddInputData("Apple", "3", "pcs");
+        final AddInputData inputData = new AddInputData("Apple", "3", "pcs");
 
         interactor.execute(inputData);
 
         assertTrue(presenter.isSuccess(), "added");
 
-        List<Ingredient> items = dao.getUsers().get(TestSetup.TEST_USERNAME).getGroceryList().getItems();
+        final List<Ingredient> items = dao.getUsers().get(TestSetup.TEST_USERNAME).getGroceryList().getItems();
         assertEquals(1, items.size());
         Ingredient addedItem = items.getFirst();
         assertEquals("Apple", addedItem.getName());
