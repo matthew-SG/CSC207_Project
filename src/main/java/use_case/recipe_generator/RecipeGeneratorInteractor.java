@@ -9,7 +9,10 @@ import entities.Intolerance;
 import entities.Recipe;
 import use_case.approve_recipe.ApproveRecipeDataAccessInterface;
 
-public class RecipeGeneratorInteractor implements RecipeGeneratorInputBoundary{
+/**
+ * Interactor for the recipe generator use case.
+ */
+public class RecipeGeneratorInteractor implements RecipeGeneratorInputBoundary {
     // DAI for Recipe Data
     private final RecipeDataAccessInterface userRecipeAccessObject;
     // Output Boundary for sending outputs to presenter
@@ -28,15 +31,15 @@ public class RecipeGeneratorInteractor implements RecipeGeneratorInputBoundary{
     @Override
     public void generateRecipes(GenerateRecipeInputData inputData) {
 
-        DietaryRestriction dietRestriction = inputData.getDietaryRestriction();
-        List<Intolerance> intolerances = inputData.getIntolerances();
-        Cuisine cuisine = inputData.getCuisine();
-        Integer minCalories = inputData.getMinCalories();
-        Integer maxCalories = inputData.getMaxCalories();
-        Integer minProtein = inputData.getMinProtein();
-        Integer maxProtein = inputData.getMaxProtein();
+        final DietaryRestriction dietRestriction = inputData.getDietaryRestriction();
+        final List<Intolerance> intolerances = inputData.getIntolerances();
+        final Cuisine cuisine = inputData.getCuisine();
+        final Integer minCalories = inputData.getMinCalories();
+        final Integer maxCalories = inputData.getMaxCalories();
+        final Integer minProtein = inputData.getMinProtein();
+        final Integer maxProtein = inputData.getMaxProtein();
 
-        List<Recipe> recipes;
+        final List<Recipe> recipes;
 
         // Handle any failure thrown by the DAO (timeouts, bad JSON, etc.)
         try {
@@ -49,33 +52,34 @@ public class RecipeGeneratorInteractor implements RecipeGeneratorInputBoundary{
                     minProtein,
                     maxProtein
             );
-        } catch (Exception ex) {
+        }
+        catch (Exception ex) {
             // Conversion of technical error → user-friendly UI message
-            List<RecipeSummary> emptySummaries = new ArrayList<>();
-            String errorMessage = "Could not load recipes right now. Please try again later.";
-            GenerateRecipeOutputData outputData = new GenerateRecipeOutputData(emptySummaries, errorMessage);
+            final List<RecipeSummary> emptySummaries = new ArrayList<>();
+            final String errorMessage = "Could not load recipes right now. Please try again later.";
+            final GenerateRecipeOutputData outputData = new GenerateRecipeOutputData(emptySummaries, errorMessage);
             recipePresenter.prepareView(outputData);
             return;
         }
 
         // Make recipes available for approval feature (only if that subsystem is present)
-        if (approveRecipeDAO != null) {
-            approveRecipeDAO.setAvailableRecipes(recipes);
+        if (approveRecipeDataAccess != null) {
+            approveRecipeDataAccess.setAvailableRecipes(recipes);
         }
 
         // Case: DAO returned empty list (no matches for selected filters)
         if (recipes == null || recipes.isEmpty()) {
-            List<RecipeSummary> emptySummaries = new ArrayList<>();
-            String message = "No recipes found, please try different filter options";
-            GenerateRecipeOutputData outputData = new GenerateRecipeOutputData(emptySummaries, message);
+            final List<RecipeSummary> emptySummaries = new ArrayList<>();
+            final String message = "No recipes found, please try different filter options";
+            final GenerateRecipeOutputData outputData = new GenerateRecipeOutputData(emptySummaries, message);
             recipePresenter.prepareView(outputData);
             return;
         }
 
         // Convert Recipe entities into RecipeSummary objects (minimal UI model)
-        List<RecipeSummary> recipeSummaryList = new ArrayList<>();
+        final List<RecipeSummary> recipeSummaryList = new ArrayList<>();
         for (Recipe recipe : recipes) {
-            RecipeSummary recipeX = new RecipeSummary(
+            final RecipeSummary recipeX = new RecipeSummary(
                     recipe.getRecipeName(),
                     recipe.getRecipeId(),
                     recipe.getRecipeImage()
@@ -84,7 +88,7 @@ public class RecipeGeneratorInteractor implements RecipeGeneratorInputBoundary{
         }
 
         // Success: return list with no error message
-        GenerateRecipeOutputData outputData =
+        final GenerateRecipeOutputData outputData =
                 new GenerateRecipeOutputData(recipeSummaryList, "");
         recipePresenter.prepareView(outputData);
     }

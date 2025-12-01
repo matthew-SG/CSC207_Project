@@ -1,13 +1,13 @@
 package data_access;
 
-import entities.*;
-import use_case.login.LoginUserDataAccessInterface;
-import use_case.signup.SignupUserDataAccessInterface;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import entities.*;
+import use_case.login.LoginUserDataAccessInterface;
+import use_case.signup.SignupUserDataAccessInterface;
 
 /**
  * In-memory implementation of the DAO for storing user data. This implementation does
@@ -26,33 +26,37 @@ public class InMemoryUserDataAccessObject implements UserDataAccess {
     private static final String RECIPE_CUISINE = "Italian";
 
     private final Map<String, User> users = new HashMap<>();
+    // Temporary storage for recipes waiting to be approved
+    private List<Recipe> pendingApprovalRecipes = new ArrayList<>();
     
     private String currentUsername;
 
     /**
      * Constructor for InMemoryUserDAO that constructs pregenerated Users for testing purposes (primarily for Meal
-     *      Plan Use Case, other Use Cases may add to test users if they wish)
+     *      Plan Use Case, other Use Cases may add to test users if they wish).
      */
+    @SuppressWarnings({"checkstyle:MagicNumber", "checkstyle:SuppressWarnings", "checkstyle:OneStatementPerLine"})
     public InMemoryUserDataAccessObject() {
-        User testUserOne = new User("test_1", PASSWORD, new ArrayList<>(), new ArrayList<>(),
+        final User testUserOne = new User("test_1", PASSWORD, new ArrayList<>(), new ArrayList<>(),
                 new GroceryList(new ArrayList<>()));
-        User testUserTwo = new User("test_2", PASSWORD, new ArrayList<>(), new ArrayList<>(),
+        final User testUserTwo = new User("test_2", PASSWORD, new ArrayList<>(), new ArrayList<>(),
                 new GroceryList(new ArrayList<>()));
-        User testUserThree = new User("test_3", PASSWORD, new ArrayList<>(), new ArrayList<>(),
+        final User testUserThree = new User("test_3", PASSWORD, new ArrayList<>(), new ArrayList<>(),
                 new GroceryList(new ArrayList<>()));
 
-        Ingredient flour = new Ingredient("flour", 2, "Tbsps");
-        Ingredient greenO = new Ingredient("green onions", 100, "g");
+        final Ingredient flour = new Ingredient("flour", 2, "Tbsps");
+        final Ingredient greenO = new Ingredient("green onions", 100, "g");
 
-        Recipe miniPastaTuna = new Recipe(654959, RECIPE_NAME,
+        final Recipe miniPastaTuna = new Recipe(654959, RECIPE_NAME,
                 RECIPE_IMAGE, new ArrayList<>(), RECIPE_CUISINE, new HashMap<>());
         miniPastaTuna.addIngredient(flour); miniPastaTuna.addIngredient(greenO);
         miniPastaTuna.addNutritionalValue(CALORIES, 422);
+
         miniPastaTuna.addNutritionalValue(CARBOHYDRATES, 57);
         miniPastaTuna.addNutritionalValue(PROTEIN, 24);
         miniPastaTuna.addNutritionalValue(FAT, 10);
 
-        Recipe copyOne = new Recipe(654959, RECIPE_NAME,
+        final Recipe copyOne = new Recipe(654959, RECIPE_NAME,
                 RECIPE_IMAGE, new ArrayList<>(), RECIPE_CUISINE, new HashMap<>());
         copyOne.addIngredient(flour); copyOne.addIngredient(greenO);
         copyOne.addNutritionalValue(CALORIES, 422);
@@ -60,7 +64,7 @@ public class InMemoryUserDataAccessObject implements UserDataAccess {
         copyOne.addNutritionalValue(PROTEIN, 24);
         copyOne.addNutritionalValue(FAT, 10);
 
-        Recipe copyTwo = new Recipe(654959, RECIPE_NAME,
+        final Recipe copyTwo = new Recipe(654959, RECIPE_NAME,
                 RECIPE_IMAGE, new ArrayList<>(), RECIPE_CUISINE, new HashMap<>());
         copyTwo.addIngredient(flour); copyTwo.addIngredient(greenO);
         copyTwo.addNutritionalValue(CALORIES, 422);
@@ -108,7 +112,8 @@ public class InMemoryUserDataAccessObject implements UserDataAccess {
     public String login(String username, String password) {
         if (!this.users.containsKey(username)) {
             return LoginUserDataAccessInterface.USER_DNE_ERROR;
-        } else if (!this.users.get(username).getPassword().equals(password)) {
+        }
+        else if (!this.users.get(username).getPassword().equals(password)) {
             return LoginUserDataAccessInterface.INCORRECT_PASSWORD_ERROR;
         }
         this.currentUsername = username;
@@ -120,7 +125,7 @@ public class InMemoryUserDataAccessObject implements UserDataAccess {
         if (this.users.containsKey(username)) {
             return SignupUserDataAccessInterface.USER_EXISTS_ERROR;
         }
-        User user = new User(username, password, new ArrayList<>(), new ArrayList<>(), new GroceryList(new ArrayList<>()));
+        final User user = new User(username, password, new ArrayList<>(), new ArrayList<>(), new GroceryList(new ArrayList<>()));
         this.currentUsername = username;
         this.users.put(this.currentUsername, user);
         return SignupUserDataAccessInterface.SUCCESS;
@@ -148,7 +153,7 @@ public class InMemoryUserDataAccessObject implements UserDataAccess {
 
     @Override
     public List<Recipe> getAvailableRecipes() {
-        return List.of();
+        return new ArrayList<>(pendingApprovalRecipes);
     }
 
     @Override
@@ -158,7 +163,7 @@ public class InMemoryUserDataAccessObject implements UserDataAccess {
 
     @Override
     public void deleteLikedRecipe(String username, int recipeId) {
-        List<Recipe> likedRecipes = users.get(username).getSavedRecipes();
+        final List<Recipe> likedRecipes = users.get(username).getSavedRecipes();
         for (Recipe recipe : likedRecipes) {
             if (recipe.getRecipeId() == recipeId) {
                 users.get(username).getSavedRecipes().remove(recipe);
@@ -174,7 +179,7 @@ public class InMemoryUserDataAccessObject implements UserDataAccess {
 
     @Override
     public Recipe getRecipeById(int recipeId) {
-        List<Recipe> likedRecipes =  users.get(currentUsername).getSavedRecipes();
+        final List<Recipe> likedRecipes = users.get(currentUsername).getSavedRecipes();
         for (Recipe recipe : likedRecipes) {
             if (recipe.getRecipeId() == recipeId) {
                 return recipe;
@@ -192,26 +197,27 @@ public class InMemoryUserDataAccessObject implements UserDataAccess {
     public void saveRecipeToUser(String username, Recipe recipe) {
         // In-memory implementation - not used for approve recipe in production
         // Just add to user's saved recipes if user exists
-        User user = this.users.get(username);
+        final User user = this.users.get(username);
         if (user != null) {
-            boolean alreadySaved = user.getSavedRecipes().stream()
-                    .anyMatch(r -> r.getRecipeId() == recipe.getRecipeId());
+            final boolean alreadySaved = user.getSavedRecipes().stream()
+                    .anyMatch(userRecipe -> userRecipe.getRecipeId() == recipe.getRecipeId());
             if (!alreadySaved) {
                 user.getSavedRecipes().add(recipe);
             }
         }
+
+        // Remove recipe from pending approval
+        removeFromPendingApproval(recipe.getRecipeId());
     }
 
     @Override
     public void removeFromPendingApproval(int recipeId) {
-        // In-memory implementation - no pending approval list to maintain
-        // This is a no-op since in-memory DAO doesn't manage pending recipes
+        pendingApprovalRecipes.removeIf(recipe -> recipe.getRecipeId() == recipeId);
     }
 
     @Override
     public void setAvailableRecipes(List<Recipe> recipes) {
-        // In-memory implementation - no pending approval list to maintain
-        // This is a no-op since in-memory DAO doesn't manage pending recipes
+        this.pendingApprovalRecipes = recipes != null ? new ArrayList<>(recipes) : new ArrayList<>();
     }
 
     @Override
@@ -220,18 +226,17 @@ public class InMemoryUserDataAccessObject implements UserDataAccess {
             return new ArrayList<>();
         }
 
-        User currentUser = this.users.get(this.currentUsername);
+        final User currentUser = this.users.get(this.currentUsername);
         if (currentUser.getGroceryList() == null) {
             return new ArrayList<>();
         }
         return currentUser.getGroceryList().getItems();
     }
 
-
     @Override
     public void save(List<Ingredient> list) {
         if (this.currentUsername != null && this.users.containsKey(this.currentUsername)) {
-            User currentUser = this.users.get(this.currentUsername);
+            final User currentUser = this.users.get(this.currentUsername);
 
             currentUser.setGroceryList(new GroceryList(list));
         }
