@@ -42,12 +42,12 @@ public class CommunityView extends JPanel implements PropertyChangeListener {
         JPanel topPanel = new JPanel(new BorderLayout(10, 10));
         
         titleLabel = new JLabel("Community Reviews", SwingConstants.CENTER);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        titleLabel.setFont(new Font("Dialog", Font.BOLD, 24));
         topPanel.add(titleLabel, BorderLayout.CENTER);
         
         // Post Review button
         postReviewButton = new JButton("Post Review");
-        postReviewButton.setFont(new Font("Arial", Font.BOLD, 14));
+        postReviewButton.setFont(new Font("Dialog", Font.BOLD, 14));
         postReviewButton.setPreferredSize(new Dimension(150, 40));
         postReviewButton.setBackground(new Color(70, 130, 180));
         postReviewButton.setForeground(Color.WHITE);
@@ -99,7 +99,7 @@ public class CommunityView extends JPanel implements PropertyChangeListener {
     private void displayEmptyState() {
         reviewListPanel.removeAll();
         JLabel emptyLabel = new JLabel("No reviews available yet.", SwingConstants.CENTER);
-        emptyLabel.setFont(new Font("Arial", Font.ITALIC, 14));
+        emptyLabel.setFont(new Font("Dialog", Font.ITALIC, 14));
         emptyLabel.setForeground(Color.GRAY);
         emptyLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         reviewListPanel.add(Box.createVerticalGlue());
@@ -175,18 +175,18 @@ public class CommunityView extends JPanel implements PropertyChangeListener {
         middlePanel.setBackground(Color.WHITE);
 
         JLabel recipeLabel = new JLabel(recipeName);
-        recipeLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        recipeLabel.setFont(new Font("Dialog", Font.BOLD, 16));
         recipeLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         JLabel starsLabel = new JLabel(getStarString(starRating));
-        starsLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+        starsLabel.setFont(new Font("Dialog", Font.PLAIN, 14));
         starsLabel.setForeground(new Color(255, 165, 0)); // Orange color for stars
         starsLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         // Username label with fallback
         String displayUsername = (username != null && !username.trim().isEmpty()) ? username : "Anonymous";
         JLabel usernameLabel = new JLabel("by " + displayUsername);
-        usernameLabel.setFont(new Font("Arial", Font.ITALIC, 12));
+        usernameLabel.setFont(new Font("Dialog", Font.ITALIC, 12));
         usernameLabel.setForeground(new Color(100, 100, 100)); // Gray color for username
         usernameLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
@@ -201,7 +201,7 @@ public class CommunityView extends JPanel implements PropertyChangeListener {
         commentArea.setWrapStyleWord(true);
         commentArea.setLineWrap(true);
         commentArea.setEditable(false);
-        commentArea.setFont(new Font("Arial", Font.PLAIN, 12));
+        commentArea.setFont(new Font("Dialog", Font.PLAIN, 12));
         commentArea.setBackground(Color.WHITE);
         commentArea.setBorder(BorderFactory.createEmptyBorder());
 
