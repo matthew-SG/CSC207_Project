@@ -1,56 +1,66 @@
 package use_case.search_by_ingr;
 
-import entities.Ingredient;
-import entities.Recipe;
-import entities.unitConverter;
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import entities.Ingredient;
+import entities.Recipe;
+import entities.UnitConverter;
+
+/**
+ * Interactor for the search by ingredient use case.
+ */
 public class SearchByIngredientInteractor implements SearchByIngredientInputBoundary {
 
     private static final int MAX_RECIPES = 10;
+    private static final String ID = "id";
+    private static final String NOT_APPLICABLE = "N/A";
+    private static final String NAME = "name";
+    private static final String UNIT = "unit";
+    private static final String AMOUNT = "amount";
+
     private final SearchByIngredientGateway gateway;
     private final SearchByIngredientOutputBoundary presenter;
-    private final data_access.FileDataAccessObject approveRecipeDAO;
+    private final data_access.FileDataAccessObject approveRecipeDataAccessObject;
 
     public SearchByIngredientInteractor(SearchByIngredientGateway gateway,
                                         SearchByIngredientOutputBoundary presenter,
-                                        data_access.FileDataAccessObject approveRecipeDAO) {
+                                        data_access.FileDataAccessObject approveRecipeDataAccessObject) {
         this.gateway = gateway;
         this.presenter = presenter;
-        this.approveRecipeDAO = approveRecipeDAO;
+        this.approveRecipeDataAccessObject = approveRecipeDataAccessObject;
     }
 
     @Override
     public void execute(SearchByIngredientInputData inputData) {
-        List<Ingredient> ingredients = inputData.getIngredients();
+        final List<Ingredient> ingredients = inputData.getIngredients();
 
         if (ingredients == null || ingredients.isEmpty()) {
             presenter.prepareFailView("Enter at least one ingredient.");
             return;
         }
 
-        int allowedMissing = Math.max(0, inputData.getAmountMissing());
+        final int allowedMissing = Math.max(0, inputData.getAmountMissing());
 
-        JSONObject apiResult = gateway.searchByIngredients(ingredients);
+        final JSONObject apiResult = gateway.searchByIngredients(ingredients);
 
         if (apiResult == null) {
             presenter.prepareFailView("Failed to call the API.");
             return;
         }
 
-        JSONArray findResults = apiResult.getJSONArray("findResults");
-        JSONArray bulkResults = apiResult.getJSONArray("bulkResults");
-        ArrayList<Integer> acceptedIds = new ArrayList<>();
+        final JSONArray findResults = apiResult.getJSONArray("findResults");
+        final JSONArray bulkResults = apiResult.getJSONArray("bulkResults");
+        final ArrayList<Integer> acceptedIds = new ArrayList<>();
 
         for (int i = 0; i < findResults.length() && acceptedIds.size() < MAX_RECIPES; i++) {
-            JSONObject recipeJson = findResults.getJSONObject(i);
+            final JSONObject recipeJson = findResults.getJSONObject(i);
 
             if (shouldIncludeRecipe(recipeJson, ingredients, allowedMissing)) {
-                int id = recipeJson.getInt("id");
+                final int id = recipeJson.getInt(ID);
                 acceptedIds.add(id);
             }
         }
@@ -63,22 +73,22 @@ public class SearchByIngredientInteractor implements SearchByIngredientInputBoun
             return;
         }
 
-        List<Recipe> recipes = new ArrayList<>();
+        final List<Recipe> recipes = new ArrayList<>();
         for (int i = 0; i < bulkResults.length(); i++) {
-            JSONObject recipeJson = bulkResults.getJSONObject(i);
-            int id = recipeJson.getInt("id");
+            final JSONObject recipeJson = bulkResults.getJSONObject(i);
+            final int id = recipeJson.getInt(ID);
 
             if (!acceptedIds.contains(id)) {
                 continue;
             }
 
-            Recipe recipe = buildFullRecipeFromBulk(recipeJson);
+            final Recipe recipe = buildFullRecipeFromBulk(recipeJson);
             recipes.add(recipe);
         }
-        if (approveRecipeDAO != null) {
-            approveRecipeDAO.setAvailableRecipes(recipes);
+        if (approveRecipeDataAccessObject != null) {
+            approveRecipeDataAccessObject.setAvailableRecipes(recipes);
         }
-        String message = "Found " + recipes.size() + " recipes.";
+        final String message = "Found " + recipes.size() + " recipes.";
         presenter.prepareSuccessView(new SearchByIngredientOutputData(recipes, message));
     }
 
@@ -86,16 +96,16 @@ public class SearchByIngredientInteractor implements SearchByIngredientInputBoun
                                         List<Ingredient> userIngredients,
                                         int allowedMissing) {
 
-        int baseMissed = recipeJson.getInt("missedIngredientCount");
+        final int baseMissed = recipeJson.getInt("missedIngredientCount");
 
         // If API already reports more missed than allowed, bail early.
         if (baseMissed > allowedMissing) {
             return false;
         }
 
-        int extraMissingFromQuantity = calculateExtraMissingFromQuantity(recipeJson, userIngredients, baseMissed, allowedMissing);
+        final int extraMissingFromQuantity = calculateExtraMissingFromQuantity(recipeJson, userIngredients, baseMissed, allowedMissing);
 
-        int totalMissing = baseMissed + extraMissingFromQuantity;
+        final int totalMissing = baseMissed + extraMissingFromQuantity;
 
         return totalMissing <= allowedMissing;
     }
@@ -105,27 +115,28 @@ public class SearchByIngredientInteractor implements SearchByIngredientInputBoun
                                                   int baseMissed,
                                                   int allowedMissing) {
 
-        JSONArray usedIngredientsJson = recipeJson.getJSONArray("usedIngredients");
+        final JSONArray usedIngredientsJson = recipeJson.getJSONArray("usedIngredients");
         int extraMissing = 0;
 
         for (int j = 0; j < usedIngredientsJson.length(); j++) {
-            JSONObject usedIngredient = usedIngredientsJson.getJSONObject(j);
+            final JSONObject usedIngredient = usedIngredientsJson.getJSONObject(j);
 
-            String apiName = normalizeName(usedIngredient.getString("name"));
-            double requiredAmount = usedIngredient.getDouble("amount");
+            final String apiName = normalizeName(usedIngredient.getString("name"));
+            final double requiredAmount = usedIngredient.getDouble(AMOUNT);
 
-            String unitShort = usedIngredient.optString("unitShort", "");
-            String unit = usedIngredient.optString("unit", unitShort);
+            final String unitShort = usedIngredient.optString("unitShort", "");
+            final String unit = usedIngredient.optString(UNIT, unitShort);
 
-            Ingredient matchingUserIng = findMatchingUserIngredient(apiName, userIngredients);
+            final Ingredient matchingUserIng = findMatchingUserIngredient(apiName, userIngredients);
 
             if (matchingUserIng == null) {
                 // No ingredient by that name found; treat as missing
                 extraMissing++;
-            } else {
+            }
+            else {
                 // Convert user's amount into the recipe's unit and compare
-                double userQuantity = matchingUserIng.getQuantity();
-                double userInRecipeUnit = convertUserToRecipeUnit(userQuantity,
+                final double userQuantity = matchingUserIng.getQuantity();
+                final double userInRecipeUnit = convertUserToRecipeUnit(userQuantity,
                         matchingUserIng.getUnit(),
                         unit);
 
@@ -154,9 +165,10 @@ public class SearchByIngredientInteractor implements SearchByIngredientInputBoun
         }
         return result;
     }
+
     private Ingredient findMatchingUserIngredient(String apiName, List<Ingredient> userIngredients) {
         for (Ingredient userIng : userIngredients) {
-            String userName = userIng.getName().toLowerCase();
+            final String userName = userIng.getName().toLowerCase();
             if (userName.contains(apiName) || apiName.contains(userName)) {
                 return userIng;
             }
@@ -164,21 +176,20 @@ public class SearchByIngredientInteractor implements SearchByIngredientInputBoun
         return null;
     }
 
-
     private double convertUserToRecipeUnit(double userQuantity,
                                            String userUnit,
                                            String recipeUnit) {
-        double asTbsp = unitConverter.toTbsp(userQuantity, userUnit);
-        return unitConverter.fromTbsp(asTbsp, recipeUnit);
+        final double asTbsp = UnitConverter.toTbsp(userQuantity, userUnit);
+        return UnitConverter.fromTbsp(asTbsp, recipeUnit);
     }
 
     private Recipe buildFullRecipeFromBulk(JSONObject recipeJson) {
-        int id = recipeJson.getInt("id");
-        String title = recipeJson.optString("title", "");
-        String image = recipeJson.optString("image", "");
-        String mealType = extractMealType(recipeJson);
+        final int id = recipeJson.getInt(ID);
+        final String title = recipeJson.optString("title", "");
+        final String image = recipeJson.optString("image", "");
+        final String mealType = extractMealType(recipeJson);
 
-        Recipe recipe = new Recipe(id, title, image, mealType);
+        final Recipe recipe = new Recipe(id, title, image, mealType);
         recipe.setIngredients(extractIngredients(recipeJson));
         recipe.setSteps(extractSteps(recipeJson));
         addNutrition(recipe, recipeJson);
@@ -188,30 +199,30 @@ public class SearchByIngredientInteractor implements SearchByIngredientInputBoun
 
     private String extractMealType(JSONObject recipeJson) {
         if (!recipeJson.has("dishTypes")) {
-            return "N/A";
+            return NOT_APPLICABLE;
         }
 
-        JSONArray dishTypes = recipeJson.optJSONArray("dishTypes");
+        final JSONArray dishTypes = recipeJson.optJSONArray("dishTypes");
         if (dishTypes == null || dishTypes.length() == 0) {
-            return "N/A";
+            return NOT_APPLICABLE;
         }
 
         return dishTypes.optString(0, "N/A");
     }
 
     private List<Ingredient> extractIngredients(JSONObject recipeJson) {
-        List<Ingredient> ingredients = new ArrayList<>();
+        final List<Ingredient> ingredients = new ArrayList<>();
 
-        JSONArray extIngr = recipeJson.optJSONArray("extendedIngredients");
+        final JSONArray extIngr = recipeJson.optJSONArray("extendedIngredients");
         if (extIngr == null) {
             return ingredients;
         }
 
         for (int i = 0; i < extIngr.length(); i++) {
-            JSONObject ingJson = extIngr.getJSONObject(i);
-            String name = ingJson.optString("name", "");
-            double amount = ingJson.optDouble("amount", 0.0);
-            String unit = ingJson.optString("unit", "");
+            final JSONObject ingJson = extIngr.getJSONObject(i);
+            final String name = ingJson.optString(NAME, "");
+            final double amount = ingJson.optDouble(AMOUNT, 0.0);
+            final String unit = ingJson.optString(UNIT, "");
             ingredients.add(new Ingredient(name, amount, unit));
         }
 
@@ -219,27 +230,27 @@ public class SearchByIngredientInteractor implements SearchByIngredientInputBoun
     }
 
     private String extractSteps(JSONObject recipeJson) {
-        StringBuilder stepsBuilder = new StringBuilder();
+        final StringBuilder stepsBuilder = new StringBuilder();
 
-        JSONArray instructions = recipeJson.optJSONArray("analyzedInstructions");
-        if (instructions == null || instructions.length() == 0) {
+        final JSONArray instructions = recipeJson.optJSONArray("analyzedInstructions");
+        if (instructions == null || instructions.isEmpty()) {
             return "";
         }
 
-        JSONObject firstInstr = instructions.optJSONObject(0);
+        final JSONObject firstInstr = instructions.optJSONObject(0);
         if (firstInstr == null) {
             return "";
         }
 
-        JSONArray steps = firstInstr.optJSONArray("steps");
+        final JSONArray steps = firstInstr.optJSONArray("steps");
         if (steps == null) {
             return "";
         }
 
         for (int i = 0; i < steps.length(); i++) {
-            JSONObject stepObj = steps.getJSONObject(i);
-            int number = stepObj.optInt("number", i + 1);
-            String stepText = stepObj.optString("step", "");
+            final JSONObject stepObj = steps.getJSONObject(i);
+            final int number = stepObj.optInt("number", i + 1);
+            final String stepText = stepObj.optString("step", "");
             stepsBuilder
                     .append(number)
                     .append(". ")
@@ -251,26 +262,24 @@ public class SearchByIngredientInteractor implements SearchByIngredientInputBoun
     }
 
     private void addNutrition(Recipe recipe, JSONObject recipeJson) {
-        JSONObject nutrition = recipeJson.optJSONObject("nutrition");
+        final JSONObject nutrition = recipeJson.optJSONObject("nutrition");
         if (nutrition == null) {
             return;
         }
 
-        JSONArray nutrients = nutrition.optJSONArray("nutrients");
+        final JSONArray nutrients = nutrition.optJSONArray("nutrients");
         if (nutrients == null) {
             return;
         }
 
         for (int i = 0; i < nutrients.length(); i++) {
-            JSONObject n = nutrients.getJSONObject(i);
-            String name = n.optString("name", "");
-            double amount = n.optDouble("amount", 0.0);
-            String unit = n.optString("unit", "");
+            final JSONObject n = nutrients.getJSONObject(i);
+            final String name = n.optString(NAME, "");
+            final double amount = n.optDouble(AMOUNT, 0.0);
+            final String unit = n.optString(UNIT, "");
             if (!name.isEmpty()) {
                 recipe.addNutritionalValue(name + " (" + unit + ")", amount);
             }
         }
     }
 }
-
-

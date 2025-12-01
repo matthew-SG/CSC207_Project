@@ -1,22 +1,23 @@
 package view;
 
-import interface_adapter.meal_plan.MealPlanController;
-import interface_adapter.meal_plan.MealPlanGeneratedState;
-import interface_adapter.meal_plan.MealPlanGeneratedViewModel;
-
-import javax.swing.*;
 import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
+
+import javax.swing.*;
+
+import interface_adapter.meal_plan.MealPlanGeneratedState;
+import interface_adapter.meal_plan.MealPlanGeneratedViewModel;
 
 /**
- * The view for the generated Meal Plan
+ * The view for the generated Meal Plan.
  */
 public class MealPlanGeneratedView extends JPanel implements PropertyChangeListener {
-
+    
     private static final String VIEW_NAME = "meal plan generated";
     private final MealPlanGeneratedViewModel mealPlanGeneratedViewModel;
 
@@ -29,53 +30,63 @@ public class MealPlanGeneratedView extends JPanel implements PropertyChangeListe
     public MealPlanGeneratedView(MealPlanGeneratedViewModel mealPlanGeneratedViewModel) {
         this.mealPlanGeneratedViewModel = mealPlanGeneratedViewModel;
         this.mealPlanGeneratedViewModel.addPropertyChangeListener(this);
-
-        // --- Main Layout ---
-        // Set the layout for the *entire* MealPlanGeneratedView panel
+        
+        final int viewSize = 10;
+        final int componentHeight = 20;
+        
+        // Set the layout for the MealPlanGeneratedView panel
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        this.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Add padding
+        // Add padding to the entire view
+        this.setBorder(BorderFactory.createEmptyBorder(viewSize, viewSize, viewSize, viewSize));
 
         final JLabel title = new JLabel("Your Generated Meal Plan");
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // --- Add Components to the View ---
+        // Spacing
+        // Add Components to the View
         this.add(title);
-        this.add(Box.createVerticalStrut(20)); // Spacing
+        this.add(Box.createVerticalStrut(componentHeight));
 
         // First Meal Section
-        JLabel firstMealLabel = new JLabel("First Meal");
+        final JLabel firstMealLabel = new JLabel("First Meal");
         firstMealLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         this.add(firstMealLabel);
-        this.add(firstMealCard); // Add the empty card panel
-        this.add(Box.createVerticalStrut(20)); // Spacing
+        // Add the empty card panel
+        this.add(firstMealCard);
+        // Spacing
+        this.add(Box.createVerticalStrut(componentHeight));
 
         // Second Meal Section
-        JLabel secondMealLabel = new JLabel("Second Meal");
+        final JLabel secondMealLabel = new JLabel("Second Meal");
         secondMealLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         this.add(secondMealLabel);
-        this.add(secondMealCard); // Add the empty card panel
-        this.add(Box.createVerticalStrut(20)); // Spacing
+        // Add the empty card panel
+        this.add(secondMealCard);
+        // Spacing
+        this.add(Box.createVerticalStrut(componentHeight));
 
         // Third Meal Section
-        JLabel thirdMealLabel = new JLabel("Third Meal");
+        final JLabel thirdMealLabel = new JLabel("Third Meal");
         thirdMealLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         this.add(thirdMealLabel);
-        this.add(thirdMealCard); // Add the empty card panel
+        // Add the empty card panel
+        this.add(thirdMealCard);
     }
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        MealPlanGeneratedState state = (MealPlanGeneratedState) evt.getNewValue();
+        final MealPlanGeneratedState state = (MealPlanGeneratedState) evt.getNewValue();
+        final int mealPlanSize = 3;
 
         // Assuming your original data structure:
-        String[] recipeNames = state.getRecipeNames();
-        String[] recipeImages = state.getRecipeImages();
-        List<List<String[]>> recipeIngredients = state.getRecipeIngredients();
-        List<Map<String, Double>> recipeNutritionalValues = state.getRecipeNutritionalValues();
+        final String[] recipeNames = state.getRecipeNames();
+        final String[] recipeImages = state.getRecipeImages();
+        final List<List<String[]>> recipeIngredients = state.getRecipeIngredients();
+        final List<Map<String, Double>> recipeNutritionalValues = state.getRecipeNutritionalValues();
 
-        // --- Build/Update the Cards ---
+        // Build and update each recipe card
         // Check if data exists (to avoid IndexOutOfBoundsException)
-        if (recipeNames != null && recipeNames.length >= 3) {
+        if (recipeNames != null && recipeNames.length >= mealPlanSize) {
 
             buildRecipeCard(firstMealCard, recipeNames[0], recipeImages[0],
                     recipeIngredients.get(0), recipeNutritionalValues.get(0));
@@ -89,7 +100,7 @@ public class MealPlanGeneratedView extends JPanel implements PropertyChangeListe
     }
 
     /**
-     * Helper method that builds/modifies a recipe card on the Meal Plan Generator View (upon a property change)
+     * Helper method that builds/modifies a recipe card on the Meal Plan Generator View (upon a property change).
      * @param cardPanel the recipe panel to be modified
      * @param name the name of the recipe
      * @param imageUrl the url to the image of the recipe
@@ -101,31 +112,37 @@ public class MealPlanGeneratedView extends JPanel implements PropertyChangeListe
 
         cardPanel.removeAll();
 
-        cardPanel.setLayout(new BorderLayout(10, 10)); // Gaps
+        final int cardGap = 10;
+        final int imageDimensions = 150;
+
+        // Gaps
+        cardPanel.setLayout(new BorderLayout(cardGap, cardGap));
         cardPanel.setBorder(BorderFactory.createRaisedBevelBorder());
 
-        JLabel nameLabel = new JLabel(name, SwingConstants.CENTER);
+        final JLabel nameLabel = new JLabel(name, SwingConstants.CENTER);
         cardPanel.add(nameLabel, BorderLayout.NORTH);
 
-        JLabel imageLabel = new JLabel("[Loading...]", SwingConstants.CENTER);
-        imageLabel.setPreferredSize(new Dimension(150, 150));
+        final JLabel imageLabel = new JLabel("[Loading...]", SwingConstants.CENTER);
+        imageLabel.setPreferredSize(new Dimension(imageDimensions, imageDimensions));
         imageLabel.setBorder(BorderFactory.createLineBorder(Color.GRAY));
 
         try {
-            URL url = new URL(imageUrl);
-            ImageIcon icon = new ImageIcon(url);
-            Image scaledImg = icon.getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH);
+            final URL url = new URL(imageUrl);
+            final ImageIcon icon = new ImageIcon(url);
+            final Image scaledImg = icon.getImage().getScaledInstance(imageDimensions, imageDimensions,
+                    Image.SCALE_SMOOTH);
             imageLabel.setIcon(new ImageIcon(scaledImg));
             imageLabel.setText(null);
-        } catch (Exception e) {
+        }
+        catch (MalformedURLException ex) {
             imageLabel.setText("[Image Failed]");
         }
 
         cardPanel.add(imageLabel, BorderLayout.WEST);
 
-        JPanel detailsPanel = new JPanel(new BorderLayout());
+        final JPanel detailsPanel = new JPanel(new BorderLayout());
 
-        JTextArea ingredientsArea = new JTextArea();
+        final JTextArea ingredientsArea = new JTextArea();
         ingredientsArea.setEditable(false);
         ingredientsArea.append("Ingredients:\n");
         for (String[] ingredient : ingredients) {
@@ -133,11 +150,11 @@ public class MealPlanGeneratedView extends JPanel implements PropertyChangeListe
         }
         detailsPanel.add(new JScrollPane(ingredientsArea), BorderLayout.CENTER);
 
-        JPanel nutritionPanel = new JPanel(new FlowLayout());
-        Double calories = nutrition.getOrDefault("Calories", 0.0);
-        Double protein = nutrition.getOrDefault("Protein", 0.0);
-        Double carbs = nutrition.getOrDefault("Carbohydrates", 0.0);
-        Double fats = nutrition.getOrDefault("Fat", 0.0);
+        final JPanel nutritionPanel = new JPanel(new FlowLayout());
+        final Double calories = nutrition.getOrDefault("Calories", 0.0);
+        final Double protein = nutrition.getOrDefault("Protein", 0.0);
+        final Double carbs = nutrition.getOrDefault("Carbohydrates", 0.0);
+        final Double fats = nutrition.getOrDefault("Fat", 0.0);
         nutritionPanel.add(new JLabel(String.format("Cals: %.1f", calories)));
         nutritionPanel.add(new JLabel(String.format("Protein: %.1f g", protein)));
         nutritionPanel.add(new JLabel(String.format("Carbs: %.1f g", carbs)));
@@ -150,6 +167,8 @@ public class MealPlanGeneratedView extends JPanel implements PropertyChangeListe
         cardPanel.repaint();
     }
 
-    public String getViewName() { return VIEW_NAME; }
+    public String getViewName() {
+        return VIEW_NAME;
+    }
 }
 

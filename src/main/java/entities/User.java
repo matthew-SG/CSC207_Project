@@ -22,7 +22,6 @@ public class User {
         this.groceryList = groceryList;
     }
 
-
     // Getters and setters
     public String getUsername() {
         return username;
@@ -40,7 +39,7 @@ public class User {
         this.password = password;
     }
 
-    public String getName(){
+    public String getName() {
         return this.username;
     }
 
@@ -48,15 +47,29 @@ public class User {
         return savedRecipes;
     }
 
-    public void saveRecipe(Recipe recipe) { savedRecipes.add(recipe); }
+    /**
+     * Saves the recipe to the user.
+     * @param recipe the recipe to be saved
+     */
+    public void saveRecipe(Recipe recipe) {
+        savedRecipes.add(recipe);
+    }
 
     public GroceryList getGroceryList() {
         return groceryList;
     }
 
-    public List<MealPlan> getMealPlans() { return mealPlans; }
+    public List<MealPlan> getMealPlans() {
+        return mealPlans;
+    }
 
-    public void saveMealPlan(MealPlan mealPlan) { mealPlans.add(mealPlan); }
+    public void saveMealPlan(MealPlan mealPlan) {
+        mealPlans.add(mealPlan);
+    }
+
+    public void setGroceryList(GroceryList groceryList) {
+        this.groceryList = groceryList;
+    }
 
     public void setGroceryList(GroceryList groceryList) {
         this.groceryList = groceryList;
@@ -64,10 +77,7 @@ public class User {
 
     @Override
     public String toString() {
-        return "User{" +
-                "username='" + username + '\'' +
-                ", savedRecipes=" + savedRecipes.size() +
-                ", groceryListItems=" + groceryList.getItems().size() +
-                '}';
+        return "User{" + "username='" + username + '\'' + ", savedRecipes=" + savedRecipes.size()
+                + ", groceryListItems=" + groceryList.getItems().size() + '}';
     }
 }

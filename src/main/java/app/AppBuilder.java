@@ -1,6 +1,11 @@
 package app;
 
+import java.awt.*;
+
+import javax.swing.*;
+
 import data_access.*;
+import data_access.RecipeDataAccessObject;
 import entities.UserFactory;
 import interface_adapter.ViewManagerModel;
 import interface_adapter.approve_recipe.ApproveRecipeController;
@@ -11,9 +16,13 @@ import interface_adapter.community.CommunityPresenter;
 import interface_adapter.community.CommunityViewModel;
 import interface_adapter.delete_meal_plan.DeleteMealPlanController;
 import interface_adapter.delete_meal_plan.DeleteMealPlanPresenter;
+import interface_adapter.grocery_list.*;
 import interface_adapter.grocery_list.GroceryController;
 import interface_adapter.grocery_list.GroceryPresenter;
 import interface_adapter.grocery_list.GroceryViewModel;
+import interface_adapter.likedRecipeList.LikedRecipeListController;
+import interface_adapter.likedRecipeList.LikedRecipeListPresenter;
+import interface_adapter.likedRecipeList.LikedRecipeListViewModel;
 import interface_adapter.load_meal_plan.LoadMealPlanController;
 import interface_adapter.load_meal_plan.LoadMealPlanPresenter;
 import interface_adapter.logged_in.LoggedInViewModel;
@@ -29,15 +38,18 @@ import interface_adapter.meal_plan.MealPlanPresenter;
 import interface_adapter.nav_bar.NavbarController;
 import interface_adapter.nav_bar.NavbarManagerViewModel;
 import interface_adapter.nav_bar.NavbarPresenter;
+import interface_adapter.recipe_generator.RecipeGeneratorController;
+import interface_adapter.recipe_generator.RecipeGeneratorPresenter;
+import interface_adapter.recipe_generator.RecipeGeneratorViewModel;
+import interface_adapter.search_by_ingr.SearchByIngredientController;
+import interface_adapter.search_by_ingr.SearchByIngredientPresenter;
+import interface_adapter.search_by_ingr.SearchByIngredientViewModel;
 import interface_adapter.signup.SignupController;
 import interface_adapter.signup.SignupPresenter;
 import interface_adapter.signup.SignupViewModel;
 import interface_adapter.view_meal_plans.ViewMealPlansController;
 import interface_adapter.view_meal_plans.ViewMealPlansPresenter;
 import interface_adapter.view_meal_plans.ViewMealPlansViewModel;
-import interface_adapter.search_by_ingr.SearchByIngredientController;
-import interface_adapter.search_by_ingr.SearchByIngredientPresenter;
-import interface_adapter.search_by_ingr.SearchByIngredientViewModel;
 import use_case.approve_recipe.ApproveRecipeDataAccessInterface;
 import use_case.approve_recipe.ApproveRecipeInputBoundary;
 import use_case.approve_recipe.ApproveRecipeInteractor;
@@ -54,6 +66,10 @@ import use_case.grocery_list.add.AddInteractor;
 import use_case.grocery_list.delete.DeleteInteractor;
 import use_case.grocery_list.edit.EditInteractor;
 import use_case.grocery_list.load.LoadInteractor;
+import use_case.likedRecipeList.LikedRecipeDataAccessInterface;
+import use_case.likedRecipeList.LikedRecipeInputBoundary;
+import use_case.likedRecipeList.LikedRecipeInteractor;
+import use_case.likedRecipeList.LikedRecipeOutputBoundary;
 import use_case.load_meal_plan.LoadMealPlanInputBoundary;
 import use_case.load_meal_plan.LoadMealPlanInteractor;
 import use_case.load_meal_plan.LoadMealPlanOutputBoundary;
@@ -67,31 +83,21 @@ import use_case.meal_plan.MealPlanInputBoundary;
 import use_case.meal_plan.MealPlanInteractor;
 import use_case.meal_plan.MealPlanOutputBoundary;
 import use_case.nav_bar.NavbarInteractor;
-import use_case.signup.SignupInputBoundary;
-import use_case.signup.SignupInteractor;
-import use_case.signup.SignupOutputBoundary;
-import data_access.RecipeDataAccessObject;
-import use_case.view_meal_plans.ViewMealPlansInputBoundary;
-import use_case.view_meal_plans.ViewMealPlansInteractor;
-import use_case.view_meal_plans.ViewMealPlansOutputBoundary;
-import interface_adapter.recipe_generator.RecipeGeneratorController;
-import interface_adapter.recipe_generator.RecipeGeneratorPresenter;
-import interface_adapter.recipe_generator.RecipeGeneratorViewModel;
-import use_case.recipe_generator.RecipeGeneratorInteractor;
 import use_case.recipe_generator.RecipeDataAccessInterface;
 import use_case.recipe_generator.RecipeGeneratorInputBoundary;
+import use_case.recipe_generator.RecipeGeneratorInteractor;
 import use_case.recipe_generator.RecipeGeneratorOutputBoundary;
-import view.RecipeGeneratorView;
-
 import use_case.search_by_ingr.SearchByIngredientInputBoundary;
 import use_case.search_by_ingr.SearchByIngredientInteractor;
 import use_case.search_by_ingr.SearchByIngredientOutputBoundary;
+import use_case.signup.SignupInputBoundary;
+import use_case.signup.SignupInteractor;
+import use_case.signup.SignupOutputBoundary;
+import use_case.view_meal_plans.ViewMealPlansInputBoundary;
+import use_case.view_meal_plans.ViewMealPlansInteractor;
+import use_case.view_meal_plans.ViewMealPlansOutputBoundary;
 import view.*;
-
-import interface_adapter.grocery_list.*;
-
-import javax.swing.*;
-import java.awt.*;
+import view.RecipeGeneratorView;
 
 /**
  * Builder class for constructing the application.
@@ -99,14 +105,14 @@ import java.awt.*;
  * and create the main JFrame window.
  */
 public class AppBuilder {
-    private static final String apiKey = "5b07df6820b74cf1b2eae9c1b440f014";
+    private static final String API_KEY = "5b07df6820b74cf1b2eae9c1b440f014";
 
     // Required components
     private UserFactory userFactory = new UserFactory();
     // In Memory Data Access Object
     // private UserDataAccess userDataAccessObject = new InMemoryUserDataAccessObject();
     // Persistent File Data Access Object
-    private UserDataAccess userDataAccessObject = new FileDataAccessObject("data/users.csv", userFactory, apiKey);
+    private UserDataAccess userDataAccessObject = new FileDataAccessObject("data/users.csv", userFactory, API_KEY);
     private CommunityDataAccessInterface communityDataAccessObject = new DBCommunityDataAccessObject();
     private ApproveRecipeDataAccessInterface approveRecipeDataAccessObject;
     private JPanel contentPanel;
@@ -168,6 +174,11 @@ public class AppBuilder {
     private SearchByIngredientView searchByIngredientView;
     private SearchByIngredientController searchByIngredientController;
     private SearchByIngredientSpoonacular searchByIngredientApi;
+
+    //like recipe list
+    private LikedRecipeListViewModel likedRecipeListViewModel;
+    private LikedRecipeListView likedRecipeListView;
+    private LikedRecipeListController likedRecipeListController;
 
     /**
      * Initialize the builder with default setup.
@@ -502,6 +513,36 @@ public class AppBuilder {
         contentPanel.add(searchByIngredientView, SearchByIngredientView.VIEWNAME);
         return this;
     }
+
+    /**
+     * Build Liked Recipe List
+     * Sets up the navigation bar with its controller and presenter.
+     *
+     * @return this builder for method chaining
+     */
+    public AppBuilder buildLikedRecipeList() {
+        likedRecipeListViewModel = new LikedRecipeListViewModel();
+
+        LikedRecipeDataAccessInterface likedDao =
+                (LikedRecipeDataAccessInterface) userDataAccessObject;
+
+        LikedRecipeOutputBoundary likedPresenter =
+                new LikedRecipeListPresenter(likedRecipeListViewModel, viewManagerModel);
+
+        LikedRecipeInputBoundary likedInteractor =
+                new LikedRecipeInteractor(likedDao, likedPresenter);
+
+        likedRecipeListController =
+                new LikedRecipeListController(likedInteractor);
+
+        likedRecipeListView =
+                new LikedRecipeListView(likedRecipeListViewModel, likedRecipeListController, viewManagerModel);
+
+        contentPanel.add(likedRecipeListView, likedRecipeListView.getViewName());
+
+        return this;
+    }
+
 
     /**
      * Build and display the application window.

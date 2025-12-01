@@ -1,17 +1,18 @@
 package use_case.meal_plan;
 
-import entities.Ingredient;
-import entities.MealPlan;
-import entities.Recipe;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import entities.Ingredient;
+import entities.MealPlan;
+import entities.Recipe;
+
 /**
- * The Meal Plan Use Case Interactor
+ * The Meal Plan Use Case Interactor.
  */
-public class MealPlanInteractor implements MealPlanInputBoundary{
+public class MealPlanInteractor implements MealPlanInputBoundary {
+    private static final int MEAL_PLAN_SIZE = 3;
     private final MealPlanUserDataAccessInterface userDataAccessObject;
     private final MealPlanOutputBoundary mealPlanPresenter;
 
@@ -21,50 +22,72 @@ public class MealPlanInteractor implements MealPlanInputBoundary{
         this.mealPlanPresenter = mealPlanPresenter;
     }
 
+    /**
+     * Executes the meal plan generator use case.
+     * @param mealPlanInputData the input data
+     */
     public void execute(MealPlanInputData mealPlanInputData) {
         final List<Recipe> savedRecipes = userDataAccessObject.getSavedRecipes();
         final String inputCalories = mealPlanInputData.getTargetCalories();
         final String inputProtein = mealPlanInputData.getTargetProtein();
         final String inputCarbs = mealPlanInputData.getTargetCarbs();
         final String inputFats = mealPlanInputData.getTargetFats();
-        MealPlan mealPlan;
-        String[] recipeNames = new String[3];
-        String[] recipeImages = new String[3];
-        List<List<String[]>> recipeIngredients = new ArrayList<>();
-        List<Map<String, Double>> recipeNutritionalValues = new ArrayList<>();
+        final MealPlan mealPlan;
+        final String[] recipeNames = new String[MEAL_PLAN_SIZE];
+        final String[] recipeImages = new String[MEAL_PLAN_SIZE];
+        final List<List<String[]>> recipeIngredients = new ArrayList<>();
+        final List<Map<String, Double>> recipeNutritionalValues = new ArrayList<>();
 
-        if (savedRecipes.size() < 3) {
-            mealPlanPresenter.prepareFailView("At least 3 saved recipes must be saved for meal plan generation!",
-                    null);
-        } else if (!isDouble(inputCalories) || !isDouble(inputProtein) || !isDouble(inputCarbs) || !isDouble(inputFats)) {
+        if (savedRecipes.size() < MEAL_PLAN_SIZE) {
+            mealPlanPresenter.prepareFailView(
+                    "At least 3 saved recipes must be saved for meal plan generation!", null);
+        }
+        else if (!isDouble(inputCalories) || !isDouble(inputProtein) || !isDouble(inputCarbs) || !isDouble(inputFats)) {
             mealPlanPresenter.prepareFailView(null, "All input values must be numerical!");
-        } else {
-            double targetCalories = Double.parseDouble(inputCalories);
-            double targetProtein = Double.parseDouble(inputProtein);
-            double targetCarbs = Double.parseDouble(inputCarbs);
-            double targetFats = Double.parseDouble(inputFats);
+        }
+        else {
+            final double targetCalories = Double.parseDouble(inputCalories);
+            final double targetProtein = Double.parseDouble(inputProtein);
+            final double targetCarbs = Double.parseDouble(inputCarbs);
+            final double targetFats = Double.parseDouble(inputFats);
             if (targetCalories < 0 || targetProtein < 0 || targetCarbs < 0 || targetFats < 0) {
                 mealPlanPresenter.prepareFailView(null, "All input values must be non-negative!");
-            } else {
-                List<Recipe> mealPlanRecipes = computeBestFittingRecipes(savedRecipes, targetCalories, targetProtein,
-                        targetCarbs, targetFats);
+            }
+            else {
+                final List<Recipe> mealPlanRecipes = computeBestFittingRecipes(savedRecipes, targetCalories,
+                        targetProtein, targetCarbs, targetFats);
                 mealPlan = new MealPlan(mealPlanRecipes, targetCalories, targetProtein, targetCarbs, targetFats);
 
                 userDataAccessObject.saveMealPlan(mealPlan);
-                int i = 0;
-
-                for (Recipe recipe : mealPlan.getRecipes()) {
-                    recipeNames[i] = recipe.getRecipeName();
-                    recipeImages[i] = recipe.getRecipeImage();
-                    recipeIngredients.add(toOrderedString(recipe.getIngredients()));
-                    recipeNutritionalValues.add(recipe.getNutritionalValues());
-                    i++;
-
-                }
-                MealPlanOutputData mealPlanOutputData = new MealPlanOutputData(recipeNames, recipeImages, recipeIngredients,
+                buildMealPlanOutput(mealPlanRecipes, recipeNames, recipeImages, recipeIngredients,
                         recipeNutritionalValues);
+                final MealPlanOutputData mealPlanOutputData = new MealPlanOutputData(recipeNames, recipeImages,
+                        recipeIngredients, recipeNutritionalValues);
                 mealPlanPresenter.prepareSuccessView(mealPlanOutputData);
             }
+
+        }
+    }
+
+    /**
+     * Helper function that builds the parameters for output data.
+     * @param mealPlanRecipes the recipes to be displayed
+     * @param recipeNames the names of recipes to be displayed
+     * @param recipeImages the image path of the recipes to be displayed
+     * @param recipeIngredients the ingredients of the recipes to be displayed
+     * @param recipeNutritionalValues the nutritional values of the recipes to be displayed
+     */
+    private static void buildMealPlanOutput(List<Recipe> mealPlanRecipes, String[] recipeNames, String[] recipeImages,
+                                            List<List<String[]>> recipeIngredients,
+                                            List<Map<String, Double>> recipeNutritionalValues) {
+        int i = 0;
+
+        for (Recipe recipe : mealPlanRecipes) {
+            recipeNames[i] = recipe.getRecipeName();
+            recipeImages[i] = recipe.getRecipeImage();
+            recipeIngredients.add(toOrderedString(recipe.getIngredients()));
+            recipeNutritionalValues.add(recipe.getNutritionalValues());
+            i++;
 
         }
     }
@@ -75,23 +98,26 @@ public class MealPlanInteractor implements MealPlanInputBoundary{
      * @return whether the String can be represented as a double
      */
     private static boolean isDouble(String str) {
+        boolean result;
         try {
             Double.parseDouble(str);
-            return true;
-        } catch (NumberFormatException _) {
-            return false;
+            result = true;
         }
+        catch (NumberFormatException ex) {
+            result = false;
+        }
+        return result;
     }
 
     /**
-     * Converts a list of ingredients into a list of string arrays
+     * Converts a list of ingredients into a list of string arrays.
      * @param ingredients the list of ingredients to be converted
      * @return the list string array representation of the ingredients
      */
     private static List<String[]> toOrderedString(List<Ingredient> ingredients) {
-        List<String[]> result = new ArrayList<>();
+        final List<String[]> result = new ArrayList<>();
         for (Ingredient ingredient : ingredients) {
-            String[] ingredientEntry = new String[3];
+            final String[] ingredientEntry = new String[MEAL_PLAN_SIZE];
             ingredientEntry[0] = ingredient.getName();
             ingredientEntry[1] = ingredient.getQuantity() + "";
             ingredientEntry[2] = ingredient.getUnit();
@@ -101,8 +127,8 @@ public class MealPlanInteractor implements MealPlanInputBoundary{
     }
 
     /**
-     * Helper function that computes the best fitting recipe triplet for the designated meal plan
-     * @param recipes list of possible recipes (with recipe size > 3)
+     * Helper function that computes the best fitting recipe triplet for the designated meal plan.
+     * @param recipes list of possible recipes (with recipe size > MEAL_PLAN_SIZE)
      * @param targetCalories the target calories
      * @param targetProtein the target protein
      * @param targetCarbs the target carbs
@@ -111,9 +137,7 @@ public class MealPlanInteractor implements MealPlanInputBoundary{
      */
     private static List<Recipe> computeBestFittingRecipes(List<Recipe> recipes, double targetCalories,
                                                           double targetProtein, double targetCarbs, double targetFats) {
-        assert recipes.size() >= 3;
-
-        List<List<Recipe>> recipeTriplets = createTripletCombinations(recipes);
+        final List<List<Recipe>> recipeTriplets = createTripletCombinations(recipes);
 
         return computeLowestNutritionalError(recipeTriplets, targetCalories, targetProtein, targetCarbs, targetFats);
 
@@ -122,7 +146,7 @@ public class MealPlanInteractor implements MealPlanInputBoundary{
     /**
      * Helper function that computes the lowest nutritional error of all the recipe triplets, where the nutritional
      *      error is determined by the absolute difference between the sum of the target nutrients and the sum of the
-     *      associated nutrients of the recipe triplet
+     *      associated nutrients of the recipe triplet.
      * @param recipeTriplets list of recipe triplets (recipeTriplets.size() > 1)
      * @param targetCalories the target calories
      * @param targetProtein the target protein
@@ -131,8 +155,8 @@ public class MealPlanInteractor implements MealPlanInputBoundary{
      * @return the recipe triplet with the lowest nutritional error
      */
     private static List<Recipe> computeLowestNutritionalError(List<List<Recipe>> recipeTriplets, double targetCalories,
-                                                              double targetProtein, double targetCarbs, double targetFats) {
-        assert !recipeTriplets.isEmpty();
+                                                              double targetProtein, double targetCarbs,
+                                                              double targetFats) {
         double currentCalories;
         double currentProtein;
         double currentCarbs;
@@ -142,14 +166,13 @@ public class MealPlanInteractor implements MealPlanInputBoundary{
         List<Recipe> result = new ArrayList<>();
 
         for (List<Recipe> recipeTriplet : recipeTriplets) {
-            assert recipeTriplet.size() == 3;
             currentCalories = 0;
             currentProtein = 0;
             currentCarbs = 0;
             currentFats = 0;
 
             for (Recipe recipe : recipeTriplet) {
-                Map<String, Double> recipeNutritionalValues = recipe.getNutritionalValues();
+                final Map<String, Double> recipeNutritionalValues = recipe.getNutritionalValues();
                 currentCalories += recipeNutritionalValues.get("Calories");
                 currentProtein += recipeNutritionalValues.get("Protein");
                 currentCarbs += recipeNutritionalValues.get("Carbohydrates");
@@ -158,9 +181,10 @@ public class MealPlanInteractor implements MealPlanInputBoundary{
             currentError = Math.abs(currentCalories - targetCalories) + Math.abs(currentProtein - targetProtein) + (
                     Math.abs(currentCarbs - targetCarbs) + Math.abs(currentFats - targetFats));
             if (currentError == 0) {
-                return recipeTriplet;
-
-            } else if (lowestError == -1 || currentError < lowestError) {
+                result = recipeTriplet;
+                break;
+            }
+            else if (lowestError == -1 || currentError < lowestError) {
                 lowestError = currentError;
                 result = recipeTriplet;
 
@@ -172,16 +196,15 @@ public class MealPlanInteractor implements MealPlanInputBoundary{
     }
 
     /**
-     * Helper function that creates the n choose 3 combinations of recipe triplets out of the overall list of recipes
-     *      recipe, where n = recipe.size() > 3.
+     * Helper function that creates the n choose MEAL_PLAN_SIZE combinations of recipe triplets out of the overall
+     *      list of recipes, where n = recipe.size() > MEAL_PLAN_SIZE.
      * @param recipes the overall/total list of individual recipes
      * @return the unique triplet combinations of recipes
      */
     private static List<List<Recipe>> createTripletCombinations(List<Recipe> recipes) {
-        assert recipes.size() >= 3;
-        ArrayList<List<Recipe>> result = new ArrayList<>();
-        ArrayList<Recipe> recipeTriplet = new ArrayList<>();
-        int n = recipes.size();
+        final ArrayList<List<Recipe>> result = new ArrayList<>();
+        final ArrayList<Recipe> recipeTriplet = new ArrayList<>();
+        final int n = recipes.size();
 
         for (int i = 0; i < n - 2; i++) {
             recipeTriplet.add(recipes.get(i));
@@ -191,7 +214,7 @@ public class MealPlanInteractor implements MealPlanInputBoundary{
 
                 for (int k = j + 1; k < n; k++) {
                     recipeTriplet.add(recipes.get(k));
-                    List<Recipe> recipeTripletCopy = new ArrayList<>(recipeTriplet);
+                    final List<Recipe> recipeTripletCopy = new ArrayList<>(recipeTriplet);
                     result.add(recipeTripletCopy);
                     recipeTriplet.remove(2);
                     

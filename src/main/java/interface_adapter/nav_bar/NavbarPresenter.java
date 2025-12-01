@@ -14,7 +14,7 @@ import use_case.nav_bar.NavbarOutputBoundary;
 import interface_adapter.recipe_generator.RecipeGeneratorViewModel;
 
 import view.MealPlanGeneratorView;
-import view.SearchByIngredientView;
+import view.LikedRecipeListView;
 
 import java.util.Objects;
 
@@ -96,6 +96,12 @@ public class NavbarPresenter implements NavbarOutputBoundary {
     @Override
     public void switchToGroceryList() {
         viewManagerModel.getState().viewName = "Grocery_List";
+        viewManagerModel.firePropertyChange();
+    }
+
+    @Override
+    public void switchToLikedRecipeList() {
+        viewManagerModel.getState().viewName = LikedRecipeListView.VIEWNAME;
         viewManagerModel.firePropertyChange();
     }
 }
