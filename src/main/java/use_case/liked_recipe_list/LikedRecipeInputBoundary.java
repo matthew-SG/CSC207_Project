@@ -8,7 +8,7 @@ public interface LikedRecipeInputBoundary {
 
     /**
      * Adds a recipe to the user's liked recipes.
-     * @param inputData the input data containing recipe information
+     * @param inputData the input data containing recipe information.
      */
     void addLikedRecipe(LikedRecipeInputData inputData);
 

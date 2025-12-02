@@ -9,7 +9,7 @@ import entities.User;
 
 /**
  * Data Access Interface for the Liked Recipe use case.
- * Handles persistence of user's liked recipes.
+ * Handles persistence of the user's liked recipes.
  */
 public interface LikedRecipeDataAccessInterface {
 

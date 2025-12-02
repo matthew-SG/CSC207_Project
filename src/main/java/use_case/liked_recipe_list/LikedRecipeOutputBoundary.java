@@ -21,7 +21,7 @@ public interface LikedRecipeOutputBoundary {
      * Prepares and launches the hands-free step-by-step instruction view.
      * This transitions the user to a guided cooking experience with
      * navigation through recipe steps.
-     * @param stepByStepInputData contains the recipe instructions and starting step index
+     * @param stepByStepInputData contains the recipe instructions and starting step index.
      */
     void prepareHandsfree(StepByStepInputData stepByStepInputData);
 

@@ -22,7 +22,7 @@ public class LikedRecipeInteractor implements LikedRecipeInputBoundary {
 
     /**
      * Constructs a new LikedRecipeInteractor.
-     * @param dataAccess the data access interface for recipe and user data
+     * @param dataAccess is the data access interface for recipe and user data
      * @param presenter the output boundary for presenting results to the view
      */
     public LikedRecipeInteractor(LikedRecipeDataAccessInterface dataAccess,
