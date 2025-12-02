@@ -15,21 +15,43 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+/**
+ * Test class for LoadInteractor.
+ * It verifies the business logic for loading the user's grocery list from the data repository.
+ */
 final class LoadInteractorTest {
 
+    /**
+     * Mock implementation of LoadOutputBoundary to capture the data received
+     * by the presenter after the interactor executes.
+     */
     private static class MockLoadPresenter implements LoadOutputBoundary {
         private List<Ingredient> receivedItems = null;
 
+        /**
+         * Captures the loaded list of items from the output data.
+         *
+         * @param outputData The output data containing the loaded list.
+         */
         @Override
         public void present(LoadOutputData outputData) {
             this.receivedItems = outputData.items;
         }
 
+        /**
+         * Retrieves the list of items received during the test.
+         *
+         * @return The received list of Ingredient entities, or null if present was not called.
+         */
         public List<Ingredient> getReceivedItems() {
             return receivedItems;
         }
     }
 
+    /**
+     * Tests the successful loading of a grocery list that contains one or more items.
+     * Verifies that the presenter receives the correct list content.
+     */
     @Test
     void testLoadSuccessNonEmpty() {
 
@@ -48,6 +70,10 @@ final class LoadInteractorTest {
         assertEquals("Banana", loadedList.getFirst().getName());
     }
 
+    /**
+     * Tests the successful loading of a grocery list that is empty.
+     * Verifies that the presenter receives an empty list.
+     */
     @Test
     void testLoadSuccessEmptyList() {
         final List<Ingredient> initialList = new ArrayList<>();
