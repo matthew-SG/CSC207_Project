@@ -26,7 +26,7 @@ public class SearchByIngredientSpoonacular implements SearchByIngredientGateway 
     }
 
     public SearchByIngredientSpoonacular() {
-        this.apiKey = "c175c29f3c7a45fab7d5357d0f9ed25e";
+        this.apiKey = "5b07df6820b74cf1b2eae9c1b440f014";
     }
 
     @Override
