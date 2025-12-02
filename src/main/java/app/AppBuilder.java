@@ -477,6 +477,12 @@ public class AppBuilder {
         return this;
     }
 
+    /**
+     * Build Search By Ingredient View
+     * Sets up the navigation bar with its controller and presenter.
+     *
+     * @return this builder for method chaining
+     */
     public AppBuilder buildSearchByIngredient() {
         searchByIngredientApi = new SearchByIngredientSpoonacular();
 

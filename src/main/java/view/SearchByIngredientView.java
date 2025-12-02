@@ -16,6 +16,10 @@ import interface_adapter.search_by_ingr.SearchByIngredientController;
 import interface_adapter.search_by_ingr.SearchByIngredientState;
 import interface_adapter.search_by_ingr.SearchByIngredientViewModel;
 
+/**
+ * Swing view for the Search By Ingredient feature.
+ * Lets the user enter ingredients, search for recipes, and view details.
+ */
 public class SearchByIngredientView extends JPanel implements PropertyChangeListener {
 
     public static final String VIEWNAME = "Search By Ingredient";
@@ -38,6 +42,13 @@ public class SearchByIngredientView extends JPanel implements PropertyChangeList
 
     private final JLabel statusLabel = new JLabel(" ");
 
+    /**
+     * Creates the search-by-ingredient view and wires up listeners and UI.
+     *
+     * @param viewModel the view model for this feature
+     * @param controller the controller used to trigger the use case
+     * @param viewManagerModel manages navigation between views
+     */
     public SearchByIngredientView(SearchByIngredientViewModel viewModel,
                                   SearchByIngredientController controller,
                                   interface_adapter.ViewManagerModel viewManagerModel) {
@@ -189,7 +200,7 @@ public class SearchByIngredientView extends JPanel implements PropertyChangeList
                 statusLabel.setText("Search for recipes first.");
                 return;
             }
-            
+
             // Navigate to approve recipe view
             if (approveRecipeController != null) {
                 approveRecipeController.loadRecipes();
@@ -203,6 +214,9 @@ public class SearchByIngredientView extends JPanel implements PropertyChangeList
         detailsBtn.addActionListener(e -> viewDetails());
     }
 
+    /**
+     * Collects ingredients from the list and triggers a search via the controller.
+     */
     private void performSearch() {
         if (ingredientModel.isEmpty()) {
             statusLabel.setText("Add at least one ingredient first.");
@@ -218,6 +232,9 @@ public class SearchByIngredientView extends JPanel implements PropertyChangeList
         controller.search(list, maxMissing);
     }
 
+    /**
+     * Shows a dialog with recipe details, including image, ingredients, and steps.
+     */
     private void viewDetails() {
         Recipe selected = recipeList.getSelectedValue();
         if (selected == null) {
@@ -285,14 +302,27 @@ public class SearchByIngredientView extends JPanel implements PropertyChangeList
         );
     }
 
+    /**
+     * @return the logical name of this view
+     */
     public String getViewName() {
         return VIEWNAME;
     }
 
+    /**
+     * Sets the approve recipe controller used to navigate to the approve view.
+     *
+     * @param controller the approve recipe controller
+     */
     public void setApproveRecipeController(interface_adapter.approve_recipe.ApproveRecipeController controller) {
         this.approveRecipeController = controller;
     }
 
+    /**
+     * Updates the recipe list and status label when the view model changes.
+     *
+     * @param evt the property change event
+     */
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         SearchByIngredientState state = searchByIngredientViewModel.getState();
