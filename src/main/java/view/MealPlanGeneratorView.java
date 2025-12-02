@@ -64,7 +64,8 @@ public class MealPlanGeneratorView extends JPanel implements PropertyChangeListe
         targetFatsPanel.add(targetFatsInputField);
 
         final JComboBox<String> strategyDropdown =
-                new JComboBox<>(new String[]{"Balanced", "Prioritize Calories"});
+                new JComboBox<>(new String[]{"Balanced", "Prioritize Calories", "Prioritize Protein",
+                                                "Prioritize Carbs", "Prioritize Fats"});
 
         final JPanel buttons = new JPanel();
 
@@ -99,11 +100,23 @@ public class MealPlanGeneratorView extends JPanel implements PropertyChangeListe
                 evt -> {
                     final MealPlanGeneratorState currentState = mealPlanGeneratorViewModel.getState();
 
-                    if ("Prioritize Calories".equals(strategyDropdown.getSelectedItem())) {
-                        currentState.setStrategy("calories");
-                    }
-                    else {
-                        currentState.setStrategy("default");
+                    final String strategy = strategyDropdown.getSelectedItem().toString();
+
+                    switch (strategy) {
+                        case "Prioritize Calories":
+                            currentState.setStrategy("calories");
+                            break;
+                        case "Prioritize Protein":
+                            currentState.setStrategy("protein");
+                            break;
+                        case "Prioritize Carbs":
+                            currentState.setStrategy("carbs");
+                            break;
+                        case "Prioritize Fats":
+                            currentState.setStrategy("fats");
+                            break;
+                        default:
+                            currentState.setStrategy("default");
                     }
                 }
         );

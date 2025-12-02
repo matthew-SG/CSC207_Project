@@ -417,9 +417,18 @@ public class MealPlanInteractorTests {
             }
         };
 
-        MealPlanInputBoundary interactor = new MealPlanInteractor(userRepository, presenter);
-        interactor.setStrategy(new PrioritizeCaloriesErrorStrategy());
-        interactor.execute(mealPlanInputData);
+        MealPlanInputBoundary interactorCalories = new MealPlanInteractor(userRepository, presenter);
+        MealPlanInputBoundary interactorProtein = new MealPlanInteractor(userRepository, presenter);
+        MealPlanInputBoundary interactorCarbs = new MealPlanInteractor(userRepository, presenter);
+        MealPlanInputBoundary interactorFats = new MealPlanInteractor(userRepository, presenter);
+        interactorCalories.setStrategy(new PrioritizeCaloriesErrorStrategy());
+        interactorProtein.setStrategy(new PrioritizeProteinErrorStrategy());
+        interactorCarbs.setStrategy(new PrioritizeCarbsErrorStrategy());
+        interactorFats.setStrategy(new PrioritizeFatsErrorStrategy());
+        interactorCalories.execute(mealPlanInputData);
+        interactorProtein.execute(mealPlanInputData);
+        interactorCarbs.execute(mealPlanInputData);
+        interactorFats.execute(mealPlanInputData);
     }
 
     /**
@@ -517,9 +526,18 @@ public class MealPlanInteractorTests {
                 }
             };
 
-            MealPlanInputBoundary interactor = new MealPlanInteractor(userRepository, presenter);
-            interactor.setStrategy(new PrioritizeCaloriesErrorStrategy());
-            interactor.execute(mealPlanInputData);
+            MealPlanInputBoundary interactorCalories = new MealPlanInteractor(userRepository, presenter);
+            MealPlanInputBoundary interactorProtein = new MealPlanInteractor(userRepository, presenter);
+            MealPlanInputBoundary interactorCarbs = new MealPlanInteractor(userRepository, presenter);
+            MealPlanInputBoundary interactorFats = new MealPlanInteractor(userRepository, presenter);
+            interactorCalories.setStrategy(new PrioritizeCaloriesErrorStrategy());
+            interactorProtein.setStrategy(new PrioritizeProteinErrorStrategy());
+            interactorCarbs.setStrategy(new PrioritizeCarbsErrorStrategy());
+            interactorFats.setStrategy(new PrioritizeFatsErrorStrategy());
+            interactorCalories.execute(mealPlanInputData);
+            interactorProtein.execute(mealPlanInputData);
+            interactorCarbs.execute(mealPlanInputData);
+            interactorFats.execute(mealPlanInputData);
         }
     }
 }
