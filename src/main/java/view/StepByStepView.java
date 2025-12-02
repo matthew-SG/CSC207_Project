@@ -1,5 +1,6 @@
 package view;
 
+import data_access.SystemTTS;
 import entities.InstructionStep;
 import entities.RecipeInstructions;
 import interface_adapter.ViewManagerModel;
@@ -152,7 +153,7 @@ public class StepByStepView extends JFrame implements PropertyChangeListener {
         StepByStepController controller = new StepByStepController(interactor, instructions);
 
         // Use system TTS
-        SpeechService tts = new speechapi.SystemTTS();
+        SpeechService tts = new SystemTTS();
 
         SwingUtilities.invokeLater(() -> {
             StepByStepView view = new StepByStepView(controller, viewModel, tts);
