@@ -64,14 +64,15 @@ This project strictly follows Clean Architecture principles to ensure separation
 
 The application uses a hybrid data approach to balance performance and connectivity:
 
-### 1. Local Storage (JSON)
+### 1. Local Storage (JSON & CSV)
 
 User-specific private data is stored locally for fast access and offline capability.
 
-- **User Profiles:** `user.json`
-- **Preferences:** `preferences.json` (Dietary restrictions, macro goals)
-- **Saved Recipes:** `saved_recipes.json`
-- **Grocery Lists:** `grocery_list.json`
+- **User Profiles:** `data/users.csv` (Stores username and password)
+- **User Data Directory:** `data/<username>/`
+  - **Saved Recipes:** `liked_recipes.json`
+  - **Grocery Lists:** `grocery_list.json`
+  - **Meal Plans:** `meal_plans.json`
 
 ### 2. Cloud Storage (Firebase Firestore)
 
@@ -97,18 +98,22 @@ Shared community data is stored in the cloud.
    ```
 
 2. **API Keys:**
-   - This project requires an API key for recipe generation.
-   - Locate the config file or `Constants.java` and insert your key.
+   - This project requires an API key for recipe generation (Spoonacular).
+   - Locate `src/main/java/app/AppBuilder.java` and insert your key in the `API_KEY` constant.
+   - For Community features, check `src/main/java/data_access/Constants.java` for the Firebase key.
    - *Note: Ensure your API key is not committed to public repositories.*
 
 ### Running the App
 
-Navigate to the `src` directory and run the main application file:
+**Using Maven:**
 
 ```bash
-javac Main.java
-java Main
+mvn clean install
+mvn exec:java -Dexec.mainClass="app.App"
 ```
+
+**Using an IDE:**
+Open the project in IntelliJ IDEA or Eclipse, let it resolve dependencies via `pom.xml`, and run `src/main/java/app/App.java`.
 
 ## 📱 Usage Guide
 
