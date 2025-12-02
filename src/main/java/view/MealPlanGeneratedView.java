@@ -19,7 +19,7 @@ import interface_adapter.meal_plan.MealPlanGeneratedViewModel;
 public class MealPlanGeneratedView extends JPanel implements PropertyChangeListener {
     
     private static final String VIEW_NAME = "meal plan generated";
-    private final MealPlanGeneratedViewModel mealPlanGeneratedViewModel;
+    private final transient MealPlanGeneratedViewModel mealPlanGeneratedViewModel;
 
     // --- Card Placeholders ---
     // These panels will hold the recipe details.
@@ -140,27 +140,34 @@ public class MealPlanGeneratedView extends JPanel implements PropertyChangeListe
 
         cardPanel.add(imageLabel, BorderLayout.WEST);
 
-        final JPanel detailsPanel = new JPanel(new BorderLayout());
+        // Panel that holds the details of the related recipe
+        final JPanel detailsPanel = new JPanel(new GridLayout(1, 2, 10, 0));
 
+        // Left side of details: Scrollable panel that holds all the ingredients of the related recipe
         final JTextArea ingredientsArea = new JTextArea();
         ingredientsArea.setEditable(false);
-        ingredientsArea.append("Ingredients:\n");
+        ingredientsArea.append("Ingredients:\n\n");
         for (String[] ingredient : ingredients) {
             ingredientsArea.append("• " + ingredient[1] + " " + ingredient[2] + " " + ingredient[0] + "\n");
         }
-        detailsPanel.add(new JScrollPane(ingredientsArea), BorderLayout.CENTER);
+        final JScrollPane ingredientsScroll = new JScrollPane(ingredientsArea);
 
-        final JPanel nutritionPanel = new JPanel(new FlowLayout());
-        final Double calories = nutrition.getOrDefault("Calories", 0.0);
-        final Double protein = nutrition.getOrDefault("Protein", 0.0);
-        final Double carbs = nutrition.getOrDefault("Carbohydrates", 0.0);
-        final Double fats = nutrition.getOrDefault("Fat", 0.0);
-        nutritionPanel.add(new JLabel(String.format("Cals: %.1f", calories)));
-        nutritionPanel.add(new JLabel(String.format("Protein: %.1f g", protein)));
-        nutritionPanel.add(new JLabel(String.format("Carbs: %.1f g", carbs)));
-        nutritionPanel.add(new JLabel(String.format("Fats: %.1f g", fats)));
-        detailsPanel.add(nutritionPanel, BorderLayout.SOUTH);
+        // Right side of details: Scrollable panel that holds all the nutrients of the related recipe
+        final JTextArea nutritionArea = new JTextArea();
+        nutritionArea.setEditable(false);
+        nutritionArea.append("Nutritional Information:\n\n");
 
+        for (Map.Entry<String, Double> entry : nutrition.entrySet()) {
+            nutritionArea.append(entry.getKey() + ": " + entry.getValue() + "\n");
+        }
+
+        final JScrollPane nutritionScroll = new JScrollPane(nutritionArea);
+
+        // Add both sides
+        detailsPanel.add(ingredientsScroll);
+        detailsPanel.add(nutritionScroll);
+
+        // Add combined panel to UI
         cardPanel.add(detailsPanel, BorderLayout.CENTER);
 
         cardPanel.revalidate();
