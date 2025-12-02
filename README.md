@@ -94,7 +94,7 @@ Shared community data is stored in the cloud.
 1. **Clone the repository:**
 
    ```bash
-   git clone https://github.com/your-repo/solid-recipe-manager.git
+   git clone git@github.com:matthew-SG/CSC207_Project.git
    ```
 
 2. **API Keys:**
