@@ -26,10 +26,13 @@ class ApproveRecipeInteractorTest {
     private static class TestApproveRecipeDAO implements ApproveRecipeDataAccessInterface {
         private List<Recipe> availableRecipes = new ArrayList<>();
         private Map<String, User> users = new HashMap<>();
+        private boolean shouldThrowOnGetRecipes = false;
+        private boolean shouldThrowOnSave = false;
+        private boolean shouldThrowOnRemove = false;
 
         public TestApproveRecipeDAO() {
             // Create test user
-            User testUser = new User("testUser", "password", new ArrayList<>(), 
+            User testUser = new User("testUser", "password", new ArrayList<>(),
                     new ArrayList<>(), new GroceryList(new ArrayList<>()));
             users.put("testUser", testUser);
         }
@@ -38,8 +41,23 @@ class ApproveRecipeInteractorTest {
             this.availableRecipes = new ArrayList<>(recipes);
         }
 
+        public void setShouldThrowOnGetRecipes(boolean shouldThrow) {
+            this.shouldThrowOnGetRecipes = shouldThrow;
+        }
+
+        public void setShouldThrowOnSave(boolean shouldThrow) {
+            this.shouldThrowOnSave = shouldThrow;
+        }
+
+        public void setShouldThrowOnRemove(boolean shouldThrow) {
+            this.shouldThrowOnRemove = shouldThrow;
+        }
+
         @Override
         public List<Recipe> getAvailableRecipes() {
+            if (shouldThrowOnGetRecipes) {
+                throw new RuntimeException("Database connection failed");
+            }
             return new ArrayList<>(availableRecipes);
         }
 
@@ -60,6 +78,9 @@ class ApproveRecipeInteractorTest {
 
         @Override
         public void saveRecipeToUser(String username, Recipe recipe) {
+            if (shouldThrowOnSave) {
+                throw new RuntimeException("Failed to save recipe to user");
+            }
             User user = users.get(username);
             if (user != null) {
                 // Check if already saved
@@ -74,6 +95,9 @@ class ApproveRecipeInteractorTest {
         }
 
         public void removeFromPendingApproval(int recipeId) {
+            if (shouldThrowOnRemove) {
+                throw new RuntimeException("Failed to remove recipe from pending list");
+            }
             availableRecipes.removeIf(r -> r.getRecipeId() == recipeId);
         }
     }
@@ -302,6 +326,169 @@ class ApproveRecipeInteractorTest {
 
         // User should not have saved the declined recipe
         assertEquals(0, dao.getUser("testUser").getSavedRecipes().size());
+    }
+
+    @Test
+    void testLoadRecipesExceptionHandling() {
+        // Setup DAO to throw exception
+        dao.setShouldThrowOnGetRecipes(true);
+
+        // Try to load recipes
+        interactor.loadRecipes();
+
+        // Should call prepareFailView with error message
+        assertNotNull(presenter.lastFailMessage);
+        assertTrue(presenter.lastFailMessage.contains("Error loading recipes"));
+        assertTrue(presenter.lastFailMessage.contains("Database connection failed"));
+    }
+
+    @Test
+    void testApproveRecipeExceptionHandling() {
+        // Setup
+        List<Recipe> recipes = new ArrayList<>();
+        recipes.add(new Recipe(1, "Pasta", "img1.jpg", "Dinner"));
+        dao.setAvailableRecipes(recipes);
+
+        interactor.loadRecipes();
+
+        // Make DAO throw exception on save
+        dao.setShouldThrowOnSave(true);
+
+        // Try to approve recipe
+        interactor.approveRecipe(new ApproveRecipeInputData(1, "testUser"));
+
+        // Should call prepareFailView with error message
+        assertNotNull(presenter.lastFailMessage);
+        assertTrue(presenter.lastFailMessage.contains("Error approving recipe"));
+        assertTrue(presenter.lastFailMessage.contains("Failed to save recipe to user"));
+    }
+
+    @Test
+    void testDeclineRecipeExceptionHandling() {
+        // Setup
+        List<Recipe> recipes = new ArrayList<>();
+        recipes.add(new Recipe(1, "Pasta", "img1.jpg", "Dinner"));
+        dao.setAvailableRecipes(recipes);
+
+        interactor.loadRecipes();
+
+        // Make DAO throw exception on remove
+        dao.setShouldThrowOnRemove(true);
+
+        // Try to decline recipe
+        interactor.declineRecipe(new DeclineRecipeInputData(1, "testUser"));
+
+        // Should call prepareFailView with error message
+        assertNotNull(presenter.lastFailMessage);
+        assertTrue(presenter.lastFailMessage.contains("Error declining recipe"));
+        assertTrue(presenter.lastFailMessage.contains("Failed to remove recipe from pending list"));
+    }
+
+    @Test
+    void testShowCurrentRecipeWhenIndexAtEnd() {
+        // Setup with one recipe
+        List<Recipe> recipes = new ArrayList<>();
+        recipes.add(new Recipe(1, "Pasta", "img1.jpg", "Dinner"));
+        dao.setAvailableRecipes(recipes);
+
+        interactor.loadRecipes();
+
+        // Approve the only recipe
+        interactor.approveRecipe(new ApproveRecipeInputData(1, "testUser"));
+
+        // Should call prepareApproveSuccessView with no recipes left
+        assertNotNull(presenter.lastApproveSuccessData);
+        assertEquals(0, presenter.lastApproveSuccessData.getRecipeIds().size());
+        assertFalse(presenter.lastApproveSuccessData.hasMore());
+    }
+
+    @Test
+    void testLoadRecipesWithSingleRecipe() {
+        // Setup with one recipe
+        List<Recipe> recipes = new ArrayList<>();
+        recipes.add(new Recipe(1, "Pasta", "img1.jpg", "Dinner"));
+        dao.setAvailableRecipes(recipes);
+
+        interactor.loadRecipes();
+
+        // Should show recipe with hasMore = false
+        assertNotNull(presenter.lastRecipeViewData);
+        assertEquals(1, presenter.lastRecipeViewData.getRecipeIds().size());
+        assertEquals("Pasta", presenter.lastRecipeViewData.getRecipeNames().get(0));
+        assertFalse(presenter.lastRecipeViewData.hasMore());
+    }
+
+    @Test
+    void testDeclineLastRecipe() {
+        // Setup with one recipe
+        List<Recipe> recipes = new ArrayList<>();
+        recipes.add(new Recipe(1, "Pasta", "img1.jpg", "Dinner"));
+        dao.setAvailableRecipes(recipes);
+
+        interactor.loadRecipes();
+
+        // Decline the only recipe
+        interactor.declineRecipe(new DeclineRecipeInputData(1, "testUser"));
+
+        // Should call prepareApproveSuccessView with no recipes left
+        assertNotNull(presenter.lastApproveSuccessData);
+        assertEquals(0, presenter.lastApproveSuccessData.getRecipeIds().size());
+        assertFalse(presenter.lastApproveSuccessData.hasMore());
+
+        // User should not have saved the declined recipe
+        assertEquals(0, dao.getUser("testUser").getSavedRecipes().size());
+    }
+
+    @Test
+    void testApproveRecipeOutputDataGetters() {
+        // Setup
+        List<Recipe> recipes = new ArrayList<>();
+        recipes.add(new Recipe(1, "Pasta", "img1.jpg", "Dinner"));
+        recipes.add(new Recipe(2, "Salad", "img2.jpg", "Lunch"));
+        dao.setAvailableRecipes(recipes);
+
+        interactor.loadRecipes();
+
+        // Verify all getters are called
+        assertNotNull(presenter.lastRecipeViewData);
+        assertEquals(2, presenter.lastRecipeViewData.getRecipeIds().size());
+        assertEquals("Pasta", presenter.lastRecipeViewData.getRecipeNames().get(0));
+        assertEquals("img1.jpg", presenter.lastRecipeViewData.getRecipeImages().get(0));
+        assertEquals("img2.jpg", presenter.lastRecipeViewData.getRecipeImages().get(1));
+        assertEquals(0, presenter.lastRecipeViewData.getCurrentIndex());
+        assertTrue(presenter.lastRecipeViewData.hasMore());
+    }
+
+    @Test
+    void testApproveRecipeInputDataGetters() {
+        // Create input data and verify getters
+        ApproveRecipeInputData inputData = new ApproveRecipeInputData(123, "testUser");
+        assertEquals(123, inputData.getRecipeId());
+        assertEquals("testUser", inputData.getUsername());
+    }
+
+    @Test
+    void testDeclineRecipeInputDataGetters() {
+        // Create input data and verify getters
+        DeclineRecipeInputData inputData = new DeclineRecipeInputData(456, "testUser");
+        assertEquals(456, inputData.getRecipeId());
+        assertEquals("testUser", inputData.getUsername());
+    }
+
+    @Test
+    void testApproveRecipeOutputDataCurrentIndexAfterApproval() {
+        // Setup
+        List<Recipe> recipes = new ArrayList<>();
+        recipes.add(new Recipe(1, "Pasta", "img1.jpg", "Dinner"));
+        dao.setAvailableRecipes(recipes);
+
+        interactor.loadRecipes();
+        interactor.approveRecipe(new ApproveRecipeInputData(1, "testUser"));
+
+        // Verify currentIndex in success view
+        assertNotNull(presenter.lastApproveSuccessData);
+        assertEquals(0, presenter.lastApproveSuccessData.getCurrentIndex());
+        assertEquals(0, presenter.lastApproveSuccessData.getRecipeImages().size());
     }
 }
 
