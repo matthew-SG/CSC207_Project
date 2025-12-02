@@ -10,12 +10,21 @@ import use_case.signup.SignupInteractor;
 import static org.junit.jupiter.api.Assertions.*;
 
 
+/**
+ * Test class for SignupInteractor.
+ * It verifies the business logic for user registration, including successful signup
+ * and various failure scenarios (password mismatch, empty fields, user already exists).
+ */
 class SignupInteractorTest {
 
     private final String NEW_USERNAME = "newUserForTest";
     private final String EXISTING_USERNAME = "test_1";
     private final String TEST_PASSWORD = "testPassword";
 
+    /**
+     * Tests the scenario for a successful user signup.
+     * It verifies that the interactor calls the presenter's success view with the new username.
+     */
     @Test
     void testSignupSuccess() {
         final InMemoryUserDataAccessObject dao = new InMemoryUserDataAccessObject();
@@ -31,6 +40,10 @@ class SignupInteractorTest {
         assertEquals(NEW_USERNAME, presenter.getSuccessUsername());
     }
 
+    /**
+     * Tests the scenario where the provided passwords do not match.
+     * It verifies that the interactor calls the presenter's fail view with the appropriate error message.
+     */
     @Test
     void testSignupFailure_PasswordsDontMatch() {
         final InMemoryUserDataAccessObject dao = new InMemoryUserDataAccessObject();
@@ -45,6 +58,10 @@ class SignupInteractorTest {
         assertEquals("Passwords don't match.", presenter.getFailMessage());
     }
 
+    /**
+     * Tests the scenario where the password field is left empty.
+     * It verifies that the interactor calls the presenter's fail view with the appropriate error message.
+     */
     @Test
     void testSignupFailure_EmptyPassword() {
         final InMemoryUserDataAccessObject dao = new InMemoryUserDataAccessObject();
@@ -59,6 +76,10 @@ class SignupInteractorTest {
         assertEquals("New password cannot be empty", presenter.getFailMessage());
     }
 
+    /**
+     * Tests the scenario where the username field is left empty.
+     * It verifies that the interactor calls the presenter's fail view with the appropriate error message.
+     */
     @Test
     void testSignupFailure_EmptyUsername() {
         final InMemoryUserDataAccessObject dao = new InMemoryUserDataAccessObject();
@@ -73,6 +94,10 @@ class SignupInteractorTest {
         assertEquals("Username cannot be empty", presenter.getFailMessage());
     }
 
+    /**
+     * Tests the scenario where the attempted username already exists in the system.
+     * It verifies that the interactor calls the presenter's fail view with the appropriate error message.
+     */
     @Test
     void testSignupFailure_UserExists() {
         final InMemoryUserDataAccessObject dao = new InMemoryUserDataAccessObject();
@@ -87,6 +112,10 @@ class SignupInteractorTest {
         assertEquals("Username already exists", presenter.getFailMessage());
     }
 
+    /**
+     * Tests the switchToLoginView method, ensuring the presenter is instructed
+     * to switch the current view to the login screen.
+     */
     @Test
     void testSwitchToLoginView() {
         final InMemoryUserDataAccessObject dao = new InMemoryUserDataAccessObject();

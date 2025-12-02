@@ -8,11 +8,29 @@ import entities.Ingredient;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * A utility class providing setup methods specifically for testing the
+ * Grocery List use cases. It helps in creating a predefined state, such as a
+ * logged-in user with a specific initial grocery list, for integration testing.
+ */
 public class TestSetup {
 
+    /**
+     * Constant representing the username used for testing purposes.
+     */
     public static final String TEST_USERNAME = "test_grocery_user";
+    /**
+     * Constant representing the password used for testing purposes.
+     */
     public static final String TEST_PASSWORD = "password";
 
+    /**
+     * Sets up a logged-in user with a specified initial grocery list state in the in-memory DAO.
+     * This method simulates user registration and login, and then initializes their grocery list.
+     *
+     * @param initialGroceryList The list of Ingredient entities to pre-populate the user's grocery list with.
+     * @return The configured InMemoryUserDataAccessObject instance ready for testing.
+     */
     public static InMemoryUserDataAccessObject setupLoggedInUser(List<Ingredient> initialGroceryList) {
 
         final InMemoryUserDataAccessObject dao = new InMemoryUserDataAccessObject();
