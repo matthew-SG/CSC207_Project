@@ -33,6 +33,7 @@ public interface LikedRecipeInputBoundary {
     /**
      * Adds all ingredients (with amounts) for a liked recipe
      * to the current user's grocery list.
+     * @param inputData the input data for this use case
      */
     void addIngredientsToGrocery(LikedRecipeInputData inputData);
 }

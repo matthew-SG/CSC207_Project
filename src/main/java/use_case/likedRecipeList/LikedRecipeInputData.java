@@ -3,7 +3,7 @@ package use_case.likedRecipeList;
 import java.util.Map;
 
 /**
- * The Input Data for the Liked Recipe List Use Case
+ * The Input Data for the Liked Recipe List Use Case.
  */
 
 public class LikedRecipeInputData {
