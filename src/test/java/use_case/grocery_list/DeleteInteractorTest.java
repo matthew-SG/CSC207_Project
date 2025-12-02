@@ -50,4 +50,44 @@ class DeleteInteractorTest {
         assertEquals(1, items.size());
         assertEquals("Eggs", items.getFirst().getName());
     }
+
+    @Test
+    void testDeleteFailure_NegativeIndex() {
+        final Ingredient milk = new Ingredient("Milk", 1, "L");
+        final List<Ingredient> initialList = new ArrayList<>(List.of(milk));
+
+        final InMemoryUserDataAccessObject dao = TestSetup.setupLoggedInUser(initialList);
+        final MockDeletePresenter presenter = new MockDeletePresenter();
+        final DeleteInteractor interactor = new DeleteInteractor(dao, presenter);
+
+        final DeleteInputData inputData = new DeleteInputData(-1);
+
+        interactor.execute(inputData);
+
+        assertTrue(presenter.isSuccess(), "Presenter should still be called");
+        final List<Ingredient> items = dao.getUsers().get(TestSetup.TEST_USERNAME).getGroceryList().getItems();
+
+        assertEquals(1, items.size());
+        assertEquals("Milk", items.getFirst().getName(), "Item should not have been deleted");
+    }
+
+    @Test
+    void testDeleteFailure_IndexTooLarge() {
+        final Ingredient milk = new Ingredient("Milk", 1, "L");
+        final List<Ingredient> initialList = new ArrayList<>(List.of(milk));
+
+        final InMemoryUserDataAccessObject dao = TestSetup.setupLoggedInUser(initialList);
+        final MockDeletePresenter presenter = new MockDeletePresenter();
+        final DeleteInteractor interactor = new DeleteInteractor(dao, presenter);
+
+        final DeleteInputData inputData = new DeleteInputData(1);
+
+        interactor.execute(inputData);
+
+        assertTrue(presenter.isSuccess(), "Presenter should still be called");
+        final List<Ingredient> items = dao.getUsers().get(TestSetup.TEST_USERNAME).getGroceryList().getItems();
+
+        assertEquals(1, items.size());
+        assertEquals("Milk", items.getFirst().getName(), "Item should not have been deleted");
+    }
 }

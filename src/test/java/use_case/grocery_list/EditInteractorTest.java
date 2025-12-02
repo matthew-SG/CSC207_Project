@@ -55,4 +55,59 @@ class EditInteractorTest {
         assertEquals(2, items.size());
         assertEquals("Eggs", items.get(1).getName());
     }
+
+    @Test
+    void testEditFailure_NegativeIndex() {
+        final Ingredient oldMilk = new Ingredient("Milk", 1, "L");
+        final List<Ingredient> initialList = new ArrayList<>(List.of(oldMilk));
+
+        final InMemoryUserDataAccessObject dao = TestSetup.setupLoggedInUser(initialList);
+        final MockEditPresenter presenter = new MockEditPresenter();
+        final EditInteractor interactor = new EditInteractor(dao, presenter);
+
+        final EditInputData inputData = new EditInputData(-1, "Bread", "2", "Loaves");
+
+        interactor.execute(inputData);
+
+        assertTrue(presenter.isSuccess(), "Presenter should still be called");
+        final List<Ingredient> items = dao.getUsers().get(TestSetup.TEST_USERNAME).getGroceryList().getItems();
+
+        assertEquals(1, items.size());
+        assertEquals("Milk", items.getFirst().getName(), "Item should not have been edited");
+    }
+
+    @Test
+    void testEditFailure_IndexTooLarge() {
+        final Ingredient oldMilk = new Ingredient("Milk", 1, "L");
+        final List<Ingredient> initialList = new ArrayList<>(List.of(oldMilk));
+
+        final InMemoryUserDataAccessObject dao = TestSetup.setupLoggedInUser(initialList);
+        final MockEditPresenter presenter = new MockEditPresenter();
+        final EditInteractor interactor = new EditInteractor(dao, presenter);
+
+        final EditInputData inputData = new EditInputData(1, "Bread", "2", "Loaves");
+
+        interactor.execute(inputData);
+
+        assertTrue(presenter.isSuccess(), "Presenter should still be called");
+        final List<Ingredient> items = dao.getUsers().get(TestSetup.TEST_USERNAME).getGroceryList().getItems();
+
+        assertEquals(1, items.size());
+        assertEquals("Milk", items.getFirst().getName(), "Item should not have been edited");
+    }
+
+    @Test
+    void testEditFailure_InvalidQuantityFormat() {
+        final Ingredient oldMilk = new Ingredient("Milk", 1, "L");
+        final List<Ingredient> initialList = new ArrayList<>(List.of(oldMilk));
+
+        final InMemoryUserDataAccessObject dao = TestSetup.setupLoggedInUser(initialList);
+        final MockEditPresenter presenter = new MockEditPresenter();
+        final EditInteractor interactor = new EditInteractor(dao, presenter);
+
+        final EditInputData inputData = new EditInputData(0, "Bread", "ABC", "Loaves");
+
+        org.junit.jupiter.api.Assertions.assertThrows(NumberFormatException.class, () -> interactor.execute(inputData),
+                "Interactor should throw NFE without a Try-Catch block");
+    }
 }
