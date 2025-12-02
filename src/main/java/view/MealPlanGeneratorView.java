@@ -63,9 +63,17 @@ public class MealPlanGeneratorView extends JPanel implements PropertyChangeListe
         targetFatsPanel.add(new JLabel("Input Target Fats (in grams):"));
         targetFatsPanel.add(targetFatsInputField);
 
+        final JComboBox<String> strategyDropdown =
+                new JComboBox<>(new String[]{"Balanced", "Prioritize Calories"});
+
         final JPanel buttons = new JPanel();
+
+        buttons.add(new JLabel("Generation Strategy"));
+        buttons.add(strategyDropdown);
+
         viewMealPlans = new JButton("View Saved Meal Plans");
         buttons.add(viewMealPlans);
+
         generate = new JButton("Generate");
         buttons.add(generate);
 
@@ -77,13 +85,27 @@ public class MealPlanGeneratorView extends JPanel implements PropertyChangeListe
                             currentState.getTargetCalories(),
                             currentState.getTargetProtein(),
                             currentState.getTargetCarbs(),
-                            currentState.getTargetFats()
+                            currentState.getTargetFats(),
+                            currentState.getStrategy()
                     );
                 }
         );
 
         viewMealPlans.addActionListener(
                 evt -> viewMealPlansController.execute()
+        );
+
+        strategyDropdown.addActionListener(
+                evt -> {
+                    final MealPlanGeneratorState currentState = mealPlanGeneratorViewModel.getState();
+
+                    if ("Prioritize Calories".equals(strategyDropdown.getSelectedItem())) {
+                        currentState.setStrategy("calories");
+                    }
+                    else {
+                        currentState.setStrategy("default");
+                    }
+                }
         );
 
         targetCaloriesInputField.getDocument().addDocumentListener(new DocumentListener() {
