@@ -22,7 +22,7 @@ class LogoutInteractorTest {
      */
     @Test
     void testLogoutSuccess() {
-        final InMemoryUserDataAccessObject dao = new InMemoryUserDataAccessObject();
+        final InMemoryUserDataAccessObject dao = new InMemoryUserDataAccessObject(null);
         dao.login(TEST_USERNAME, TEST_PASSWORD);
 
         assertEquals(TEST_USERNAME, dao.getCurrentUsername(),
