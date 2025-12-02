@@ -174,7 +174,7 @@ public class SearchByIngredientInteractorTests {
 
         UserFactory userFactory = new UserFactory();
         FileDataAccessObject dao =
-                new FileDataAccessObject("build/test-users-search-by-ingredient.csv", userFactory);
+                new FileDataAccessObject("build/test-users-search-by-ingredient.csv", userFactory, null);
 
         SearchByIngredientInteractor interactor =
                 new SearchByIngredientInteractor(new FakeGateway(api), presenter, dao);
