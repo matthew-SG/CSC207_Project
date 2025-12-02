@@ -13,7 +13,8 @@ public class MealPlanInteractor implements MealPlanInputBoundary {
     private static final int MEAL_PLAN_SIZE = 3;
     private final MealPlanUserDataAccessInterface userDataAccessObject;
     private final MealPlanOutputBoundary mealPlanPresenter;
-    private MealPlanGeneratorStrategy generationStrategy;
+    // Default strategy is LowestNutritionalErrorStrategy
+    private MealPlanGeneratorStrategy generationStrategy = new LowestNutritionalErrorStrategy();
 
     public MealPlanInteractor(MealPlanUserDataAccessInterface userDataAccessObject,
                               MealPlanOutputBoundary mealPlanPresenter) {
@@ -31,7 +32,6 @@ public class MealPlanInteractor implements MealPlanInputBoundary {
         final String inputProtein = mealPlanInputData.getTargetProtein();
         final String inputCarbs = mealPlanInputData.getTargetCarbs();
         final String inputFats = mealPlanInputData.getTargetFats();
-        final String strategy = mealPlanInputData.getStrategy();
         final MealPlan mealPlan;
 
         if (savedRecipes.size() < MEAL_PLAN_SIZE) {
@@ -50,13 +50,6 @@ public class MealPlanInteractor implements MealPlanInputBoundary {
                 mealPlanPresenter.prepareFailView(null, "All input values must be non-negative!");
             }
             else {
-                // Sets the generation strategy for the meal plan
-                if ("calories".equals(strategy)) {
-                    generationStrategy = new PrioritizeCaloriesErrorStrategy();
-                }
-                else {
-                    generationStrategy = new LowestNutritionalErrorStrategy();
-                }
                 // Computes the recipes according to the selected strategy
                 final List<Recipe> mealPlanRecipes = computeBestFittingRecipes(savedRecipes, targetCalories,
                         targetProtein, targetCarbs, targetFats);
@@ -143,6 +136,15 @@ public class MealPlanInteractor implements MealPlanInputBoundary {
             recipeTriplet.remove(0);
         }
         return result;
+    }
+
+    /**
+     * Sets the generation strategy for the interactor.
+     * @param strategy the strategy to be used for meal plan generation
+     */
+    @Override
+    public void setStrategy(MealPlanGeneratorStrategy strategy) {
+        generationStrategy = strategy;
     }
 
 }

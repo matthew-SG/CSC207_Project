@@ -10,4 +10,10 @@ public interface MealPlanInputBoundary {
      * @param mealPlanInputData the input data
      */
     void execute(MealPlanInputData mealPlanInputData);
+
+    /**
+     * Sets the generation strategy for the meal plan generator.
+     * @param generationStrategy the strategy to be used when generating the meal plans
+     */
+    void setStrategy(MealPlanGeneratorStrategy generationStrategy);
 }

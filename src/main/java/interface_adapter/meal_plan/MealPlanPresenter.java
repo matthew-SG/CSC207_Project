@@ -5,7 +5,7 @@ import use_case.meal_plan.MealPlanOutputBoundary;
 import use_case.meal_plan.MealPlanOutputData;
 
 /**
- * Presenter for the Meal Plan Use Case
+ * Presenter for the Meal Plan Use Case.
  */
 public class MealPlanPresenter implements MealPlanOutputBoundary {
 
@@ -35,6 +35,11 @@ public class MealPlanPresenter implements MealPlanOutputBoundary {
         viewManagerModel.firePropertyChange();
     }
 
+    /**
+     * Prepares the fail view for the meal plan generator use case.
+     * @param listError the error to be displayed due to the saved recipes
+     * @param inputError the error to be displayed due to the input
+     */
     public void prepareFailView(String listError, String inputError) {
         final MealPlanGeneratorState mealPlanGeneratorState = mealPlanGeneratorViewModel.getState();
         mealPlanGeneratorState.setInsufficientRecipesError(listError);

@@ -20,7 +20,7 @@ public class MealPlanInteractorTests {
     @Test
     public void failureLessThanThreeLikedRecipes() {
         // Creates input data and temp DAO, api key doesn't matter
-        MealPlanInputData inputData = new MealPlanInputData("1", "1", "1", "1", "default");
+        MealPlanInputData inputData = new MealPlanInputData("1", "1", "1", "1");
         InMemoryUserDataAccessObject userRepository = new InMemoryUserDataAccessObject("a");
 
         // For the failure test, we need to add a user to the repository with less than three recipes
@@ -60,10 +60,10 @@ public class MealPlanInteractorTests {
     @Test
     public void failureNonDoubleInputs() {
         // One input data object for each parameter being a non-double string
-        MealPlanInputData inputData1 = new MealPlanInputData("a", "1", "2", "3", "default");
-        MealPlanInputData inputData2 = new MealPlanInputData("1", "a", "2", "3", "default");
-        MealPlanInputData inputData3 = new MealPlanInputData("1", "2", "a", "3", "default");
-        MealPlanInputData inputData4 = new MealPlanInputData("1", "2", "3", "a", "default");
+        MealPlanInputData inputData1 = new MealPlanInputData("a", "1", "2", "3");
+        MealPlanInputData inputData2 = new MealPlanInputData("1", "a", "2", "3");
+        MealPlanInputData inputData3 = new MealPlanInputData("1", "2", "a", "3");
+        MealPlanInputData inputData4 = new MealPlanInputData("1", "2", "3", "a");
         // Creates temp DAO for testing, api key doesn't matter
         InMemoryUserDataAccessObject userRepository = new InMemoryUserDataAccessObject("a");
 
@@ -107,10 +107,10 @@ public class MealPlanInteractorTests {
     @Test
     public void failureNegativeInputs() {
         // One input data object for each parameter being a negative value
-        MealPlanInputData inputData1 = new MealPlanInputData("-1", "1", "2", "3", "default");
-        MealPlanInputData inputData2 = new MealPlanInputData("1", "-1", "2", "3", "default");
-        MealPlanInputData inputData3 = new MealPlanInputData("1", "2", "-1", "3", "default");
-        MealPlanInputData inputData4 = new MealPlanInputData("1", "2", "3", "-1", "default");
+        MealPlanInputData inputData1 = new MealPlanInputData("-1", "1", "2", "3");
+        MealPlanInputData inputData2 = new MealPlanInputData("1", "-1", "2", "3");
+        MealPlanInputData inputData3 = new MealPlanInputData("1", "2", "-1", "3");
+        MealPlanInputData inputData4 = new MealPlanInputData("1", "2", "3", "-1");
         // Creates temp DAO for testing, api key doesn't matter
         InMemoryUserDataAccessObject userRepository = new InMemoryUserDataAccessObject("a");
 
@@ -156,7 +156,7 @@ public class MealPlanInteractorTests {
     public void successThreeRecipes() {
         // Values of non-negative input data do not matter as the returned meal plan should just be the three recipes
         //      in the user's liked recipes, in the same order
-        MealPlanInputData mealPlanInputData = new MealPlanInputData("1", "1", "1", "1", "default");
+        MealPlanInputData mealPlanInputData = new MealPlanInputData("1", "1", "1", "1");
         // Creates temp DAO for testing, api key doesn't matter
         InMemoryUserDataAccessObject userRepository = new InMemoryUserDataAccessObject("a");
 
@@ -230,7 +230,7 @@ public class MealPlanInteractorTests {
     public void successMoreThanThreeRecipes() {
         // Values of non-negative input data do not matter as the returned meal plan should just be the three recipes
         //      in the user's liked recipes, in the same order
-        MealPlanInputData mealPlanInputData = new MealPlanInputData("50", "50", "50", "50", "default");
+        MealPlanInputData mealPlanInputData = new MealPlanInputData("50", "50", "50", "50");
         // Creates temp DAO for testing, api key doesn't matter
         InMemoryUserDataAccessObject userRepository = new InMemoryUserDataAccessObject("a");
 
@@ -328,7 +328,7 @@ public class MealPlanInteractorTests {
     public void successDifferentStrategy() {
         // Values of non-negative input data do not matter as the returned meal plan should just be the three recipes
         //      in the user's liked recipes, in the same order
-        MealPlanInputData mealPlanInputData = new MealPlanInputData("50", "50", "50", "50", "calories");
+        MealPlanInputData mealPlanInputData = new MealPlanInputData("50", "50", "50", "50");
         // Creates temp DAO for testing, api key doesn't matter
         InMemoryUserDataAccessObject userRepository = new InMemoryUserDataAccessObject("a");
 
@@ -418,6 +418,7 @@ public class MealPlanInteractorTests {
         };
 
         MealPlanInputBoundary interactor = new MealPlanInteractor(userRepository, presenter);
+        interactor.setStrategy(new PrioritizeCaloriesErrorStrategy());
         interactor.execute(mealPlanInputData);
     }
 

@@ -1,7 +1,9 @@
 package interface_adapter.meal_plan;
 
+import use_case.meal_plan.LowestNutritionalErrorStrategy;
 import use_case.meal_plan.MealPlanInputBoundary;
 import use_case.meal_plan.MealPlanInputData;
+import use_case.meal_plan.PrioritizeCaloriesErrorStrategy;
 
 /**
  * Controller for the Meal Plan Use Case.
@@ -24,7 +26,14 @@ public class MealPlanController {
     public void execute(String targetCalories, String targetProtein, String targetCarbs, String targetFats,
                         String strategy) {
         final MealPlanInputData mealPlanInputData = new MealPlanInputData(targetCalories, targetProtein, targetCarbs,
-                targetFats, strategy);
+                targetFats);
+
+        if ("calories".equals(strategy)) {
+            userMealPlanUseCaseInteractor.setStrategy(new PrioritizeCaloriesErrorStrategy());
+        }
+        else {
+            userMealPlanUseCaseInteractor.setStrategy(new LowestNutritionalErrorStrategy());
+        }
 
         userMealPlanUseCaseInteractor.execute(mealPlanInputData);
     }

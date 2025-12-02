@@ -9,15 +9,12 @@ public class MealPlanInputData {
     private final String targetProtein;
     private final String targetCarbs;
     private final String targetFats;
-    private final String strategy;
 
-    public MealPlanInputData(String targetCalories, String targetProtein, String targetCarbs, String targetFats,
-                             String strategy) {
+    public MealPlanInputData(String targetCalories, String targetProtein, String targetCarbs, String targetFats) {
         this.targetCalories = targetCalories;
         this.targetProtein = targetProtein;
         this.targetCarbs = targetCarbs;
         this.targetFats = targetFats;
-        this.strategy = strategy;
     }
 
     String getTargetCalories() {
@@ -34,9 +31,5 @@ public class MealPlanInputData {
 
     String getTargetFats() {
         return targetFats;
-    }
-
-    String getStrategy() {
-        return strategy;
     }
 }
