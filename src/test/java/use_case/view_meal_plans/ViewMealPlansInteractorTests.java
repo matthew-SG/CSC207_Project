@@ -17,7 +17,8 @@ class ViewMealPlansInteractorTests {
      */
     @Test
     void failureTest() {
-        InMemoryUserDataAccessObject userRepository = new InMemoryUserDataAccessObject();
+        // Creates temp DAO, api key doesn't matter
+        InMemoryUserDataAccessObject userRepository = new InMemoryUserDataAccessObject("a");
 
         // Need a user to view meal plans for
         userRepository.signupUser("Matthew", "password");
@@ -45,8 +46,8 @@ class ViewMealPlansInteractorTests {
      */
     @Test
     void successTest() {
-        // Create the DAO and the user to test with
-        InMemoryUserDataAccessObject userRepository = new InMemoryUserDataAccessObject();
+        // Create the DAO and the user to test with, api key doesn't matter
+        InMemoryUserDataAccessObject userRepository = new InMemoryUserDataAccessObject("a");
         userRepository.signupUser("Matthew", "password");
         userRepository.login("Matthew", "password");
 

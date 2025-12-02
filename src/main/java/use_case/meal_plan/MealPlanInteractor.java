@@ -31,6 +31,7 @@ public class MealPlanInteractor implements MealPlanInputBoundary {
         final String inputProtein = mealPlanInputData.getTargetProtein();
         final String inputCarbs = mealPlanInputData.getTargetCarbs();
         final String inputFats = mealPlanInputData.getTargetFats();
+        final String strategy = mealPlanInputData.getStrategy();
         final MealPlan mealPlan;
 
         if (savedRecipes.size() < MEAL_PLAN_SIZE) {
@@ -50,7 +51,12 @@ public class MealPlanInteractor implements MealPlanInputBoundary {
             }
             else {
                 // Sets the generation strategy for the meal plan
-                generationStrategy = new LowestNutritionalErrorStrategy();
+                if ("calories".equals(strategy)) {
+                    generationStrategy = new PrioritizeCaloriesErrorStrategy();
+                }
+                else {
+                    generationStrategy = new LowestNutritionalErrorStrategy();
+                }
                 // Computes the recipes according to the selected strategy
                 final List<Recipe> mealPlanRecipes = computeBestFittingRecipes(savedRecipes, targetCalories,
                         targetProtein, targetCarbs, targetFats);

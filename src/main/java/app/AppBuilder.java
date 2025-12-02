@@ -105,8 +105,8 @@ import view.RecipeGeneratorView;
  */
 public class AppBuilder {
     private static final String API_KEY = "5b07df6820b74cf1b2eae9c1b440f014";
-    private static final int APPLICATION_HEIGHT = 1920;
-    private static final int APPLICATION_WIDTH = 1080;
+    private static final int APPLICATION_WIDTH = 1920;
+    private static final int APPLICATION_HEIGHT = 1080;
 
     // Error pop up
     private ErrorMessageView errorMessageView;

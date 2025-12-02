@@ -21,8 +21,8 @@ class LoadMealPlanInteractorTests {
      */
     @Test
     void testLoadMealPlanInteractor() {
-        // Create DAO and user for the purposes of the test
-        InMemoryUserDataAccessObject userRepository = new InMemoryUserDataAccessObject();
+        // Create DAO and user for the purposes of the test, api key doesn't matter
+        InMemoryUserDataAccessObject userRepository = new InMemoryUserDataAccessObject("a");
         userRepository.signupUser("Matthew", "password");
         userRepository.login("Matthew", "password");
 
