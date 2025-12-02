@@ -1,7 +1,7 @@
 package use_case.step_by_step;
 
 /**
- * Output Boundary for actions related to step-by-step instructions
+ * Output Boundary for actions related to step-by-step instructions.
  */
 
 public interface StepByStepOutputBoundary {
@@ -11,5 +11,9 @@ public interface StepByStepOutputBoundary {
      */
     void present(StepByStepOutputData outputData);
 
+    /**
+     * Prepares the fail view for the use case.
+     * @param error contains the error message to display.
+     */
     void prepareFailView(String error);
 }

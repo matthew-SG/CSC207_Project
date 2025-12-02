@@ -11,7 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-class StepByStepInteractorTest {
+class StepByStepInteractorTests {
 
     private MockStepByStepPresenter mockPresenter;
     private StepByStepInteractor interactor;

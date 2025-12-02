@@ -9,7 +9,7 @@ import entities.User;
 
 /**
  * Data Access Interface for the Liked Recipe use case.
- * Handles persistence of user's liked recipes.
+ * Handles persistence of the user's liked recipes.
  */
 public interface LikedRecipeDataAccessInterface {
 
@@ -63,6 +63,8 @@ public interface LikedRecipeDataAccessInterface {
 
     /**
      * Adds the given ingredients to the user's grocery list and persists it.
+     * @param  username the username of the user
+     * @param  ingredients the list of ingredients to be added to the grocery list
      */
     void addIngredientsToGroceryList(String username, List<Ingredient> ingredients);
 }

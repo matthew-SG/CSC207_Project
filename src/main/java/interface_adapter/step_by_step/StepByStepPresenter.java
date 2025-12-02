@@ -16,7 +16,7 @@ public class StepByStepPresenter implements StepByStepOutputBoundary {
     @Override
     public void present(StepByStepOutputData outputData) {
 
-        StepByStepState newState = new StepByStepState();
+        final StepByStepState newState = new StepByStepState();
         newState.setStepText(outputData.stepText());
         newState.setStepNumber(outputData.stepNumber());
         newState.setCanGoNext(outputData.hasNext());

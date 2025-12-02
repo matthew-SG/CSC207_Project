@@ -1,7 +1,8 @@
 package use_case.step_by_step;
 
-import entities.InstructionStep;
 import java.util.List;
+
+import entities.InstructionStep;
 
 /**
  * Interactor for StepByStep use case, implementing navigation.
@@ -9,7 +10,7 @@ import java.util.List;
 public class StepByStepInteractor implements StepByStepInputBoundary {
     private final StepByStepOutputBoundary presenter;
     private List<InstructionStep> steps;
-    private int currentIndex = 0;
+    private int currentIndex;
 
     public StepByStepInteractor(StepByStepOutputBoundary presenter) {
         this.presenter = presenter;
@@ -62,11 +63,11 @@ public class StepByStepInteractor implements StepByStepInputBoundary {
      * Helper method to present the current step via the presenter.
      */
     private void showCurrentStep() {
-        InstructionStep currentStep = steps.get(currentIndex);
-        boolean hasNext = currentIndex < steps.size() - 1;
-        boolean hasPrev = currentIndex > 0;
+        final InstructionStep currentStep = steps.get(currentIndex);
+        final boolean hasNext = currentIndex < steps.size() - 1;
+        final boolean hasPrev = currentIndex > 0;
 
-        StepByStepOutputData outputData = new StepByStepOutputData(
+        final StepByStepOutputData outputData = new StepByStepOutputData(
                 currentStep.getStep(),
                 currentIndex + 1,
                 hasNext,
