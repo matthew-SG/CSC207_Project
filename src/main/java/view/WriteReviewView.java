@@ -106,6 +106,8 @@ public class WriteReviewView extends JPanel implements PropertyChangeListener {
         submitButton.setFont(new Font("Arial", Font.BOLD, 14));
         submitButton.setPreferredSize(new Dimension(150, 40));
         submitButton.setBackground(new Color(70, 130, 180));
+        submitButton.setOpaque(true);
+        submitButton.setBorderPainted(false);
         submitButton.setForeground(Color.WHITE);
         submitButton.setFocusPainted(false);
         submitButton.addActionListener(new ActionListener() {

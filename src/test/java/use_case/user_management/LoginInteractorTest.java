@@ -26,7 +26,7 @@ class LoginInteractorTest {
      */
     @Test
     void testLoginSuccess() {
-        final InMemoryUserDataAccessObject dao = new InMemoryUserDataAccessObject();
+        final InMemoryUserDataAccessObject dao = new InMemoryUserDataAccessObject(null);
         final MockLoginPresenter presenter = new MockLoginPresenter();
 
         final LoginInteractor interactor = new LoginInteractor(dao, presenter);
@@ -45,7 +45,7 @@ class LoginInteractorTest {
      */
     @Test
     void testLoginFailure_UserDNE() {
-        final InMemoryUserDataAccessObject dao = new InMemoryUserDataAccessObject();
+        final InMemoryUserDataAccessObject dao = new InMemoryUserDataAccessObject(null);
         final MockLoginPresenter presenter = new MockLoginPresenter();
         final LoginInteractor interactor = new LoginInteractor(dao, presenter);
         final LoginInputData inputData = new LoginInputData(DNE_USERNAME, CORRECT_PASSWORD);
@@ -64,7 +64,7 @@ class LoginInteractorTest {
     @Test
     void testLoginFailure_IncorrectPassword() {
         // NOTE: Similar to testLoginSuccess, relies on implicit setup of "test_1" in the DAO.
-        final InMemoryUserDataAccessObject dao = new InMemoryUserDataAccessObject();
+        final InMemoryUserDataAccessObject dao = new InMemoryUserDataAccessObject(null);
         final MockLoginPresenter presenter = new MockLoginPresenter();
         final LoginInteractor interactor = new LoginInteractor(dao, presenter);
         final LoginInputData inputData = new LoginInputData(EXISTING_USERNAME, WRONG_PASSWORD);

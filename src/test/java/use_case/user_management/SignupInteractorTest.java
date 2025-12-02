@@ -27,7 +27,7 @@ class SignupInteractorTest {
      */
     @Test
     void testSignupSuccess() {
-        final InMemoryUserDataAccessObject dao = new InMemoryUserDataAccessObject();
+        final InMemoryUserDataAccessObject dao = new InMemoryUserDataAccessObject("5b07df6820b74cf1b2eae9c1b440f014");
         final MockSignupPresenter presenter = new MockSignupPresenter();
         final UserFactory userFactory = new UserFactory();
 
@@ -46,7 +46,7 @@ class SignupInteractorTest {
      */
     @Test
     void testSignupFailure_PasswordsDontMatch() {
-        final InMemoryUserDataAccessObject dao = new InMemoryUserDataAccessObject();
+        final InMemoryUserDataAccessObject dao = new InMemoryUserDataAccessObject(null);
         final MockSignupPresenter presenter = new MockSignupPresenter();
         final UserFactory userFactory = new UserFactory();
         final SignupInteractor interactor = new SignupInteractor(dao, presenter, userFactory);
@@ -64,7 +64,7 @@ class SignupInteractorTest {
      */
     @Test
     void testSignupFailure_EmptyPassword() {
-        final InMemoryUserDataAccessObject dao = new InMemoryUserDataAccessObject();
+        final InMemoryUserDataAccessObject dao = new InMemoryUserDataAccessObject(null);
         final MockSignupPresenter presenter = new MockSignupPresenter();
         final UserFactory userFactory = new UserFactory();
         final SignupInteractor interactor = new SignupInteractor(dao, presenter, userFactory);
@@ -82,7 +82,7 @@ class SignupInteractorTest {
      */
     @Test
     void testSignupFailure_EmptyUsername() {
-        final InMemoryUserDataAccessObject dao = new InMemoryUserDataAccessObject();
+        final InMemoryUserDataAccessObject dao = new InMemoryUserDataAccessObject(null);
         final MockSignupPresenter presenter = new MockSignupPresenter();
         final UserFactory userFactory = new UserFactory();
         final SignupInteractor interactor = new SignupInteractor(dao, presenter, userFactory);
@@ -100,7 +100,7 @@ class SignupInteractorTest {
      */
     @Test
     void testSignupFailure_UserExists() {
-        final InMemoryUserDataAccessObject dao = new InMemoryUserDataAccessObject();
+        final InMemoryUserDataAccessObject dao = new InMemoryUserDataAccessObject(null);
         final MockSignupPresenter presenter = new MockSignupPresenter();
         final UserFactory userFactory = new UserFactory();
         final SignupInteractor interactor = new SignupInteractor(dao, presenter, userFactory);
@@ -118,7 +118,7 @@ class SignupInteractorTest {
      */
     @Test
     void testSwitchToLoginView() {
-        final InMemoryUserDataAccessObject dao = new InMemoryUserDataAccessObject();
+        final InMemoryUserDataAccessObject dao = new InMemoryUserDataAccessObject(null);
         final MockSignupPresenter presenter = new MockSignupPresenter();
         final UserFactory userFactory = new UserFactory();
         final SignupInteractor interactor = new SignupInteractor(dao, presenter, userFactory);

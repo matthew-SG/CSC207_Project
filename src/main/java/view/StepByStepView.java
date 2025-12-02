@@ -132,33 +132,4 @@ public class StepByStepView extends JFrame implements PropertyChangeListener {
         nextButton.setEnabled(newState.canGoNext());
         prevButton.setEnabled(newState.canGoPrevious());
     }
-
-    // Example main method using SystemTTSService
-    public static void main(String[] args) {
-        // Example steps
-        List<InstructionStep> steps = List.of(
-                new InstructionStep(1, "Heat the oven"),
-                new InstructionStep(2, "Make it hotter"),
-                new InstructionStep(3, "MAKE IT EVEN HOTTER"),
-                new InstructionStep(4, "You have been burned :)")
-        );
-
-        RecipeInstructions instructions = new RecipeInstructions(steps);
-
-        StepByStepViewModel viewModel = new StepByStepViewModel();
-        ViewManagerModel viewManagerModel = new ViewManagerModel();
-        ErrorMessageView errorMessageView = new ErrorMessageView(viewManagerModel);
-        StepByStepPresenter presenter = new StepByStepPresenter(viewModel, viewManagerModel);
-        StepByStepInteractor interactor = new StepByStepInteractor(presenter);
-        StepByStepController controller = new StepByStepController(interactor, instructions);
-
-        // Use system TTS
-        SpeechService tts = new SystemTTS();
-
-        SwingUtilities.invokeLater(() -> {
-            StepByStepView view = new StepByStepView(controller, viewModel, tts);
-            controller.start();
-            view.setVisible(true);
-        });
-    }
 }
