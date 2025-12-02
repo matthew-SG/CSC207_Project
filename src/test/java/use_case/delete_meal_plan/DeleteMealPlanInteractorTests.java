@@ -19,8 +19,8 @@ class DeleteMealPlanInteractorTests {
      */
     @Test
     void failureOnlyOneMealPlan() {
-        // Create DAO and user to test one
-        InMemoryUserDataAccessObject userRepository = new InMemoryUserDataAccessObject();
+        // Create DAO and user to test one, apiKey doesn't matter
+        InMemoryUserDataAccessObject userRepository = new InMemoryUserDataAccessObject("a");
         userRepository.signupUser("Matthew", "password");
         userRepository.login("Matthew", "password");
 
@@ -70,8 +70,8 @@ class DeleteMealPlanInteractorTests {
      */
     @Test
     void failureIndexOutOfBounds() {
-        // Create DAO and user to test one
-        InMemoryUserDataAccessObject userRepository = new InMemoryUserDataAccessObject();
+        // Create DAO and user to test one, api key doesn't matter
+        InMemoryUserDataAccessObject userRepository = new InMemoryUserDataAccessObject("a");
         userRepository.signupUser("Matthew", "password");
         userRepository.login("Matthew", "password");
 
@@ -126,8 +126,8 @@ class DeleteMealPlanInteractorTests {
      */
     @Test
     void successTest() {
-        // Create DAO and user to test one
-        InMemoryUserDataAccessObject userRepository = new InMemoryUserDataAccessObject();
+        // Create DAO and user to test one, apiKey doesn't matter
+        InMemoryUserDataAccessObject userRepository = new InMemoryUserDataAccessObject("a");
         userRepository.signupUser("Matthew", "password");
         userRepository.login("Matthew", "password");
 

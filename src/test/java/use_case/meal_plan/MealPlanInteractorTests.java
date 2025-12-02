@@ -19,8 +19,9 @@ public class MealPlanInteractorTests {
      */
     @Test
     public void failureLessThanThreeLikedRecipes() {
+        // Creates input data and temp DAO, api key doesn't matter
         MealPlanInputData inputData = new MealPlanInputData("1", "1", "1", "1");
-        InMemoryUserDataAccessObject userRepository = new InMemoryUserDataAccessObject();
+        InMemoryUserDataAccessObject userRepository = new InMemoryUserDataAccessObject("a");
 
         // For the failure test, we need to add a user to the repository with less than three recipes
         //      In this case, we will add two, one with no recipes, and one with a singular recipe
@@ -63,7 +64,8 @@ public class MealPlanInteractorTests {
         MealPlanInputData inputData2 = new MealPlanInputData("1", "a", "2", "3");
         MealPlanInputData inputData3 = new MealPlanInputData("1", "2", "a", "3");
         MealPlanInputData inputData4 = new MealPlanInputData("1", "2", "3", "a");
-        InMemoryUserDataAccessObject userRepository = new InMemoryUserDataAccessObject();
+        // Creates temp DAO for testing, api key doesn't matter
+        InMemoryUserDataAccessObject userRepository = new InMemoryUserDataAccessObject("a");
 
         // Will need a new user with (at least) 3 recipes to get to the next failure use case
         userRepository.signupUser("Matthew", "password");
@@ -109,7 +111,8 @@ public class MealPlanInteractorTests {
         MealPlanInputData inputData2 = new MealPlanInputData("1", "-1", "2", "3");
         MealPlanInputData inputData3 = new MealPlanInputData("1", "2", "-1", "3");
         MealPlanInputData inputData4 = new MealPlanInputData("1", "2", "3", "-1");
-        InMemoryUserDataAccessObject userRepository = new InMemoryUserDataAccessObject();
+        // Creates temp DAO for testing, api key doesn't matter
+        InMemoryUserDataAccessObject userRepository = new InMemoryUserDataAccessObject("a");
 
         // Will need a new user with (at least) 3 recipes to get to the next failure use case
         userRepository.signupUser("Matthew", "password");
@@ -154,7 +157,8 @@ public class MealPlanInteractorTests {
         // Values of non-negative input data do not matter as the returned meal plan should just be the three recipes
         //      in the user's liked recipes, in the same order
         MealPlanInputData mealPlanInputData = new MealPlanInputData("1", "1", "1", "1");
-        InMemoryUserDataAccessObject  userRepository = new InMemoryUserDataAccessObject();
+        // Creates temp DAO for testing, api key doesn't matter
+        InMemoryUserDataAccessObject userRepository = new InMemoryUserDataAccessObject("a");
 
         // Creating a user to test the interactor on
         userRepository.signupUser("Matthew", "password");
@@ -227,7 +231,8 @@ public class MealPlanInteractorTests {
         // Values of non-negative input data do not matter as the returned meal plan should just be the three recipes
         //      in the user's liked recipes, in the same order
         MealPlanInputData mealPlanInputData = new MealPlanInputData("50", "50", "50", "50");
-        InMemoryUserDataAccessObject  userRepository = new InMemoryUserDataAccessObject();
+        // Creates temp DAO for testing, api key doesn't matter
+        InMemoryUserDataAccessObject userRepository = new InMemoryUserDataAccessObject("a");
 
         // Creating a user to test the interactor on
         userRepository.signupUser("Matthew", "password");
