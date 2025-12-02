@@ -18,6 +18,7 @@ import interface_adapter.meal_plan.MealPlanGeneratedViewModel;
  */
 public class MealPlanGeneratedView extends JPanel implements PropertyChangeListener {
     
+    private static final Font FONT = new Font("Arial", Font.BOLD, 16);
     private static final String VIEW_NAME = "meal plan generated";
     private final transient MealPlanGeneratedViewModel mealPlanGeneratedViewModel;
 
@@ -40,6 +41,7 @@ public class MealPlanGeneratedView extends JPanel implements PropertyChangeListe
         this.setBorder(BorderFactory.createEmptyBorder(viewSize, viewSize, viewSize, viewSize));
 
         final JLabel title = new JLabel("Your Generated Meal Plan");
+        title.setFont(FONT);
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         // Spacing
@@ -49,6 +51,7 @@ public class MealPlanGeneratedView extends JPanel implements PropertyChangeListe
 
         // First Meal Section
         final JLabel firstMealLabel = new JLabel("First Meal");
+        firstMealLabel.setFont(FONT);
         firstMealLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         this.add(firstMealLabel);
         // Add the empty card panel
@@ -58,6 +61,7 @@ public class MealPlanGeneratedView extends JPanel implements PropertyChangeListe
 
         // Second Meal Section
         final JLabel secondMealLabel = new JLabel("Second Meal");
+        secondMealLabel.setFont(FONT);
         secondMealLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         this.add(secondMealLabel);
         // Add the empty card panel
@@ -67,6 +71,7 @@ public class MealPlanGeneratedView extends JPanel implements PropertyChangeListe
 
         // Third Meal Section
         final JLabel thirdMealLabel = new JLabel("Third Meal");
+        thirdMealLabel.setFont(FONT);
         thirdMealLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         this.add(thirdMealLabel);
         // Add the empty card panel
@@ -78,7 +83,7 @@ public class MealPlanGeneratedView extends JPanel implements PropertyChangeListe
         final MealPlanGeneratedState state = (MealPlanGeneratedState) evt.getNewValue();
         final int mealPlanSize = 3;
 
-        // Assuming your original data structure:
+        // Gets all required data for output from state
         final String[] recipeNames = state.getRecipeNames();
         final String[] recipeImages = state.getRecipeImages();
         final List<List<String[]>> recipeIngredients = state.getRecipeIngredients();
@@ -110,22 +115,26 @@ public class MealPlanGeneratedView extends JPanel implements PropertyChangeListe
     private void buildRecipeCard(JPanel cardPanel, String name, String imageUrl,
                                  List<String[]> ingredients, Map<String, Double> nutrition) {
 
+        // Clears card to make room for new recipe card
         cardPanel.removeAll();
 
+        // Constants
         final int cardGap = 10;
         final int imageDimensions = 150;
 
-        // Gaps
+        // Creates gaps between cards
         cardPanel.setLayout(new BorderLayout(cardGap, cardGap));
         cardPanel.setBorder(BorderFactory.createRaisedBevelBorder());
 
         final JLabel nameLabel = new JLabel(name, SwingConstants.CENTER);
+        nameLabel.setFont(FONT);
         cardPanel.add(nameLabel, BorderLayout.NORTH);
 
         final JLabel imageLabel = new JLabel("[Loading...]", SwingConstants.CENTER);
         imageLabel.setPreferredSize(new Dimension(imageDimensions, imageDimensions));
         imageLabel.setBorder(BorderFactory.createLineBorder(Color.GRAY));
 
+        // Sets the image of the card
         try {
             final URL url = new URL(imageUrl);
             final ImageIcon icon = new ImageIcon(url);
@@ -138,6 +147,7 @@ public class MealPlanGeneratedView extends JPanel implements PropertyChangeListe
             imageLabel.setText("[Image Failed]");
         }
 
+        // Adds image to the card
         cardPanel.add(imageLabel, BorderLayout.WEST);
 
         // Panel that holds the details of the related recipe
@@ -145,6 +155,7 @@ public class MealPlanGeneratedView extends JPanel implements PropertyChangeListe
 
         // Left side of details: Scrollable panel that holds all the ingredients of the related recipe
         final JTextArea ingredientsArea = new JTextArea();
+        ingredientsArea.setFont(FONT);
         ingredientsArea.setEditable(false);
         ingredientsArea.append("Ingredients:\n\n");
         for (String[] ingredient : ingredients) {
@@ -154,6 +165,7 @@ public class MealPlanGeneratedView extends JPanel implements PropertyChangeListe
 
         // Right side of details: Scrollable panel that holds all the nutrients of the related recipe
         final JTextArea nutritionArea = new JTextArea();
+        nutritionArea.setFont(FONT);
         nutritionArea.setEditable(false);
         nutritionArea.append("Nutritional Information:\n\n");
 
