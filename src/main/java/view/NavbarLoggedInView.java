@@ -11,7 +11,6 @@ import interface_adapter.nav_bar.NavbarController;
 public class NavbarLoggedInView extends JPanel {
     private JButton communityButton;
     private JButton generateRecipe;
-    private JButton approveRecipeButton;
     private JButton userProfileButton;
     private JButton mealPlanButton;
     private JButton searchByIngredientsButton;
@@ -31,7 +30,6 @@ public class NavbarLoggedInView extends JPanel {
         likeRecipeButton = new JButton("Like Recipe List");
         add(communityButton);
         add(generateRecipe);
-        add(approveRecipeButton);
         add(userProfileButton);
         add(groceryButton);
         add(mealPlanButton);
@@ -42,13 +40,6 @@ public class NavbarLoggedInView extends JPanel {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 navbarController.switchToCommunity();
-            }
-        });
-
-        approveRecipeButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                navbarController.switchToApproveRecipe();
             }
         });
 
