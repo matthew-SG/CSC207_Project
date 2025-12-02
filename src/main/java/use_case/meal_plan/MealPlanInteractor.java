@@ -2,9 +2,7 @@ package use_case.meal_plan;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-import entities.Ingredient;
 import entities.MealPlan;
 import entities.Recipe;
 
@@ -34,10 +32,6 @@ public class MealPlanInteractor implements MealPlanInputBoundary {
         final String inputCarbs = mealPlanInputData.getTargetCarbs();
         final String inputFats = mealPlanInputData.getTargetFats();
         final MealPlan mealPlan;
-        final String[] recipeNames = new String[MEAL_PLAN_SIZE];
-        final String[] recipeImages = new String[MEAL_PLAN_SIZE];
-        final List<List<String[]>> recipeIngredients = new ArrayList<>();
-        final List<Map<String, Double>> recipeNutritionalValues = new ArrayList<>();
 
         if (savedRecipes.size() < MEAL_PLAN_SIZE) {
             mealPlanPresenter.prepareFailView(
@@ -63,35 +57,16 @@ public class MealPlanInteractor implements MealPlanInputBoundary {
                 mealPlan = new MealPlan(mealPlanRecipes, targetCalories, targetProtein, targetCarbs, targetFats);
 
                 userDataAccessObject.saveMealPlan(mealPlan);
-                buildMealPlanOutput(mealPlanRecipes, recipeNames, recipeImages, recipeIngredients,
-                        recipeNutritionalValues);
-                final MealPlanOutputData mealPlanOutputData = new MealPlanOutputData(recipeNames, recipeImages,
-                        recipeIngredients, recipeNutritionalValues);
+
+                // Builds the output data and sends it to the presenter.
+                final MealPlanOutputData mealPlanOutputData = new MealPlanOutputData.Builder()
+                        .buildRecipeNames(mealPlanRecipes)
+                        .buildRecipeImages(mealPlanRecipes)
+                        .buildRecipeIngredients(mealPlanRecipes)
+                        .buildRecipeNutritionalValues(mealPlanRecipes)
+                        .build();
                 mealPlanPresenter.prepareSuccessView(mealPlanOutputData);
             }
-
-        }
-    }
-
-    /**
-     * Helper function that builds the parameters for output data.
-     * @param mealPlanRecipes the recipes to be displayed
-     * @param recipeNames the names of recipes to be displayed
-     * @param recipeImages the image path of the recipes to be displayed
-     * @param recipeIngredients the ingredients of the recipes to be displayed
-     * @param recipeNutritionalValues the nutritional values of the recipes to be displayed
-     */
-    private static void buildMealPlanOutput(List<Recipe> mealPlanRecipes, String[] recipeNames, String[] recipeImages,
-                                            List<List<String[]>> recipeIngredients,
-                                            List<Map<String, Double>> recipeNutritionalValues) {
-        int i = 0;
-
-        for (Recipe recipe : mealPlanRecipes) {
-            recipeNames[i] = recipe.getRecipeName();
-            recipeImages[i] = recipe.getRecipeImage();
-            recipeIngredients.add(toOrderedString(recipe.getIngredients()));
-            recipeNutritionalValues.add(recipe.getNutritionalValues());
-            i++;
 
         }
     }
@@ -109,23 +84,6 @@ public class MealPlanInteractor implements MealPlanInputBoundary {
         }
         catch (NumberFormatException ex) {
             result = false;
-        }
-        return result;
-    }
-
-    /**
-     * Converts a list of ingredients into a list of string arrays.
-     * @param ingredients the list of ingredients to be converted
-     * @return the list string array representation of the ingredients
-     */
-    private static List<String[]> toOrderedString(List<Ingredient> ingredients) {
-        final List<String[]> result = new ArrayList<>();
-        for (Ingredient ingredient : ingredients) {
-            final String[] ingredientEntry = new String[MEAL_PLAN_SIZE];
-            ingredientEntry[0] = ingredient.getName();
-            ingredientEntry[1] = ingredient.getQuantity() + "";
-            ingredientEntry[2] = ingredient.getUnit();
-            result.add(ingredientEntry);
         }
         return result;
     }
