@@ -22,7 +22,6 @@ public class NavbarLoggedInView extends JPanel {
         setBackground(Color.PINK);
         communityButton = new JButton("Community");
         generateRecipe = new JButton("Generate Recipe");
-        approveRecipeButton = new JButton("Approve Recipes");
         userProfileButton = new JButton("User Profile");
         groceryButton = new JButton("Grocery List");
         mealPlanButton = new JButton("Meal Plan Generator");
