@@ -1,4 +1,4 @@
-package interface_adapter.likedRecipeList;
+package interface_adapter.liked_recipe_list;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,14 +13,14 @@ import interface_adapter.step_by_step.StepByStepController;
 import interface_adapter.step_by_step.StepByStepPresenter;
 import interface_adapter.step_by_step.StepByStepViewModel;
 
-import use_case.likedRecipeList.LikedRecipeOutputBoundary;
-import use_case.likedRecipeList.LikedRecipeOutputData;
+import use_case.liked_recipe_list.LikedRecipeOutputBoundary;
+import use_case.liked_recipe_list.LikedRecipeOutputData;
 import use_case.step_by_step.StepByStepInputData;
 import use_case.step_by_step.StepByStepInteractor;
 
 import view.StepByStepView;
 
-import speechapi.SystemTTS;
+import data_access.SystemTTS;
 
 public class LikedRecipeListPresenter implements LikedRecipeOutputBoundary {
     private final LikedRecipeListViewModel viewModel;

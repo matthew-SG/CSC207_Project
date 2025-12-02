@@ -1,9 +1,9 @@
-package interface_adapter.likedRecipeList;
+package interface_adapter.liked_recipe_list;
 
 import java.util.HashMap;
 
-import use_case.likedRecipeList.LikedRecipeInputBoundary;
-import use_case.likedRecipeList.LikedRecipeInputData;
+import use_case.liked_recipe_list.LikedRecipeInputBoundary;
+import use_case.liked_recipe_list.LikedRecipeInputData;
 
 public class LikedRecipeListController {
     private final LikedRecipeInputBoundary interactor;

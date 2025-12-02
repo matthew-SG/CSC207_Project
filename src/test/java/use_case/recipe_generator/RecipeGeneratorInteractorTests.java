@@ -88,9 +88,9 @@ class RecipeGeneratorInteractorTests {
     @Test
     void generateRecipes_success_returnsRecipeSummaries() {
         // arrange: fake DAO with two recipes
-        // Temp DAO for testing
+        // Temp DAO for testing, api key doesn't matter
         FakeRecipeDAO fakeDAO = new FakeRecipeDAO();
-        InMemoryUserDataAccessObject userRepository = new InMemoryUserDataAccessObject();
+        InMemoryUserDataAccessObject userRepository = new InMemoryUserDataAccessObject("a");
         DummyRecipePresenter spyPresenter = new DummyRecipePresenter();
 
         userRepository.signupUser("Taaha", "password");
@@ -166,10 +166,10 @@ class RecipeGeneratorInteractorTests {
     @Test
     void generateRecipes_noRecipes_showsNoRecipesMessage() {
         // arrange: fake DAO returns empty list
-        // Temp DAO for testing
+        // Temp DAO for testing, api key doesn't matter
         FakeRecipeDAO fakeDAO = new FakeRecipeDAO();
         fakeDAO.recipesToReturn = new ArrayList<>();
-        InMemoryUserDataAccessObject userRepository = new InMemoryUserDataAccessObject();
+        InMemoryUserDataAccessObject userRepository = new InMemoryUserDataAccessObject("a");
 
         userRepository.signupUser("Taaha", "password");
         userRepository.login("Taaha", "password");
@@ -206,10 +206,10 @@ class RecipeGeneratorInteractorTests {
     @Test
     void generateRecipes_daoThrows_showsGenericErrorMessage() {
         // fake DAO throws to simulate API failure
-        // Temp DAO for testing
+        // Temp DAO for testing, api key doesn't matter
         FakeRecipeDAO fakeDAO = new FakeRecipeDAO();
         fakeDAO.exceptionToThrow = new RuntimeException("Simulated API failure");
-        InMemoryUserDataAccessObject userRepository = new InMemoryUserDataAccessObject();
+        InMemoryUserDataAccessObject userRepository = new InMemoryUserDataAccessObject("a");
 
         userRepository.signupUser("Taaha", "password");
         userRepository.login("Taaha", "password");
@@ -247,10 +247,10 @@ class RecipeGeneratorInteractorTests {
     @Test
     void generateRecipes_nullRecipes_treatedAsNoRecipes() {
         // arrange: fake DAO returns null (not just empty list)
-        // Temp DAO for testing
+        // Temp DAO for testing, api key doesn't matter
         FakeRecipeDAO fakeDAO = new FakeRecipeDAO();
         fakeDAO.recipesToReturn = null;  // ← key difference
-        InMemoryUserDataAccessObject userRepository = new InMemoryUserDataAccessObject();
+        InMemoryUserDataAccessObject userRepository = new InMemoryUserDataAccessObject("");
 
         userRepository.signupUser("Taaha", "password");
         userRepository.login("Taaha", "password");

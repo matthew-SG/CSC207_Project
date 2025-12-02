@@ -2,10 +2,10 @@ package data_access;
 
 import entities.User;
 import use_case.approve_recipe.ApproveRecipeDataAccessInterface;
+import use_case.community.CommunityUserRecipeDataAccessInterface;
 import use_case.delete_meal_plan.DeleteMealPlanDataAccessInterface;
 import use_case.grocery_list.GroceryRepository;
-import use_case.likedRecipeList.LikedRecipeDataAccessInterface;
-import use_case.grocery_list.GroceryRepository;
+import use_case.liked_recipe_list.LikedRecipeDataAccessInterface;
 import use_case.load_meal_plan.LoadMealPlanDataAccessInterface;
 import use_case.login.LoginUserDataAccessInterface;
 import use_case.logout.LogoutUserDataAccessInterface;
@@ -20,7 +20,7 @@ public interface UserDataAccess extends SignupUserDataAccessInterface,
         LogoutUserDataAccessInterface,
         MealPlanUserDataAccessInterface, ViewMealPlansDataAccessInterface, LoadMealPlanDataAccessInterface,
         DeleteMealPlanDataAccessInterface, ApproveRecipeDataAccessInterface, LikedRecipeDataAccessInterface,
-        GroceryRepository {
+        GroceryRepository, CommunityUserRecipeDataAccessInterface {
 
     /**
      * Get the users map for accessing user data.

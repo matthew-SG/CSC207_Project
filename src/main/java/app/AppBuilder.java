@@ -20,9 +20,9 @@ import interface_adapter.grocery_list.*;
 import interface_adapter.grocery_list.GroceryController;
 import interface_adapter.grocery_list.GroceryPresenter;
 import interface_adapter.grocery_list.GroceryViewModel;
-import interface_adapter.likedRecipeList.LikedRecipeListController;
-import interface_adapter.likedRecipeList.LikedRecipeListPresenter;
-import interface_adapter.likedRecipeList.LikedRecipeListViewModel;
+import interface_adapter.liked_recipe_list.LikedRecipeListController;
+import interface_adapter.liked_recipe_list.LikedRecipeListPresenter;
+import interface_adapter.liked_recipe_list.LikedRecipeListViewModel;
 import interface_adapter.load_meal_plan.LoadMealPlanController;
 import interface_adapter.load_meal_plan.LoadMealPlanPresenter;
 import interface_adapter.logged_in.LoggedInViewModel;
@@ -50,7 +50,6 @@ import interface_adapter.signup.SignupViewModel;
 import interface_adapter.view_meal_plans.ViewMealPlansController;
 import interface_adapter.view_meal_plans.ViewMealPlansPresenter;
 import interface_adapter.view_meal_plans.ViewMealPlansViewModel;
-import use_case.approve_recipe.ApproveRecipeDataAccessInterface;
 import use_case.approve_recipe.ApproveRecipeInputBoundary;
 import use_case.approve_recipe.ApproveRecipeInteractor;
 import use_case.approve_recipe.ApproveRecipeOutputBoundary;
@@ -66,10 +65,10 @@ import use_case.grocery_list.add.AddInteractor;
 import use_case.grocery_list.delete.DeleteInteractor;
 import use_case.grocery_list.edit.EditInteractor;
 import use_case.grocery_list.load.LoadInteractor;
-import use_case.likedRecipeList.LikedRecipeDataAccessInterface;
-import use_case.likedRecipeList.LikedRecipeInputBoundary;
-import use_case.likedRecipeList.LikedRecipeInteractor;
-import use_case.likedRecipeList.LikedRecipeOutputBoundary;
+import use_case.liked_recipe_list.LikedRecipeDataAccessInterface;
+import use_case.liked_recipe_list.LikedRecipeInputBoundary;
+import use_case.liked_recipe_list.LikedRecipeInteractor;
+import use_case.liked_recipe_list.LikedRecipeOutputBoundary;
 import use_case.load_meal_plan.LoadMealPlanInputBoundary;
 import use_case.load_meal_plan.LoadMealPlanInteractor;
 import use_case.load_meal_plan.LoadMealPlanOutputBoundary;
@@ -106,23 +105,25 @@ import view.RecipeGeneratorView;
  */
 public class AppBuilder {
     private static final String API_KEY = "5b07df6820b74cf1b2eae9c1b440f014";
+    private static final int APPLICATION_WIDTH = 1920;
+    private static final int APPLICATION_HEIGHT = 1080;
+
+    // Error pop up
+    private ErrorMessageView errorMessageView;
 
     // Required components
     private UserFactory userFactory = new UserFactory();
     // In Memory Data Access Object
-    // private UserDataAccess userDataAccessObject = new InMemoryUserDataAccessObject();
+    // private UserDataAccess userDataAccessObject = new InMemoryUserDataAccessObject(API_KEY);
     // Persistent File Data Access Object
-    private final FileDataAccessObject fileUserDataAccessObject = new FileDataAccessObject("data/users.csv", userFactory, API_KEY);
-    private UserDataAccess userDataAccessObject = fileUserDataAccessObject;
-    private CommunityDataAccessInterface communityDataAccessObject = new DBCommunityDataAccessObject(fileUserDataAccessObject);
-    private ApproveRecipeDataAccessInterface approveRecipeDataAccessObject;
+    private UserDataAccess userDataAccessObject = new FileDataAccessObject("data/users.csv",
+            userFactory, API_KEY);
+    private CommunityDataAccessInterface communityDataAccessObject =
+            new DBCommunityDataAccessObject(userDataAccessObject);
     private JPanel contentPanel;
     private CardLayout cardLayout;
     private ViewManagerModel viewManagerModel;
     private ViewManager viewManager;
-
-    // Error pop up
-    ErrorMessageView errorMessageView;
 
     // Approve Recipe components
     private ApproveRecipeViewModel approveRecipeViewModel;
@@ -176,7 +177,7 @@ public class AppBuilder {
     private SearchByIngredientController searchByIngredientController;
     private SearchByIngredientSpoonacular searchByIngredientApi;
 
-    //like recipe list
+    // like recipe list
     private LikedRecipeListViewModel likedRecipeListViewModel;
     private LikedRecipeListView likedRecipeListView;
     private LikedRecipeListController likedRecipeListController;
@@ -198,12 +199,7 @@ public class AppBuilder {
 
         viewManagerModel = new ViewManagerModel();
         viewManager = new ViewManager(contentPanel, cardLayout, viewManagerModel);
-        // Use FileDataAccessObject as the approve recipe DAO (implements ApproveRecipeDataAccessInterface)
-        if (userDataAccessObject instanceof FileDataAccessObject) {
-            approveRecipeDataAccessObject = (FileDataAccessObject) userDataAccessObject;
-        } else {
-            throw new RuntimeException("UserDataAccessObject must be FileDataAccessObject for approve recipe functionality");
-        }
+
         communityViewModel = new CommunityViewModel();
         loggedInViewModel = new LoggedInViewModel();
         approveRecipeViewModel = new ApproveRecipeViewModel();
@@ -226,12 +222,12 @@ public class AppBuilder {
         approveRecipeView = new ApproveRecipeView(approveRecipeViewModel, viewManagerModel);
 
         // Wire up use case
-        ApproveRecipeOutputBoundary approveRecipePresenter = new ApproveRecipePresenter(
+        final ApproveRecipeOutputBoundary approveRecipePresenter = new ApproveRecipePresenter(
                 viewManagerModel,
                 approveRecipeViewModel
         );
-        ApproveRecipeInputBoundary approveRecipeInteractor = new ApproveRecipeInteractor(
-                approveRecipeDataAccessObject,
+        final ApproveRecipeInputBoundary approveRecipeInteractor = new ApproveRecipeInteractor(
+                userDataAccessObject,
                 approveRecipePresenter
         );
         approveRecipeController = new ApproveRecipeController(approveRecipeInteractor);
@@ -250,26 +246,26 @@ public class AppBuilder {
     }
 
     public AppBuilder buildRecipeGeneratorFeature() {
-        RecipeGeneratorViewModel recipeGeneratorViewModel =
+        final RecipeGeneratorViewModel recipeGeneratorViewModel =
                 new RecipeGeneratorViewModel();
 
         // Presenter
-        RecipeGeneratorOutputBoundary recipeGeneratorPresenter =
+        final RecipeGeneratorOutputBoundary recipeGeneratorPresenter =
                 new RecipeGeneratorPresenter(recipeGeneratorViewModel, viewManagerModel);
 
-        RecipeDataAccessInterface recipeGateway =
+        final RecipeDataAccessInterface recipeGateway =
                 new RecipeDataAccessObject();
 
-        RecipeGeneratorInputBoundary recipeGeneratorInteractor =
+        final RecipeGeneratorInputBoundary recipeGeneratorInteractor =
                 new RecipeGeneratorInteractor(recipeGateway, recipeGeneratorPresenter,
-                        approveRecipeDataAccessObject);
+                        userDataAccessObject);
 
-        //Controller
-        RecipeGeneratorController recipeGeneratorController =
+        // Controller
+        final RecipeGeneratorController recipeGeneratorController =
                 new RecipeGeneratorController(recipeGeneratorInteractor);
 
         // View
-        RecipeGeneratorView recipeGeneratorView =
+        final RecipeGeneratorView recipeGeneratorView =
                 new RecipeGeneratorView(
                         recipeGeneratorViewModel,
                         recipeGeneratorController,
@@ -316,14 +312,14 @@ public class AppBuilder {
         );
 
         // Wire up community use case
-        CommunityOutputBoundary communityPresenter = new CommunityPresenter(
+        final CommunityOutputBoundary communityPresenter = new CommunityPresenter(
                 viewManagerModel,
                 communityViewModel
         );
-        CommunityInputBoundary communityInteractor = new CommunityMarketInteractor(
+        final CommunityInputBoundary communityInteractor = new CommunityMarketInteractor(
                 communityDataAccessObject,
                 communityPresenter,
-                fileUserDataAccessObject
+                userDataAccessObject
         );
         communityController = new CommunityController(communityInteractor);
 
@@ -360,7 +356,7 @@ public class AppBuilder {
         final SignupInputBoundary userSignupInteractor = new SignupInteractor(
                 userDataAccessObject, signupOutputBoundary, userFactory);
 
-        SignupController controller = new SignupController(userSignupInteractor);
+        final SignupController controller = new SignupController(userSignupInteractor);
         signupView.setSignupController(controller);
 
         final LoginOutputBoundary loginOutputBoundary = new LoginPresenter(viewManagerModel,
@@ -368,7 +364,7 @@ public class AppBuilder {
         final LoginInputBoundary loginInteractor = new LoginInteractor(
                 userDataAccessObject, loginOutputBoundary);
 
-        LoginController loginController = new LoginController(loginInteractor);
+        final LoginController loginController = new LoginController(loginInteractor);
         loginView.setLoginController(loginController);
 
         final LogoutOutputBoundary logoutOutputBoundary = new LogoutPresenter(viewManagerModel,
@@ -399,7 +395,7 @@ public class AppBuilder {
         navBarLoggedIn = new NavbarLoggedInView();
 
         navbarPresenter = new NavbarPresenter(viewManagerModel, communityViewModel, mealPlanGeneratorViewModel);
-        NavbarController navbarController = new NavbarController(
+        final NavbarController navbarController = new NavbarController(
                 new NavbarInteractor(navbarPresenter)
         );
         navBar.setNavbarController(navbarController);
@@ -425,17 +421,17 @@ public class AppBuilder {
      */
     public AppBuilder buildGroceryList() {
 
-        GroceryRepository repo = userDataAccessObject;
+        final GroceryRepository repo = userDataAccessObject;
 
-        GroceryViewModel vm = new GroceryViewModel();
-        GroceryPresenter presenter = new GroceryPresenter(vm);
+        final GroceryViewModel vm = new GroceryViewModel();
+        final GroceryPresenter presenter = new GroceryPresenter(vm);
 
-        AddInteractor addUC = new AddInteractor(repo, presenter);
-        EditInteractor editUC = new EditInteractor(repo, presenter);
-        DeleteInteractor deleteUC = new DeleteInteractor(repo, presenter);
-        LoadInteractor loadUC = new LoadInteractor(repo, presenter);
+        final AddInteractor addUc = new AddInteractor(repo, presenter);
+        final EditInteractor editUc = new EditInteractor(repo, presenter);
+        final DeleteInteractor deleteUc = new DeleteInteractor(repo, presenter);
+        final LoadInteractor loadUc = new LoadInteractor(repo, presenter);
 
-        GroceryController controller = new GroceryController(addUC, editUC, deleteUC, loadUC);
+        final GroceryController controller = new GroceryController(addUc, editUc, deleteUc, loadUc);
         this.groceryController = controller;
         contentPanel.add(new GroceryView(controller, vm, viewManagerModel), "Grocery_List");
         return this;
@@ -465,13 +461,13 @@ public class AppBuilder {
         final DeleteMealPlanInputBoundary deleteMealPlanInteractor = new DeleteMealPlanInteractor(userDataAccessObject,
                 deleteMealPlanPresenter, viewMealPlansPresenter);
 
-        MealPlanController mealPlanController = new MealPlanController(mealPlanInteractor);
+        final MealPlanController mealPlanController = new MealPlanController(mealPlanInteractor);
         mealPlanGeneratorView.setMealPlanController(mealPlanController);
-        ViewMealPlansController viewMealPlansController = new ViewMealPlansController(viewMealPlansInteractor);
+        final ViewMealPlansController viewMealPlansController = new ViewMealPlansController(viewMealPlansInteractor);
         mealPlanGeneratorView.setViewMealPlansController(viewMealPlansController);
-        LoadMealPlanController loadMealPlanController = new LoadMealPlanController(loadMealPlanInteractor);
+        final LoadMealPlanController loadMealPlanController = new LoadMealPlanController(loadMealPlanInteractor);
         viewMealPlansView.setLoadMealPlanController(loadMealPlanController);
-        DeleteMealPlanController deleteMealPlanController = new DeleteMealPlanController(deleteMealPlanInteractor);
+        final DeleteMealPlanController deleteMealPlanController = new DeleteMealPlanController(deleteMealPlanInteractor);
         viewMealPlansView.setDeleteMealPlanController(deleteMealPlanController);
 
         contentPanel.add(mealPlanGeneratorView, mealPlanGeneratorView.getViewName());
@@ -484,17 +480,17 @@ public class AppBuilder {
     public AppBuilder buildSearchByIngredient() {
         searchByIngredientApi = new SearchByIngredientSpoonacular();
 
-        SearchByIngredientViewModel searchByIngredientViewModel =
+        final SearchByIngredientViewModel searchByIngredientViewModel =
                 new SearchByIngredientViewModel();
 
-        SearchByIngredientOutputBoundary searchByIngredientPresenter =
+        final SearchByIngredientOutputBoundary searchByIngredientPresenter =
                 new SearchByIngredientPresenter(viewManagerModel, searchByIngredientViewModel);
 
-        SearchByIngredientInputBoundary searchByIngredientInteractor =
+        final SearchByIngredientInputBoundary searchByIngredientInteractor =
                 new SearchByIngredientInteractor(
                         searchByIngredientApi,
                         searchByIngredientPresenter,
-                        approveRecipeDataAccessObject
+                        userDataAccessObject
                 );
 
         searchByIngredientController =
@@ -523,13 +519,13 @@ public class AppBuilder {
     public AppBuilder buildLikedRecipeList() {
         likedRecipeListViewModel = new LikedRecipeListViewModel();
 
-        LikedRecipeDataAccessInterface likedDao =
-                (LikedRecipeDataAccessInterface) userDataAccessObject;
+        final LikedRecipeDataAccessInterface likedDao =
+                userDataAccessObject;
 
-        LikedRecipeOutputBoundary likedPresenter =
+        final LikedRecipeOutputBoundary likedPresenter =
                 new LikedRecipeListPresenter(likedRecipeListViewModel, viewManagerModel);
 
-        LikedRecipeInputBoundary likedInteractor =
+        final LikedRecipeInputBoundary likedInteractor =
                 new LikedRecipeInteractor(likedDao, likedPresenter);
 
         likedRecipeListController =
@@ -542,7 +538,6 @@ public class AppBuilder {
 
         return this;
     }
-
 
     /**
      * Build and display the application window.
@@ -562,9 +557,9 @@ public class AppBuilder {
      * @return the configured JFrame
      */
     private JFrame createAndShowFrame() {
-        JFrame frame = new JFrame("Recipe Generator Application");
+        final JFrame frame = new JFrame("Recipe Generator Application");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(1920, 1080);
+        frame.setSize(APPLICATION_WIDTH, APPLICATION_HEIGHT);
         frame.setLayout(new BorderLayout());
 
         frame.add(navBarContentPanel, BorderLayout.NORTH);

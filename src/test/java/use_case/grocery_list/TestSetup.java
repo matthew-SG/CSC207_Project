@@ -15,7 +15,8 @@ public class TestSetup {
 
     public static InMemoryUserDataAccessObject setupLoggedInUser(List<Ingredient> initialGroceryList) {
 
-        final InMemoryUserDataAccessObject dao = new InMemoryUserDataAccessObject();
+        // Sets up temporary DAO, api key does not matter
+        final InMemoryUserDataAccessObject dao = new InMemoryUserDataAccessObject("a");
 
         dao.signupUser(TEST_USERNAME, TEST_PASSWORD);
         dao.login(TEST_USERNAME, TEST_PASSWORD);

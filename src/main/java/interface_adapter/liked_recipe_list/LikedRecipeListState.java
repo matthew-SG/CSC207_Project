@@ -1,4 +1,4 @@
-package interface_adapter.likedRecipeList;
+package interface_adapter.liked_recipe_list;
 
 import java.util.List;
 import java.util.Map;

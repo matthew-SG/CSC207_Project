@@ -18,10 +18,10 @@ import interface_adapter.view_meal_plans.ViewMealPlansViewModel;
 public class ViewMealPlansView extends JPanel implements PropertyChangeListener {
 
     private static final String VIEW_NAME = "view meal plans";
+    private static final Font FONT = new Font("Arial", Font.BOLD, 16);
     private static final int CARD_DIMENSIONS = 10;
     private static final int CARD_LABEL_SPACING = 5;
     private static final int CARD_SPACING = 10;
-    private static final int FONT_SIZE = 16;
     private final transient ViewMealPlansViewModel viewMealPlansViewModel;
 
     private final JLabel onlyOneMealPlanErrorField = new JLabel();
@@ -66,7 +66,7 @@ public class ViewMealPlansView extends JPanel implements PropertyChangeListener 
                     CARD_DIMENSIONS));
 
             final JLabel nameLabel = new JLabel(firstRecipeNames.get(i));
-            nameLabel.setFont(new Font("Arial", Font.BOLD, FONT_SIZE));
+            nameLabel.setFont(FONT);
 
             final JLabel nutrientsLabel = new JLabel(
                     "Target Calories: " + targetCalories.get(i)
@@ -74,10 +74,13 @@ public class ViewMealPlansView extends JPanel implements PropertyChangeListener 
                     + " | Target Carbs: " + targetCarbs.get(i)
                     + " | Target Fats: " + targetFats.get(i)
             );
+            nutrientsLabel.setFont(FONT);
 
             final JPanel buttons = new JPanel();
             final JButton viewButton = new JButton("View Meal Plan");
+            viewButton.setFont(FONT);
             final JButton deleteButton = new JButton("Delete Meal Plan");
+            deleteButton.setFont(FONT);
             final int index = i;
             viewButton.addActionListener(actionEvent -> loadMealPlanController.execute(index));
             deleteButton.addActionListener(actionEvent -> deleteMealPlanController.execute(index));

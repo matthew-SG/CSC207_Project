@@ -1,36 +1,34 @@
 package view;
 
-import interface_adapter.nav_bar.NavbarController;
-
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.*;
+
+import interface_adapter.nav_bar.NavbarController;
+
 public class NavbarLoggedInView extends JPanel {
     private JButton communityButton;
     private JButton generateRecipe;
-    private JButton approveRecipeButton;
     private JButton userProfileButton;
     private JButton mealPlanButton;
     private JButton searchByIngredientsButton;
     private JButton groceryButton;
-    private NavbarController navbarController = null;
+    private NavbarController navbarController;
     private JButton likeRecipeButton;
 
-    public NavbarLoggedInView(){
+    public NavbarLoggedInView() {
         setBackground(Color.PINK);
-        communityButton = new JButton("community");
-        generateRecipe = new JButton("generate recipe");
-        approveRecipeButton = new JButton("approve recipes");
-        userProfileButton = new JButton("user profile");
-        groceryButton = new JButton("grocery list");
+        communityButton = new JButton("Community");
+        generateRecipe = new JButton("Generate Recipe");
+        userProfileButton = new JButton("User Profile");
+        groceryButton = new JButton("Grocery List");
         mealPlanButton = new JButton("Meal Plan Generator");
-        searchByIngredientsButton = new JButton("search by ingredients");
+        searchByIngredientsButton = new JButton("Search By Ingredients");
         likeRecipeButton = new JButton("Like Recipe List");
         add(communityButton);
         add(generateRecipe);
-        add(approveRecipeButton);
         add(userProfileButton);
         add(groceryButton);
         add(mealPlanButton);
@@ -41,13 +39,6 @@ public class NavbarLoggedInView extends JPanel {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 navbarController.switchToCommunity();
-            }
-        });
-
-        approveRecipeButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                navbarController.switchToApproveRecipe();
             }
         });
 
@@ -67,15 +58,16 @@ public class NavbarLoggedInView extends JPanel {
 
         mealPlanButton.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent actionEvent) { navbarController.switchToMealPlan();}
+            public void actionPerformed(ActionEvent actionEvent) {
+                navbarController.switchToMealPlan();
+            }
         });
 
         searchByIngredientsButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-              navbarController.switchToSearchByIngredients();
+                navbarController.switchToSearchByIngredients();
             }
-            
         });
           
         groceryButton.addActionListener(new ActionListener() {

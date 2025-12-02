@@ -4,7 +4,7 @@ import use_case.meal_plan.MealPlanInputBoundary;
 import use_case.meal_plan.MealPlanInputData;
 
 /**
- * Controller for the Meal Plan Use Case
+ * Controller for the Meal Plan Use Case.
  */
 public class MealPlanController {
     private final MealPlanInputBoundary userMealPlanUseCaseInteractor;
@@ -14,15 +14,17 @@ public class MealPlanController {
     }
 
     /**
-     * Executes the Meal Plan Use Case
+     * Executes the Meal Plan Use Case.
      * @param targetCalories the target calories
      * @param targetProtein the target protein
      * @param targetCarbs the target carbs
      * @param targetFats the target fats
+     * @param strategy the specified strategy for generation
      */
-    public void execute(String targetCalories, String targetProtein, String targetCarbs, String targetFats) {
+    public void execute(String targetCalories, String targetProtein, String targetCarbs, String targetFats,
+                        String strategy) {
         final MealPlanInputData mealPlanInputData = new MealPlanInputData(targetCalories, targetProtein, targetCarbs,
-                targetFats);
+                targetFats, strategy);
 
         userMealPlanUseCaseInteractor.execute(mealPlanInputData);
     }
