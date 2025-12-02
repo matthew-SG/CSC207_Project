@@ -9,6 +9,9 @@ import org.json.JSONObject;
 import entities.Ingredient;
 import entities.Recipe;
 import entities.UnitConverter;
+import use_case.approve_recipe.ApproveRecipeDataAccessInterface;
+
+import static data_access.Constants.UNIT;
 
 /**
  * Interactor for the search by ingredient use case.
@@ -19,16 +22,16 @@ public class SearchByIngredientInteractor implements SearchByIngredientInputBoun
     private static final String ID = "id";
     private static final String NOT_APPLICABLE = "N/A";
     private static final String NAME = "name";
-    private static final String UNIT = "unit";
+    //private static final String UNIT = "unit";
     private static final String AMOUNT = "amount";
 
     private final SearchByIngredientGateway gateway;
     private final SearchByIngredientOutputBoundary presenter;
-    private final data_access.FileDataAccessObject approveRecipeDataAccessObject;
+    private final ApproveRecipeDataAccessInterface approveRecipeDataAccessObject;
 
     public SearchByIngredientInteractor(SearchByIngredientGateway gateway,
                                         SearchByIngredientOutputBoundary presenter,
-                                        data_access.FileDataAccessObject approveRecipeDataAccessObject) {
+                                        ApproveRecipeDataAccessInterface approveRecipeDataAccessObject) {
         this.gateway = gateway;
         this.presenter = presenter;
         this.approveRecipeDataAccessObject = approveRecipeDataAccessObject;
@@ -276,9 +279,9 @@ public class SearchByIngredientInteractor implements SearchByIngredientInputBoun
             final JSONObject n = nutrients.getJSONObject(i);
             final String name = n.optString(NAME, "");
             final double amount = n.optDouble(AMOUNT, 0.0);
-            final String unit = n.optString(UNIT, "");
+            //final String unit = n.optString(UNIT, "");
             if (!name.isEmpty()) {
-                recipe.addNutritionalValue(name + " (" + unit + ")", amount);
+                recipe.addNutritionalValue(name, amount);
             }
         }
     }

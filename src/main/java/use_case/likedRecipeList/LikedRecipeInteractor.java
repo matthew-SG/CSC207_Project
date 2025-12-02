@@ -170,4 +170,38 @@ public class LikedRecipeInteractor implements LikedRecipeInputBoundary {
             return new ArrayList<>();
         }
     }
+
+    @Override
+    public void addIngredientsToGrocery(LikedRecipeInputData inputData) {
+        try {
+            String username = dataAccess.getCurrentUsername();
+
+            List<Recipe> liked = dataAccess.getLikedRecipes(username);
+            Recipe target = null;
+            for (Recipe r : liked) {
+                if (r.getRecipeId() == inputData.getId()) {
+                    target = r;
+                    break;
+                }
+            }
+
+            if (target == null) {
+                presenter.prepareFailView("Recipe not found with ID: " + inputData.getId());
+                return;
+            }
+
+            List<Ingredient> ingredients = target.getIngredients();
+            if (ingredients == null || ingredients.isEmpty()) {
+                presenter.prepareFailView("This recipe has no ingredients to add.");
+                return;
+            }
+
+            dataAccess.addIngredientsToGroceryList(username, ingredients);
+
+            loadLikedRecipes();
+
+        } catch (Exception e) {
+            presenter.prepareFailView("Error adding ingredients to grocery list: " + e.getMessage());
+        }
+    }
 }

@@ -55,13 +55,20 @@ public class FindInstructionsSpoonacular {
                 return steps;
             }
 
+            int stepNumber = 1;
             for (int i = 0; i < stepArray.length(); i++) {
                 JSONObject stepObj = stepArray.getJSONObject(i);
-                int number = stepObj.optInt("number", i + 1);
                 String stepText = stepObj.optString("step", "").trim();
 
                 if (!stepText.isEmpty()) {
-                    steps.add(new InstructionStep(number, stepText));
+                    // Split by: period/!/? followed by space + capital OR capital letter after lowercase (missing punctuation)
+                    String[] sentences = stepText.split("(?<=[.!?])\\s*(?=[A-Z])");
+                    for (String sentence : sentences) {
+                        String trimmed = sentence.trim();
+                        if (!trimmed.isEmpty()) {
+                            steps.add(new InstructionStep(stepNumber++, trimmed));
+                        }
+                    }
                 }
             }
 

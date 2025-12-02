@@ -29,4 +29,10 @@ public interface LikedRecipeInputBoundary {
      * @return list of instruction steps
      */
     List<InstructionStep> handsfree(LikedRecipeInputData inputData);
+
+    /**
+     * Adds all ingredients (with amounts) for a liked recipe
+     * to the current user's grocery list.
+     */
+    void addIngredientsToGrocery(LikedRecipeInputData inputData);
 }

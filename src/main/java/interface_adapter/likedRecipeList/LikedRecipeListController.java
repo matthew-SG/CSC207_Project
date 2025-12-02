@@ -35,4 +35,10 @@ public class LikedRecipeListController {
         );
         interactor.deleteLikedRecipe(inputData);
     }
+
+    public void addIngredientsToGrocery(int recipeId, String recipeName) {
+        LikedRecipeInputData data =
+                new LikedRecipeInputData(recipeId, recipeName, null, null);
+        interactor.addIngredientsToGrocery(data);
+    }
 }
