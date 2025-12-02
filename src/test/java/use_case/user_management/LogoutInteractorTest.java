@@ -20,7 +20,6 @@ class LogoutInteractorTest {
         assertEquals(TEST_USERNAME, dao.getCurrentUsername(),
                 "Pre-condition failed: user should be logged in.");
 
-        // 使用外部定义的 MockLogoutPresenter
         final MockLogoutPresenter presenter = new MockLogoutPresenter();
         final LogoutInteractor interactor = new LogoutInteractor(dao, presenter);
 

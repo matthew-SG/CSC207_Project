@@ -26,9 +26,11 @@ public class MockSignupPresenter implements SignupOutputBoundary {
     public String getFailMessage() {
         return failMessage;
     }
+
     public String getSuccessUsername() {
         return successUsername;
     }
+
     public boolean isLoginViewSwitched() {
         return loginViewSwitched;
     }

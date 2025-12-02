@@ -18,7 +18,6 @@ class LoginInteractorTest {
 
     @Test
     void testLoginSuccess() {
-        // 使用外部定义的 MockLoginPresenter
         final InMemoryUserDataAccessObject dao = new InMemoryUserDataAccessObject();
         final MockLoginPresenter presenter = new MockLoginPresenter();
 
@@ -27,7 +26,8 @@ class LoginInteractorTest {
 
         interactor.execute(inputData);
 
-        assertEquals(EXISTING_USERNAME, presenter.getSuccessUsername(), "Success view should be called with correct username.");
+        assertEquals(EXISTING_USERNAME, presenter.getSuccessUsername(),
+                "Success view should be called with correct username.");
         assertNull(presenter.getFailMessage(), "Fail view should not be called.");
     }
 

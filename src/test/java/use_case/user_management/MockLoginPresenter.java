@@ -16,9 +16,11 @@ public class MockLoginPresenter implements LoginOutputBoundary {
     public void prepareFailView(String error) {
         this.failMessage = error;
     }
+
     public String getFailMessage() {
         return failMessage;
     }
+
     public String getSuccessUsername() {
         return successUsername;
     }

@@ -19,7 +19,6 @@ class SignupInteractorTest {
     @Test
     void testSignupSuccess() {
         final InMemoryUserDataAccessObject dao = new InMemoryUserDataAccessObject();
-        // 使用外部定义的 MockSignupPresenter
         final MockSignupPresenter presenter = new MockSignupPresenter();
         final UserFactory userFactory = new UserFactory();
 
