@@ -11,6 +11,8 @@ import entities.Recipe;
 import entities.UnitConverter;
 import use_case.approve_recipe.ApproveRecipeDataAccessInterface;
 
+import static data_access.Constants.UNIT;
+
 /**
  * Interactor for the search by ingredient use case.
  */
