@@ -63,6 +63,10 @@ public class User {
         return mealPlans;
     }
 
+    /**
+     * Saves the specified meal plan to the user's list of meal plans.
+     * @param mealPlan the meal plan to be saved
+     */
     public void saveMealPlan(MealPlan mealPlan) {
         mealPlans.add(mealPlan);
     }

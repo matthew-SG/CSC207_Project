@@ -3,6 +3,7 @@ package data_access;
 import static data_access.Constants.*;
 
 import java.io.*;
+import java.io.BufferedReader;
 import java.util.*;
 import java.util.Objects;
 import java.util.Optional;
@@ -10,19 +11,15 @@ import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import java.io.BufferedReader;
 
 import entities.*;
-import use_case.community.CommunityUserRecipeDataAccessInterface;
-import use_case.likedRecipeList.LikedRecipeDataAccessInterface;
 import use_case.login.LoginUserDataAccessInterface;
 import use_case.signup.SignupUserDataAccessInterface;
-import use_case.approve_recipe.ApproveRecipeDataAccessInterface;
 
 /**
  * DAO for all data, mainly user data, using a File to persist the data.
  */
-public class FileDataAccessObject implements UserDataAccess, ApproveRecipeDataAccessInterface, CommunityUserRecipeDataAccessInterface, LikedRecipeDataAccessInterface {
+public class FileDataAccessObject implements UserDataAccess {
     private final File usersCsv;
     private final Map<String, Integer> headers = new LinkedHashMap<>();
     private final Map<String, User> users = new HashMap<>();
@@ -440,7 +437,7 @@ public class FileDataAccessObject implements UserDataAccess, ApproveRecipeDataAc
             return null;
         }
 
-        List<Ingredient> ingredientsCopy = new ArrayList<>();
+        final List<Ingredient> ingredientsCopy = new ArrayList<>();
         if (source.getIngredients() != null) {
             for (Ingredient ingredient : source.getIngredients()) {
                 ingredientsCopy.add(new Ingredient(
@@ -451,15 +448,15 @@ public class FileDataAccessObject implements UserDataAccess, ApproveRecipeDataAc
             }
         }
 
-        Map<String, Double> nutritionCopy = source.getNutritionalValues() != null
+        final Map<String, Double> nutritionCopy = source.getNutritionalValues() != null
                 ? new HashMap<>(source.getNutritionalValues())
                 : new HashMap<>();
 
-        String recipeName = Optional.ofNullable(source.getRecipeName()).orElse("");
-        String recipeImage = Optional.ofNullable(source.getRecipeImage()).orElse("");
-        String mealType = Optional.ofNullable(source.getMealType()).orElse("");
+        final String recipeName = Optional.ofNullable(source.getRecipeName()).orElse("");
+        final String recipeImage = Optional.ofNullable(source.getRecipeImage()).orElse("");
+        final String mealType = Optional.ofNullable(source.getMealType()).orElse("");
 
-        Recipe copy = new Recipe(source.getRecipeId(), recipeName, recipeImage,
+        final Recipe copy = new Recipe(source.getRecipeId(), recipeName, recipeImage,
                 ingredientsCopy, mealType, nutritionCopy);
         copy.setSteps(source.getSteps());
         return copy;
@@ -476,14 +473,14 @@ public class FileDataAccessObject implements UserDataAccess, ApproveRecipeDataAc
             return new ArrayList<>();
         }
 
-        User user = users.get(username);
+        final User user = users.get(username);
         if (user == null || user.getSavedRecipes() == null) {
             return new ArrayList<>();
         }
 
-        List<Recipe> copies = new ArrayList<>();
+        final List<Recipe> copies = new ArrayList<>();
         for (Recipe recipe : user.getSavedRecipes()) {
-            Recipe copy = copyRecipe(recipe);
+            final Recipe copy = copyRecipe(recipe);
             if (copy != null) {
                 copies.add(copy);
             }
@@ -502,7 +499,7 @@ public class FileDataAccessObject implements UserDataAccess, ApproveRecipeDataAc
             return Optional.empty();
         }
 
-        User user = users.get(currentUsername);
+        final User user = users.get(currentUsername);
         if (user == null || user.getSavedRecipes() == null) {
             return Optional.empty();
         }
@@ -513,7 +510,6 @@ public class FileDataAccessObject implements UserDataAccess, ApproveRecipeDataAc
                 .findFirst()
                 .map(FileDataAccessObject::copyRecipe);
     }
-
 
     @Override
     public String login(String username, String password) {
@@ -700,7 +696,7 @@ public class FileDataAccessObject implements UserDataAccess, ApproveRecipeDataAc
 
     @Override
     public void addIngredientsToGroceryList(String username, List<Ingredient> ingredients) {
-        User user = users.get(username);
+        final User user = users.get(username);
         if (user == null) {
             System.err.println("User not found: " + username);
             return;
@@ -712,19 +708,18 @@ public class FileDataAccessObject implements UserDataAccess, ApproveRecipeDataAc
             user.setGroceryList(groceryList);
         }
 
-        List<Ingredient> items = groceryList.getItems();
-
+        final List<Ingredient> items = groceryList.getItems();
 
         for (Ingredient incoming : ingredients) {
             boolean merged = false;
 
             for (int i = 0; i < items.size(); i++) {
-                Ingredient existing = items.get(i);
+                final Ingredient existing = items.get(i);
 
                 if (existing.getName().equalsIgnoreCase(incoming.getName())
                         && existing.getUnit().equalsIgnoreCase(incoming.getUnit())) {
 
-                    double newQty = existing.getQuantity() + incoming.getQuantity();
+                    final double newQty = existing.getQuantity() + incoming.getQuantity();
                     items.set(i, new Ingredient(existing.getName(), newQty, existing.getUnit()));
                     merged = true;
                     break;
@@ -739,7 +734,7 @@ public class FileDataAccessObject implements UserDataAccess, ApproveRecipeDataAc
                 ));
             }
         }
-        String jsonPath = String.format(USER_GROCERY_LIST_PATH, username);
+        final String jsonPath = String.format(USER_GROCERY_LIST_PATH, username);
         saveGroceryList(user, jsonPath);
     }
 }

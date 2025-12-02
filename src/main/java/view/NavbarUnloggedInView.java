@@ -1,23 +1,24 @@
 package view;
 
-import interface_adapter.nav_bar.NavbarController;
-
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
+import javax.swing.*;
+
+import interface_adapter.nav_bar.NavbarController;
 
 public class NavbarUnloggedInView extends JPanel {
     private JButton communityButton;
     private JButton signUpButton;
     private JButton loginButton;
-    private NavbarController navbarController = null;
+    private NavbarController navbarController;
 
-    public NavbarUnloggedInView(){
+    public NavbarUnloggedInView() {
         setBackground(Color.PINK);
-        communityButton = new JButton("community");
-        signUpButton = new JButton("sign up");
-        loginButton = new JButton("log in");
+        communityButton = new JButton("Community");
+        signUpButton = new JButton("Sign Up");
+        loginButton = new JButton("Log In");
         add(communityButton);
         add(signUpButton);
         add(loginButton);

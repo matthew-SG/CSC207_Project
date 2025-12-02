@@ -1,9 +1,6 @@
 package data_access;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import entities.*;
 import use_case.login.LoginUserDataAccessInterface;
@@ -28,15 +25,19 @@ public class InMemoryUserDataAccessObject implements UserDataAccess {
     private final Map<String, User> users = new HashMap<>();
     // Temporary storage for recipes waiting to be approved
     private List<Recipe> pendingApprovalRecipes = new ArrayList<>();
-    
+
     private String currentUsername;
+
+    private final FindInstructionsSpoonacular instructionsApi = new FindInstructionsSpoonacular();
+    private final String apiKey;
 
     /**
      * Constructor for InMemoryUserDAO that constructs pregenerated Users for testing purposes (primarily for Meal
      *      Plan Use Case, other Use Cases may add to test users if they wish).
+     * @param apiKey the API key
      */
     @SuppressWarnings({"checkstyle:MagicNumber", "checkstyle:SuppressWarnings", "checkstyle:OneStatementPerLine"})
-    public InMemoryUserDataAccessObject() {
+    public InMemoryUserDataAccessObject(String apiKey) {
         final User testUserOne = new User("test_1", PASSWORD, new ArrayList<>(), new ArrayList<>(),
                 new GroceryList(new ArrayList<>()));
         final User testUserTwo = new User("test_2", PASSWORD, new ArrayList<>(), new ArrayList<>(),
@@ -83,6 +84,7 @@ public class InMemoryUserDataAccessObject implements UserDataAccess {
         users.put("test_2", testUserTwo);
         users.put("test_3", testUserThree);
 
+        this.apiKey = apiKey;
     }
 
     @Override
@@ -92,7 +94,7 @@ public class InMemoryUserDataAccessObject implements UserDataAccess {
 
     @Override
     public List<InstructionStep> getAnalyzedInstructions(int recipeId) {
-        return List.of();
+        return instructionsApi.getAnalyzedInstructions(recipeId, apiKey);
     }
 
     @Override
@@ -194,6 +196,27 @@ public class InMemoryUserDataAccessObject implements UserDataAccess {
     }
 
     @Override
+    public List<Recipe> getLikedRecipesForUser(String username) {
+        if (username == null || username.trim().isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        final User user = users.get(username);
+        if (user == null || user.getSavedRecipes() == null) {
+            return new ArrayList<>();
+        }
+
+        final List<Recipe> copies = new ArrayList<>();
+        for (Recipe recipe : user.getSavedRecipes()) {
+            final Recipe copy = copyRecipe(recipe);
+            if (copy != null) {
+                copies.add(copy);
+            }
+        }
+        return copies;
+    }
+
+    @Override
     public void saveRecipeToUser(String username, Recipe recipe) {
         // In-memory implementation - not used for approve recipe in production
         // Just add to user's saved recipes if user exists
@@ -208,6 +231,24 @@ public class InMemoryUserDataAccessObject implements UserDataAccess {
 
         // Remove recipe from pending approval
         removeFromPendingApproval(recipe.getRecipeId());
+    }
+
+    @Override
+    public Optional<Recipe> getCurrentUserLikedRecipe(int recipeId) {
+        if (currentUsername == null || currentUsername.trim().isEmpty()) {
+            return Optional.empty();
+        }
+
+        final User user = users.get(currentUsername);
+        if (user == null || user.getSavedRecipes() == null) {
+            return Optional.empty();
+        }
+
+        return user.getSavedRecipes().stream()
+                .filter(Objects::nonNull)
+                .filter(recipe -> recipe.getRecipeId() == recipeId)
+                .findFirst()
+                .map(InMemoryUserDataAccessObject::copyRecipe);
     }
 
     @Override
@@ -244,7 +285,7 @@ public class InMemoryUserDataAccessObject implements UserDataAccess {
 
     @Override
     public void addIngredientsToGroceryList(String username, List<Ingredient> ingredients) {
-        User user = users.get(username);
+        final User user = users.get(username);
         if (user == null) {
             return;
         }
@@ -255,18 +296,18 @@ public class InMemoryUserDataAccessObject implements UserDataAccess {
             user.setGroceryList(groceryList);
         }
 
-        List<Ingredient> items = groceryList.getItems();
+        final List<Ingredient> items = groceryList.getItems();
 
         for (Ingredient incoming : ingredients) {
             boolean merged = false;
 
             for (int i = 0; i < items.size(); i++) {
-                Ingredient existing = items.get(i);
+                final Ingredient existing = items.get(i);
 
                 if (existing.getName().equalsIgnoreCase(incoming.getName())
                         && existing.getUnit().equalsIgnoreCase(incoming.getUnit())) {
 
-                    double newQty = existing.getQuantity() + incoming.getQuantity();
+                    final double newQty = existing.getQuantity() + incoming.getQuantity();
                     items.set(i, new Ingredient(existing.getName(), newQty, existing.getUnit()));
                     merged = true;
                     break;
@@ -281,5 +322,41 @@ public class InMemoryUserDataAccessObject implements UserDataAccess {
                 ));
             }
         }
+    }
+
+    /**
+     * Helper method to create a defensive copy of a recipe (including ingredients and nutritional values)
+     * to avoid exposing internal mutable state to callers.
+     * @param source the recipe to copy
+     * @return a deep copy of the recipe
+     */
+    private static Recipe copyRecipe(Recipe source) {
+        if (source == null) {
+            return null;
+        }
+
+        final List<Ingredient> ingredientsCopy = new ArrayList<>();
+        if (source.getIngredients() != null) {
+            for (Ingredient ingredient : source.getIngredients()) {
+                ingredientsCopy.add(new Ingredient(
+                        ingredient.getName(),
+                        ingredient.getQuantity(),
+                        ingredient.getUnit()
+                ));
+            }
+        }
+
+        final Map<String, Double> nutritionCopy = source.getNutritionalValues() != null
+                ? new HashMap<>(source.getNutritionalValues())
+                : new HashMap<>();
+
+        final String recipeName = Optional.ofNullable(source.getRecipeName()).orElse("");
+        final String recipeImage = Optional.ofNullable(source.getRecipeImage()).orElse("");
+        final String mealType = Optional.ofNullable(source.getMealType()).orElse("");
+
+        final Recipe copy = new Recipe(source.getRecipeId(), recipeName, recipeImage,
+                ingredientsCopy, mealType, nutritionCopy);
+        copy.setSteps(source.getSteps());
+        return copy;
     }
 }
