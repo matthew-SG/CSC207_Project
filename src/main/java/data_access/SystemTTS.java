@@ -1,4 +1,4 @@
-package speechapi;
+package data_access;
 
 import interface_adapter.speech.SpeechService;
 

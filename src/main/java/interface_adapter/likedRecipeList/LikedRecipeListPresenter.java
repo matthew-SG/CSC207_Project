@@ -20,7 +20,7 @@ import use_case.step_by_step.StepByStepInteractor;
 
 import view.StepByStepView;
 
-import speechapi.SystemTTS;
+import data_access.SystemTTS;
 
 public class LikedRecipeListPresenter implements LikedRecipeOutputBoundary {
     private final LikedRecipeListViewModel viewModel;
