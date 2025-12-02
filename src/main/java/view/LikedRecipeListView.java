@@ -11,9 +11,9 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
 
 import interface_adapter.ViewManagerModel;
-import interface_adapter.likedRecipeList.LikedRecipeListController;
-import interface_adapter.likedRecipeList.LikedRecipeListState;
-import interface_adapter.likedRecipeList.LikedRecipeListViewModel;
+import interface_adapter.liked_recipe_list.LikedRecipeListController;
+import interface_adapter.liked_recipe_list.LikedRecipeListState;
+import interface_adapter.liked_recipe_list.LikedRecipeListViewModel;
 
 /**
  * View for displaying the user's liked recipes.
