@@ -29,6 +29,13 @@ public class SearchByIngredientInteractor implements SearchByIngredientInputBoun
     private final SearchByIngredientOutputBoundary presenter;
     private final ApproveRecipeDataAccessInterface approveRecipeDataAccessObject;
 
+    /**
+     * Creates a new interactor for the search by ingredient use case.
+     *
+     * @param gateway the gateway used to call the external API
+     * @param presenter the presenter used to format output
+     * @param approveRecipeDataAccessObject data access for available recipes (can be null)
+     */
     public SearchByIngredientInteractor(SearchByIngredientGateway gateway,
                                         SearchByIngredientOutputBoundary presenter,
                                         ApproveRecipeDataAccessInterface approveRecipeDataAccessObject) {
@@ -37,6 +44,12 @@ public class SearchByIngredientInteractor implements SearchByIngredientInputBoun
         this.approveRecipeDataAccessObject = approveRecipeDataAccessObject;
     }
 
+    /**
+     * Executes the use case: validates input, calls the API, filters recipes,
+     * and sends results to the presenter.
+     *
+     * @param inputData the input data containing ingredients and allowed missing count
+     */
     @Override
     public void execute(SearchByIngredientInputData inputData) {
         final List<Ingredient> ingredients = inputData.getIngredients();
@@ -95,6 +108,14 @@ public class SearchByIngredientInteractor implements SearchByIngredientInputBoun
         presenter.prepareSuccessView(new SearchByIngredientOutputData(recipes, message));
     }
 
+    /**
+     * Decides whether a recipe should be included based on missing ingredients and quantities.
+     *
+     * @param recipeJson the recipe JSON from the API
+     * @param userIngredients the user's ingredients
+     * @param allowedMissing allowed number of missing ingredients
+     * @return true if the recipe should be included, false otherwise
+     */
     private boolean shouldIncludeRecipe(JSONObject recipeJson,
                                         List<Ingredient> userIngredients,
                                         int allowedMissing) {
@@ -113,6 +134,15 @@ public class SearchByIngredientInteractor implements SearchByIngredientInputBoun
         return totalMissing <= allowedMissing;
     }
 
+    /**
+     * Calculates extra "missing" ingredients based on quantity checks.
+     *
+     * @param recipeJson the recipe JSON from the API
+     * @param userIngredients the user's ingredients
+     * @param baseMissed base missed count from the API
+     * @param allowedMissing allowed number of missing ingredients
+     * @return additional missing count due to not enough quantity
+     */
     private int calculateExtraMissingFromQuantity(JSONObject recipeJson,
                                                   List<Ingredient> userIngredients,
                                                   int baseMissed,
@@ -158,6 +188,12 @@ public class SearchByIngredientInteractor implements SearchByIngredientInputBoun
         return extraMissing;
     }
 
+    /**
+     * Normalizes ingredient names for comparison.
+     *
+     * @param name the original name
+     * @return a lowercased, trimmed, singular name
+     */
     private String normalizeName(String name) {
         if (name == null) {
             return "";
@@ -169,6 +205,13 @@ public class SearchByIngredientInteractor implements SearchByIngredientInputBoun
         return result;
     }
 
+    /**
+     * Finds a user ingredient that matches the API ingredient name.
+     *
+     * @param apiName the name from the API
+     * @param userIngredients the user's ingredients
+     * @return the matching ingredient or null if not found
+     */
     private Ingredient findMatchingUserIngredient(String apiName, List<Ingredient> userIngredients) {
         for (Ingredient userIng : userIngredients) {
             final String userName = userIng.getName().toLowerCase();
@@ -179,6 +222,14 @@ public class SearchByIngredientInteractor implements SearchByIngredientInputBoun
         return null;
     }
 
+    /**
+     * Converts the user's quantity into the recipe's unit using the UnitConverter.
+     *
+     * @param userQuantity the user's quantity
+     * @param userUnit the user's unit
+     * @param recipeUnit the unit expected by the recipe
+     * @return the quantity expressed in the recipe's unit
+     */
     private double convertUserToRecipeUnit(double userQuantity,
                                            String userUnit,
                                            String recipeUnit) {
@@ -186,6 +237,12 @@ public class SearchByIngredientInteractor implements SearchByIngredientInputBoun
         return UnitConverter.fromTbsp(asTbsp, recipeUnit);
     }
 
+    /**
+     * Builds a full Recipe object from the bulk API JSON.
+     *
+     * @param recipeJson the recipe JSON from the bulk API
+     * @return a Recipe object with ingredients, steps, and nutrition
+     */
     private Recipe buildFullRecipeFromBulk(JSONObject recipeJson) {
         final int id = recipeJson.getInt(ID);
         final String title = recipeJson.optString("title", "");
@@ -200,6 +257,12 @@ public class SearchByIngredientInteractor implements SearchByIngredientInputBoun
         return recipe;
     }
 
+    /**
+     * Extracts the meal type (dish type) from the recipe JSON.
+     *
+     * @param recipeJson the recipe JSON
+     * @return the first dish type or "N/A" if missing
+     */
     private String extractMealType(JSONObject recipeJson) {
         if (!recipeJson.has("dishTypes")) {
             return NOT_APPLICABLE;
@@ -213,6 +276,12 @@ public class SearchByIngredientInteractor implements SearchByIngredientInputBoun
         return dishTypes.optString(0, "N/A");
     }
 
+    /**
+     * Extracts ingredients from the recipe JSON into a list.
+     *
+     * @param recipeJson the recipe JSON
+     * @return a list of Ingredient objects
+     */
     private List<Ingredient> extractIngredients(JSONObject recipeJson) {
         final List<Ingredient> ingredients = new ArrayList<>();
 
@@ -232,6 +301,12 @@ public class SearchByIngredientInteractor implements SearchByIngredientInputBoun
         return ingredients;
     }
 
+    /**
+     * Extracts the step-by-step instructions as a single string.
+     *
+     * @param recipeJson the recipe JSON
+     * @return the steps text, or an empty string if none exist
+     */
     private String extractSteps(JSONObject recipeJson) {
         final StringBuilder stepsBuilder = new StringBuilder();
 
@@ -264,6 +339,12 @@ public class SearchByIngredientInteractor implements SearchByIngredientInputBoun
         return stepsBuilder.toString().trim();
     }
 
+    /**
+     * Adds basic nutrition information from the JSON into the Recipe.
+     *
+     * @param recipe the recipe to update
+     * @param recipeJson the recipe JSON
+     */
     private void addNutrition(Recipe recipe, JSONObject recipeJson) {
         final JSONObject nutrition = recipeJson.optJSONObject("nutrition");
         if (nutrition == null) {

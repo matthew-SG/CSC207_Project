@@ -16,6 +16,11 @@ import java.beans.PropertyChangeListener;
 
 import static interface_adapter.grocery_list.InputValidator.isValidQuantity;
 
+/**
+ * The view component for displaying and managing the user's grocery list.
+ * This panel is responsible for rendering the list of ingredients, handling user interactions
+ * (add, edit, delete), and updating itself based on changes in the GroceryViewModel.
+ */
 public class GroceryView extends JPanel implements PropertyChangeListener {
 
     private final transient GroceryController controller;
@@ -30,10 +35,18 @@ public class GroceryView extends JPanel implements PropertyChangeListener {
     private static final Color EVEN_ROW_BG = new Color(248, 250, 252);
     private static final String MY_FONT = "SansSerif";
 
+    /**
+     * Constructs the GroceryView.
+     *
+     * @param controller The controller used to initiate use cases (Add, Edit, Delete, Load).
+     * @param viewModel The view model that holds the state of the grocery list and notifies this view of changes.
+     * @param viewManagerModel The view manager model, used here to detect when this view becomes active and load data.
+     */
     public GroceryView(GroceryController controller, GroceryViewModel viewModel, ViewManagerModel viewManagerModel) {
         this.controller = controller;
         this.viewModel = viewModel;
 
+        // Listener to load the list every time this view is shown/activated by the ViewManager
         viewManagerModel.addPropertyChangeListener(evt -> {
             SwingUtilities.invokeLater(() -> {
                 if (this.isShowing()) {
@@ -113,6 +126,7 @@ public class GroceryView extends JPanel implements PropertyChangeListener {
         gbc.gridx = 6; gbc.weightx = 0;
         bottomPanel.add(addBtn, gbc);
 
+        // Action listener for the Add Item button
         addBtn.addActionListener(e -> {
             String name = nameField.getText().trim();
             String qty = qtyField.getText().trim();
@@ -141,9 +155,16 @@ public class GroceryView extends JPanel implements PropertyChangeListener {
         add(bottomPanel, BorderLayout.SOUTH);
 
         viewModel.addPropertyChangeListener(this);
+        // Initial load of the data
         controller.load();
     }
 
+    /**
+     * Creates a standardized JLabel for the table header.
+     *
+     * @param text The text to display in the header label.
+     * @return A styled JLabel.
+     */
     private JLabel createHeaderLabel(String text) {
         JLabel label = new JLabel(text);
         label.setFont(new Font(MY_FONT, Font.BOLD, 14));
@@ -151,6 +172,10 @@ public class GroceryView extends JPanel implements PropertyChangeListener {
         return label;
     }
 
+    /**
+     * Refreshes the display of the grocery list by clearing and repopulating the list panel
+     * based on the current state in the view model.
+     */
     private void refresh() {
         listPanel.removeAll();
 
@@ -166,6 +191,14 @@ public class GroceryView extends JPanel implements PropertyChangeListener {
         listPanel.repaint();
     }
 
+    /**
+     * Builds a single row panel for an ingredient in the grocery list.
+     * This includes the item details, and Edit/Delete buttons with their corresponding actions.
+     *
+     * @param index The index of the ingredient in the list, used for edit/delete operations.
+     * @param g The Ingredient object to display.
+     * @return A JPanel representing a single row in the grocery list table.
+     */
     private JPanel buildRow(int index, Ingredient g) {
         JPanel row = new JPanel(new BorderLayout());
         row.setBorder(new EmptyBorder(8, 0, 8, 0));
@@ -203,6 +236,7 @@ public class GroceryView extends JPanel implements PropertyChangeListener {
         editBtn.setFont(new Font(MY_FONT, Font.PLAIN, 11));
         delBtn.setFont(new Font(MY_FONT, Font.PLAIN, 11));
 
+        // Action listener for the Edit button
         editBtn.addActionListener(e -> {
             String newName = JOptionPane.showInputDialog(this, "Edit Item name", g.getName());
             if (newName == null) return;
@@ -223,6 +257,7 @@ public class GroceryView extends JPanel implements PropertyChangeListener {
             controller.edit(index, newName, newQty, newUnits);
         });
 
+        // Action listener for the Delete button
         delBtn.addActionListener(e -> {
             final int ok = JOptionPane.showConfirmDialog(this, "Delete item?", "Confirm",
                     JOptionPane.YES_NO_OPTION);
@@ -241,10 +276,21 @@ public class GroceryView extends JPanel implements PropertyChangeListener {
         return row;
     }
 
+    /**
+     * Returns the unique name of this view.
+     *
+     * @return The view name string.
+     */
     public String getViewName() {
         return "Grocery_List";
     }
 
+    /**
+     * Handles property change events fired by the GroceryViewModel.
+     * When the state changes, it triggers a refresh of the UI.
+     *
+     * @param evt The property change event.
+     */
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         SwingUtilities.invokeLater(this::refresh);

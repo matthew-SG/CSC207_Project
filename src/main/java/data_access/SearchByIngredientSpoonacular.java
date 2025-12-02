@@ -16,19 +16,37 @@ import entities.Ingredient;
 
 import use_case.search_by_ingr.SearchByIngredientGateway;
 
+/**
+ * Data access class that calls the Spoonacular API for searching recipes by ingredients.
+ */
 public class SearchByIngredientSpoonacular implements SearchByIngredientGateway {
     private static final String BYINGREDIENTSURL = "https://api.spoonacular.com/recipes/findByIngredients";
     private static final String RECIPEINFOURL = "https://api.spoonacular.com/recipes/informationBulk";
     private String apiKey;
 
+    /**
+     * Creates a new Spoonacular gateway with the given API key.
+     *
+     * @param apiKey the Spoonacular API key
+     */
     public SearchByIngredientSpoonacular(String apiKey) {
         this.apiKey = apiKey;
     }
 
+    /**
+     * Creates a new Spoonacular gateway with a default API key.
+     */
     public SearchByIngredientSpoonacular() {
         this.apiKey = "5b07df6820b74cf1b2eae9c1b440f014";
     }
 
+    /**
+     * Searches for recipes using the given list of ingredients.
+     * Calls the "find by ingredients" endpoint, then fetches detailed info.
+     *
+     * @param ingredients the list of ingredients to search with
+     * @return a JSONObject with "findResults" and "bulkResults", or null if the first call fails
+     */
     @Override
     public JSONObject searchByIngredients(List<Ingredient> ingredients) {
         JSONArray recipesJSON = findResipes(ingredients);
@@ -57,6 +75,12 @@ public class SearchByIngredientSpoonacular implements SearchByIngredientGateway 
         return result;
     }
 
+    /**
+     * Calls Spoonacular's "findByIngredients" endpoint using the given ingredients.
+     *
+     * @param ingredients the list of ingredients
+     * @return a JSONArray of basic recipe results, or null if the call fails or is empty
+     */
     private JSONArray findResipes(List<Ingredient> ingredients) {
         if (ingredients.isEmpty()) {
             return null;
@@ -118,10 +142,11 @@ public class SearchByIngredientSpoonacular implements SearchByIngredientGateway 
     }
 
     /**
-     * Retrieves detailed recipe information for a list of recipe IDs.
+     * Retrieves detailed recipe information for the given recipe IDs
+     * using Spoonacular's "informationBulk" endpoint.
      *
-     * @param ids the list of recipe IDs to fetch information for
-     * @return a JSONArray containing the information for each recipe
+     * @param ids the recipe IDs to fetch information for
+     * @return a JSONArray with detailed recipe data; empty array if the call fails
      */
     public JSONArray getInfo(List<Integer> ids) {
         if (ids.isEmpty()) {
