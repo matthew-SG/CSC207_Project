@@ -18,6 +18,8 @@ public class NavbarLoggedInView extends JPanel {
     private NavbarController navbarController;
     private JButton likeRecipeButton;
 
+    private JButton approveRecipeButton;
+
     public NavbarLoggedInView() {
         setBackground(Color.PINK);
         communityButton = new JButton("Community");
