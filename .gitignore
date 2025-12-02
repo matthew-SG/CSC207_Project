@@ -28,3 +28,6 @@ replay_pid*
 # gitignore data directory
 src/data
 data/
+
+# Maven build output
+target/
