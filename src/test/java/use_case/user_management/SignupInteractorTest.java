@@ -6,38 +6,11 @@ import entities.UserFactory;
 import org.junit.jupiter.api.Test;
 import use_case.signup.SignupInputData;
 import use_case.signup.SignupInteractor;
-import use_case.signup.SignupOutputBoundary;
-import use_case.signup.SignupOutputData;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class MockSignupPresenter implements SignupOutputBoundary {
-    private String failMessage = null;
-    private String successUsername = null;
-    private boolean loginViewSwitched = false;
 
-    @Override
-    public void prepareSuccessView(SignupOutputData outputData) {
-        this.successUsername = outputData.getUsername();
-    }
-
-    @Override
-    public void prepareFailView(String error) {
-        this.failMessage = error;
-    }
-
-    @Override
-    public void switchToLoginView() {
-        this.loginViewSwitched = true;
-    }
-
-    public String getFailMessage() { return failMessage; }
-    public String getSuccessUsername() { return successUsername; }
-    public boolean isLoginViewSwitched() { return loginViewSwitched; }
-}
-
-
-public class SignupInteractorTest {
+class SignupInteractorTest {
 
     private final String NEW_USERNAME = "newUserForTest";
     private final String EXISTING_USERNAME = "test_1";
@@ -46,18 +19,16 @@ public class SignupInteractorTest {
     @Test
     void testSignupSuccess() {
         final InMemoryUserDataAccessObject dao = new InMemoryUserDataAccessObject();
+        // 使用外部定义的 MockSignupPresenter
         final MockSignupPresenter presenter = new MockSignupPresenter();
-
-        // Use the actual UserFactory class now that it is available
         final UserFactory userFactory = new UserFactory();
-        final SignupInteractor interactor = new SignupInteractor(dao, presenter, userFactory);
 
+        final SignupInteractor interactor = new SignupInteractor(dao, presenter, userFactory);
         final SignupInputData inputData = new SignupInputData(NEW_USERNAME, TEST_PASSWORD, TEST_PASSWORD);
 
         interactor.execute(inputData);
 
-        // Verify Success Branch (Covers the successful path)
-        assertNotNull(presenter.getSuccessUsername(), "Success view should be called.");
+        assertNotNull(presenter.getSuccessUsername());
         assertEquals(NEW_USERNAME, presenter.getSuccessUsername());
     }
 

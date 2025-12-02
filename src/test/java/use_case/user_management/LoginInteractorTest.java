@@ -5,29 +5,8 @@ import org.junit.jupiter.api.Test;
 
 import use_case.login.LoginInputData;
 import use_case.login.LoginInteractor;
-import use_case.login.LoginOutputBoundary;
-import use_case.login.LoginOutputData;
 
 import static org.junit.jupiter.api.Assertions.*;
-
-
-class MockLoginPresenter implements LoginOutputBoundary {
-    private String failMessage = null;
-    private String successUsername = null;
-
-    @Override
-    public void prepareSuccessView(LoginOutputData outputData) {
-        this.successUsername = outputData.getUsername();
-    }
-
-    @Override
-    public void prepareFailView(String error) {
-        this.failMessage = error;
-    }
-
-    public String getFailMessage() { return failMessage; }
-    public String getSuccessUsername() { return successUsername; }
-}
 
 
 class LoginInteractorTest {
@@ -39,17 +18,16 @@ class LoginInteractorTest {
 
     @Test
     void testLoginSuccess() {
+        // 使用外部定义的 MockLoginPresenter
         final InMemoryUserDataAccessObject dao = new InMemoryUserDataAccessObject();
         final MockLoginPresenter presenter = new MockLoginPresenter();
 
         final LoginInteractor interactor = new LoginInteractor(dao, presenter);
-
         final LoginInputData inputData = new LoginInputData(EXISTING_USERNAME, CORRECT_PASSWORD);
 
         interactor.execute(inputData);
 
-        assertNotNull(presenter.getSuccessUsername(), "Success view should be called.");
-        assertEquals(EXISTING_USERNAME, presenter.getSuccessUsername());
+        assertEquals(EXISTING_USERNAME, presenter.getSuccessUsername(), "Success view should be called with correct username.");
         assertNull(presenter.getFailMessage(), "Fail view should not be called.");
     }
 
