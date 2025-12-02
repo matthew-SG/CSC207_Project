@@ -27,7 +27,7 @@ class SignupInteractorTest {
      */
     @Test
     void testSignupSuccess() {
-        final InMemoryUserDataAccessObject dao = new InMemoryUserDataAccessObject();
+        final InMemoryUserDataAccessObject dao = new InMemoryUserDataAccessObject("5b07df6820b74cf1b2eae9c1b440f014");
         final MockSignupPresenter presenter = new MockSignupPresenter();
         final UserFactory userFactory = new UserFactory();
 
