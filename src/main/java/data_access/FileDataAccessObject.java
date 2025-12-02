@@ -653,7 +653,7 @@ public class FileDataAccessObject implements UserDataAccess, ApproveRecipeDataAc
 
         // Check if recipe already exists
         final boolean alreadySaved = user.getSavedRecipes().stream()
-                .anyMatch(userRecipe -> userRecipe.getRecipeId() == userRecipe.getRecipeId());
+                .anyMatch(userRecipe -> userRecipe.getRecipeId() == recipe.getRecipeId());
 
         if (!alreadySaved) {
             user.getSavedRecipes().add(recipe);
