@@ -15,6 +15,7 @@ public class MealPlanInteractor implements MealPlanInputBoundary {
     private static final int MEAL_PLAN_SIZE = 3;
     private final MealPlanUserDataAccessInterface userDataAccessObject;
     private final MealPlanOutputBoundary mealPlanPresenter;
+    private MealPlanGeneratorStrategy generationStrategy;
 
     public MealPlanInteractor(MealPlanUserDataAccessInterface userDataAccessObject,
                               MealPlanOutputBoundary mealPlanPresenter) {
@@ -54,6 +55,9 @@ public class MealPlanInteractor implements MealPlanInputBoundary {
                 mealPlanPresenter.prepareFailView(null, "All input values must be non-negative!");
             }
             else {
+                // Sets the generation strategy for the meal plan
+                generationStrategy = new LowestNutritionalErrorStrategy();
+                // Computes the recipes according to the selected strategy
                 final List<Recipe> mealPlanRecipes = computeBestFittingRecipes(savedRecipes, targetCalories,
                         targetProtein, targetCarbs, targetFats);
                 mealPlan = new MealPlan(mealPlanRecipes, targetCalories, targetProtein, targetCarbs, targetFats);
@@ -135,63 +139,14 @@ public class MealPlanInteractor implements MealPlanInputBoundary {
      * @param targetFats the target fats
      * @return the best three recipes that match the meal plan target as close as possible
      */
-    private static List<Recipe> computeBestFittingRecipes(List<Recipe> recipes, double targetCalories,
+    private List<Recipe> computeBestFittingRecipes(List<Recipe> recipes, double targetCalories,
                                                           double targetProtein, double targetCarbs, double targetFats) {
+        // Gathers all unique combinations of possible recipe triplets
         final List<List<Recipe>> recipeTriplets = createTripletCombinations(recipes);
 
-        return computeLowestNutritionalError(recipeTriplets, targetCalories, targetProtein, targetCarbs, targetFats);
-
-    }
-
-    /**
-     * Helper function that computes the lowest nutritional error of all the recipe triplets, where the nutritional
-     *      error is determined by the absolute difference between the sum of the target nutrients and the sum of the
-     *      associated nutrients of the recipe triplet.
-     * @param recipeTriplets list of recipe triplets (recipeTriplets.size() > 1)
-     * @param targetCalories the target calories
-     * @param targetProtein the target protein
-     * @param targetCarbs the target carbs
-     * @param targetFats the target fats
-     * @return the recipe triplet with the lowest nutritional error
-     */
-    private static List<Recipe> computeLowestNutritionalError(List<List<Recipe>> recipeTriplets, double targetCalories,
-                                                              double targetProtein, double targetCarbs,
-                                                              double targetFats) {
-        double currentCalories;
-        double currentProtein;
-        double currentCarbs;
-        double currentFats;
-        double currentError;
-        double lowestError = -1;
-        List<Recipe> result = new ArrayList<>();
-
-        for (List<Recipe> recipeTriplet : recipeTriplets) {
-            currentCalories = 0;
-            currentProtein = 0;
-            currentCarbs = 0;
-            currentFats = 0;
-
-            for (Recipe recipe : recipeTriplet) {
-                final Map<String, Double> recipeNutritionalValues = recipe.getNutritionalValues();
-                currentCalories += recipeNutritionalValues.get("Calories");
-                currentProtein += recipeNutritionalValues.get("Protein");
-                currentCarbs += recipeNutritionalValues.get("Carbohydrates");
-                currentFats += recipeNutritionalValues.get("Fat");
-            }
-            currentError = Math.abs(currentCalories - targetCalories) + Math.abs(currentProtein - targetProtein) + (
-                    Math.abs(currentCarbs - targetCarbs) + Math.abs(currentFats - targetFats));
-            if (currentError == 0) {
-                result = recipeTriplet;
-                break;
-            }
-            else if (lowestError == -1 || currentError < lowestError) {
-                lowestError = currentError;
-                result = recipeTriplet;
-
-            }
-
-        }
-        return result;
+        // Uses the strategy to generate which recipes go into the meal plan
+        return generationStrategy.generateMealPlan(recipeTriplets, targetCalories, targetProtein, targetCarbs,
+                targetFats);
 
     }
 
