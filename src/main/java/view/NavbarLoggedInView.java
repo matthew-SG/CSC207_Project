@@ -10,7 +10,6 @@ import java.awt.event.ActionListener;
 public class NavbarLoggedInView extends JPanel {
     private JButton communityButton;
     private JButton generateRecipe;
-    private JButton approveRecipeButton;
     private JButton userProfileButton;
     private JButton mealPlanButton;
     private JButton searchByIngredientsButton;
@@ -22,7 +21,6 @@ public class NavbarLoggedInView extends JPanel {
         setBackground(Color.PINK);
         communityButton = new JButton("community");
         generateRecipe = new JButton("generate recipe");
-        approveRecipeButton = new JButton("approve recipes");
         userProfileButton = new JButton("user profile");
         groceryButton = new JButton("grocery list");
         mealPlanButton = new JButton("Meal Plan Generator");
@@ -30,7 +28,6 @@ public class NavbarLoggedInView extends JPanel {
         likeRecipeButton = new JButton("Like Recipe List");
         add(communityButton);
         add(generateRecipe);
-        add(approveRecipeButton);
         add(userProfileButton);
         add(groceryButton);
         add(mealPlanButton);
@@ -41,13 +38,6 @@ public class NavbarLoggedInView extends JPanel {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 navbarController.switchToCommunity();
-            }
-        });
-
-        approveRecipeButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                navbarController.switchToApproveRecipe();
             }
         });
 
