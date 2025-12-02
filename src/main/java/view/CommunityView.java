@@ -51,6 +51,8 @@ public class CommunityView extends JPanel implements PropertyChangeListener {
         postReviewButton.setPreferredSize(new Dimension(150, 40));
         postReviewButton.setBackground(new Color(70, 130, 180));
         postReviewButton.setForeground(Color.WHITE);
+        postReviewButton.setOpaque(true);
+        postReviewButton.setBorderPainted(false);
         postReviewButton.setFocusPainted(false);
         postReviewButton.addActionListener(e -> {
             if (communityController != null) {
@@ -62,6 +64,8 @@ public class CommunityView extends JPanel implements PropertyChangeListener {
         refreshReviewButton.setPreferredSize(new Dimension(150, 40));
         refreshReviewButton.setBackground(new Color(70, 130, 180));
         refreshReviewButton.setForeground(Color.WHITE);
+        refreshReviewButton.setOpaque(true);
+        refreshReviewButton.setBorderPainted(false);
         refreshReviewButton.setFocusPainted(false);
         refreshReviewButton.addActionListener(e -> {
             if (communityController != null) {
@@ -234,6 +238,8 @@ public class CommunityView extends JPanel implements PropertyChangeListener {
         JButton addButton = new JButton("Add to Liked");
         addButton.setFocusPainted(false);
         addButton.setBackground(new Color(60, 179, 113));
+        addButton.setOpaque(true);
+        addButton.setBorderPainted(false);
         addButton.setForeground(Color.WHITE);
         addButton.setPreferredSize(new Dimension(140, 35));
 
