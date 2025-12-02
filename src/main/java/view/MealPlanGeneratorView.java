@@ -39,6 +39,7 @@ public class MealPlanGeneratorView extends JPanel implements PropertyChangeListe
     private ViewMealPlansController viewMealPlansController;
 
     public MealPlanGeneratorView(MealPlanGeneratorViewModel mealPlanGeneratorViewModel) {
+        final int fontSize = 16;
 
         this.mealPlanGeneratorViewModel = mealPlanGeneratorViewModel;
         this.mealPlanGeneratorViewModel.addPropertyChangeListener(this);
@@ -200,6 +201,26 @@ public class MealPlanGeneratorView extends JPanel implements PropertyChangeListe
         formPanel.add(noMealPlansErrorField);
 
         this.add(formPanel, gbc);
+
+        // Sets the font of all text in the view to the specified font
+        setAllFonts(this, new Font("Arial", Font.BOLD, fontSize));
+    }
+
+    /**
+     * Helper method that recursively sets the fonts of all components to the same font (including the super-component).
+     * @param component the current component
+     * @param font the font to set to
+     */
+    private void setAllFonts(Component component, Font font) {
+        // Sets the font of the current component
+        component.setFont(font);
+        if (component instanceof Container container) {
+            // Sets all components to the same font inside any container contained within the current component
+            // For the main instance, this would set all the components of view (the initial container) to the same font
+            for (Component child : container.getComponents()) {
+                setAllFonts(child, font);
+            }
+        }
     }
 
     @Override
