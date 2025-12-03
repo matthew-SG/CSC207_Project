@@ -21,7 +21,7 @@ public class StepByStepPresenter implements StepByStepOutputBoundary {
 
     @Override
     public void prepareSuccessView(StepByStepOutputData outputData) {
-        StepByStepState state = new StepByStepState();
+        final StepByStepState state = new StepByStepState();
         state.setStepNumber(outputData.getStepNumber());
         state.setStepText(outputData.getStepText());
         state.setCanGoNext(outputData.canGoNext());
