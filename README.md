@@ -98,10 +98,8 @@ Shared community data is stored in the cloud.
    ```
 
 2. **API Keys:**
-   - This project requires an API key for recipe generation (Spoonacular).
-   - Locate `src/main/java/app/AppBuilder.java` and insert your key in the `API_KEY` constant.
-   - For Community features, check `src/main/java/data_access/Constants.java` for the Firebase key.
-   - *Note: Ensure your API key is not committed to public repositories.*
+   **Important:** We cannot store the API key in an environment file because the Firebase configuration contains specific data that is tied to our API key. If we try to transmit our api via github to the TA, that defeats the purpose, so we have just kept it hardcoded instead.
+
 
 ### Running the App
 
