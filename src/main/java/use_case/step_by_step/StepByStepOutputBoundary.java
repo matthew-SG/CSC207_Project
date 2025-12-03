@@ -1,19 +1,26 @@
 package use_case.step_by_step;
 
 /**
- * Output Boundary for actions related to step-by-step instructions.
+ * Output boundary for the Step-by-Step use case.
+ * Defines the contract for presenting step navigation and TTS results.
  */
-
 public interface StepByStepOutputBoundary {
-    /**
-     * Executes the step_by_step use case.
-     * @param outputData output data for this use case
-     */
-    void present(StepByStepOutputData outputData);
 
     /**
-     * Prepares the fail view for the use case.
-     * @param error contains the error message to display.
+     * Prepares the success view for step navigation.
+     * @param outputData the data to be presented
      */
-    void prepareFailView(String error);
+    void prepareSuccessView(StepByStepOutputData outputData);
+
+    /**
+     * Prepares the fail view for step navigation.
+     * @param errorMessage the error message to display
+     */
+    void prepareFailView(String errorMessage);
+
+    /**
+     * Prepares the fail view for TTS errors.
+     * @param errorMessage the error message to display
+     */
+    void prepareSpeakFailView(String errorMessage);
 }

@@ -3,10 +3,23 @@ package use_case.step_by_step;
 import entities.RecipeInstructions;
 
 /**
- * The input data for the step_by_step Use Case.
- * @param instructions set of instructions.
- * @param currentStepIndex stores current index of instruction in instruction list.
+ * Input data for the Step-by-Step use case.
+ * Contains the instructions, current step index, and operation type.
  */
-public record StepByStepInputData(RecipeInstructions instructions, int currentStepIndex) {
+public class StepByStepInputData {
+    private final RecipeInstructions instructions;
+    private final int currentStepIndex;
 
+    public StepByStepInputData(RecipeInstructions instructions, int currentStepIndex) {
+        this.instructions = instructions;
+        this.currentStepIndex = currentStepIndex;
+    }
+
+    public RecipeInstructions getInstructions() {
+        return instructions;
+    }
+
+    public int getCurrentStepIndex() {
+        return currentStepIndex;
+    }
 }

@@ -1,22 +1,20 @@
 package use_case.step_by_step;
 
 /**
- * Input Boundary for actions related to step-by-step instructions.
+ * Input boundary for the Step-by-Step use case.
+ * Defines the contract for step navigation and TTS operations.
  */
 public interface StepByStepInputBoundary {
-    /**
-     * Prepares the success view for the step_by_step use case.
-     * @param Recipe the input data for this use case
-     */
-    void execute(StepByStepInputData Recipe);
 
     /**
-     * Switches to the next step in the recipe.
+     * Executes the step navigation logic.
+     * @param inputData contains the instructions and current step index
      */
-    void nextStep();
+    void execute(StepByStepInputData inputData);
 
     /**
-     * Switches to the previous step in the recipe.
+     * Executes the text-to-speech logic for the current step.
+     * @param inputData contains the instructions and current step index
      */
-    void previousStep();
+    void executeSpeak(StepByStepInputData inputData);
 }

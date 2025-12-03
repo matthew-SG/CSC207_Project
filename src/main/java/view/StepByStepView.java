@@ -1,12 +1,10 @@
 package view;
 
-import data_access.SystemTTS;
 import entities.InstructionStep;
 import entities.RecipeInstructions;
 import interface_adapter.ViewManagerModel;
 import interface_adapter.speech.SpeechService;
 import interface_adapter.step_by_step.*;
-import interface_adapter.step_by_step.StepByStepViewModel;
 import use_case.step_by_step.StepByStepInteractor;
 
 import javax.swing.*;
@@ -19,7 +17,6 @@ public class StepByStepView extends JFrame implements PropertyChangeListener {
 
     private final StepByStepController stepByStepController;
     private final StepByStepViewModel stepByStepViewModel;
-    private final SpeechService speechService;
 
     private ImageIcon scaledIcon;
     private Image scaled;
@@ -33,12 +30,10 @@ public class StepByStepView extends JFrame implements PropertyChangeListener {
     private JButton speakButton;
 
     public StepByStepView(StepByStepController controller,
-                          StepByStepViewModel viewModel,
-                          SpeechService speechService) {
+                          StepByStepViewModel viewModel) {
 
         this.stepByStepController = controller;
         this.stepByStepViewModel = viewModel;
-        this.speechService = speechService;
 
         // Register this view as a property change listener
         viewModel.addPropertyChangeListener(this);
@@ -103,33 +98,37 @@ public class StepByStepView extends JFrame implements PropertyChangeListener {
         prevButton.addActionListener(e -> stepByStepController.previousStep());
         nextButton.addActionListener(e -> stepByStepController.nextStep());
 
-        speakButton.addActionListener(e -> playSpeech());
-    }
-
-    private void playSpeech() {
-        StepByStepState state = stepByStepViewModel.getState();
-        if (state == null || state.getStepText() == null || speechService == null) return;
-
-        // Run TTS in a background thread so UI doesn't freeze
-        new Thread(() -> {
-            try {
-                speechService.synthesize(state.getStepText());
-            } catch (Exception e) {
-                System.err.println("TTS error: " + e.getMessage());
-                e.printStackTrace();
-            }
-        }).start();
+        // Now following Clean Architecture pattern
+        speakButton.addActionListener(e -> stepByStepController.speak());
     }
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        if (!"state".equals(evt.getPropertyName())) return;
+        String propertyName = evt.getPropertyName();
 
-        StepByStepState newState = (StepByStepState) evt.getNewValue();
+        if ("state".equals(propertyName)) {
+            StepByStepState newState = (StepByStepState) evt.getNewValue();
+            updateStepDisplay(newState);
+        }
+        else if ("error".equals(propertyName) || "speakError".equals(propertyName)) {
+            StepByStepState newState = (StepByStepState) evt.getNewValue();
+            handleError(newState);
+        }
+    }
 
-        stepLabel.setText("Step " + newState.getStepNumber());
-        stepTextArea.setText(newState.getStepText());
-        nextButton.setEnabled(newState.canGoNext());
-        prevButton.setEnabled(newState.canGoPrevious());
+    private void updateStepDisplay(StepByStepState state) {
+        stepLabel.setText("Step " + state.getStepNumber());
+        stepTextArea.setText(state.getStepText());
+        nextButton.setEnabled(state.canGoNext());
+        prevButton.setEnabled(state.canGoPrevious());
+    }
+
+    private void handleError(StepByStepState state) {
+        if (state.getErrorMessage() != null) {
+            JOptionPane.showMessageDialog(this,
+                    state.getErrorMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+        }
     }
 }

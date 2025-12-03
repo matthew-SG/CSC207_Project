@@ -1,13 +1,36 @@
 package use_case.step_by_step;
 
 /**
- * The output data for the step_by_step Use Case.
- * @param stepText the text for this step in the recipe.
- * @param stepNumber the index number of this step.
- * @param hasNext tells us whether there is another step after this.
- * @param hasPrevious tells us whether there is a previous step before this.
+ * Output data for the Step-by-Step use case.
+ * Contains the data that the interactor passes to the presenter.
  */
+public class StepByStepOutputData {
+    private final int stepNumber;
+    private final String stepText;
+    private final boolean canGoPrevious;
+    private final boolean canGoNext;
 
-public record StepByStepOutputData(String stepText, int stepNumber, boolean hasNext, boolean hasPrevious) {
+    public StepByStepOutputData(int stepNumber, String stepText,
+                                boolean canGoPrevious, boolean canGoNext) {
+        this.stepNumber = stepNumber;
+        this.stepText = stepText;
+        this.canGoPrevious = canGoPrevious;
+        this.canGoNext = canGoNext;
+    }
 
+    public int getStepNumber() {
+        return stepNumber;
+    }
+
+    public String getStepText() {
+        return stepText;
+    }
+
+    public boolean canGoPrevious() {
+        return canGoPrevious;
+    }
+
+    public boolean canGoNext() {
+        return canGoNext;
+    }
 }

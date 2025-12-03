@@ -60,16 +60,22 @@ public class LikedRecipeListPresenter implements LikedRecipeOutputBoundary {
 
         StepByStepPresenter stepPresenter = new StepByStepPresenter(stepVm, viewManagerModel);
 
-        StepByStepInteractor stepInteractor = new StepByStepInteractor(stepPresenter);
+        // Create the speech service
+        SpeechService speechService = new SystemTTS();
 
+        // FIXED: Changed 'presenter' to 'stepPresenter'
+        StepByStepInteractor interactor = new StepByStepInteractor(stepPresenter, speechService);
+
+        // FIXED: Changed 'instructions()' to 'getInstructions()'
         StepByStepController stepController =
-                new StepByStepController(stepInteractor, stepByStepInputData.instructions());
+                new StepByStepController(interactor, stepByStepInputData.getInstructions());
 
-        SpeechService tts = new SystemTTS();
+        // REMOVED: Duplicate tts creation - already have speechService
 
         SwingUtilities.invokeLater(() -> {
+            // FIXED: Removed tts parameter since StepByStepView no longer needs it
             StepByStepView stepView =
-                    new StepByStepView(stepController, stepVm, tts);
+                    new StepByStepView(stepController, stepVm);
             stepController.start();
             stepView.setLocationRelativeTo(null);
             stepView.setVisible(true);

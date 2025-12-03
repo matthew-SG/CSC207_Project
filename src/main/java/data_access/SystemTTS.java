@@ -2,10 +2,18 @@ package data_access;
 
 import interface_adapter.speech.SpeechService;
 
+/**
+ * System text-to-speech implementation using native OS TTS engines.
+ * Supports macOS (say), Windows (PowerShell SAPI), and Linux (espeak).
+ */
 public class SystemTTS implements SpeechService {
 
     @Override
-    public void synthesize(String text) {
+    public void synthesize(String text) throws Exception {
+        if (text == null || text.trim().isEmpty()) {
+            throw new Exception("No text to synthesize");
+        }
+
         String os = System.getProperty("os.name").toLowerCase();
         Process process;
 
@@ -23,11 +31,14 @@ public class SystemTTS implements SpeechService {
                 // Linux, requires espeak installed
                 process = new ProcessBuilder("espeak", text).start();
             } else {
-                System.err.println("TTS not supported on this OS: " + os);
-                return;
+                throw new Exception("TTS not supported on this OS: " + os);
             }
+
+            // Optional: wait for process to complete
+            process.waitFor();
+
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new Exception("TTS error: " + e.getMessage(), e);
         }
     }
 }
