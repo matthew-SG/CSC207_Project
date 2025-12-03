@@ -408,7 +408,8 @@ public class LikedRecipeInteractorTest {
         assertEquals(1, presenter.handsfreeCalls);
         assertNotNull(presenter.lastHandsfreeInput);
 
-        RecipeInstructions instructions = presenter.lastHandsfreeInput.instructions();
+        // FIXED: Use getInstructions() instead of instructions()
+        RecipeInstructions instructions = presenter.lastHandsfreeInput.getInstructions();
         assertEquals(2, instructions.steps().size());
         assertEquals("Step 1", instructions.steps().get(0).getStep());
     }
@@ -521,7 +522,7 @@ public class LikedRecipeInteractorTest {
         Recipe existing = newRecipe(99, "Other", new ArrayList<>());
         user.getSavedRecipes().add(existing);
 
-        // New recipe we’re trying to add (ID 1)
+        // New recipe we're trying to add (ID 1)
         Recipe newOne = newRecipe(1, "New", new ArrayList<>());
 
         dao.usersByName.put("user1", user);
@@ -557,7 +558,7 @@ public class LikedRecipeInteractorTest {
 
         LikedRecipeInteractor interactor = new LikedRecipeInteractor(dao, presenter);
 
-        // Look for ID 10, which doesn’t match any recipe
+        // Look for ID 10, which doesn't match any recipe
         interactor.addIngredientsToGrocery(inputFor(10));
 
         // Should behave like "recipe not found"

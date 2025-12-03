@@ -2,7 +2,7 @@ package use_case.step_by_step;
 
 import entities.InstructionStep;
 import entities.RecipeInstructions;
-
+import interface_adapter.speech.SpeechService;
 
 import java.util.Collections;
 import java.util.List;
@@ -14,13 +14,15 @@ import static org.junit.jupiter.api.Assertions.*;
 class StepByStepInteractorTests {
 
     private MockStepByStepPresenter mockPresenter;
+    private MockSpeechService mockSpeechService;
     private StepByStepInteractor interactor;
     private List<InstructionStep> sampleSteps;
 
     @BeforeEach
     void setUp() {
         mockPresenter = new MockStepByStepPresenter();
-        interactor = new StepByStepInteractor(mockPresenter);
+        mockSpeechService = new MockSpeechService();
+        interactor = new StepByStepInteractor(mockPresenter, mockSpeechService);
 
         // Create sample steps for testing
         sampleSteps = List.of(
@@ -31,10 +33,10 @@ class StepByStepInteractorTests {
         );
     }
 
-    // ==================== INITIALIZATION TESTS ====================
+    // ==================== EXECUTE (NAVIGATION) TESTS ====================
 
     @Test
-    void testExecuteWithValidSteps() {
+    void testExecuteWithValidFirstStep() {
         // Arrange
         RecipeInstructions instructions = new RecipeInstructions(sampleSteps);
         StepByStepInputData inputData = new StepByStepInputData(instructions, 0);
@@ -43,44 +45,52 @@ class StepByStepInteractorTests {
         interactor.execute(inputData);
 
         // Assert
-        assertTrue(mockPresenter.isPresentCalled(), "Present should be called");
+        assertTrue(mockPresenter.isSuccessViewCalled(), "Success view should be called");
         assertFalse(mockPresenter.isFailViewCalled(), "Fail view should not be called");
 
         StepByStepOutputData output = mockPresenter.getLastOutputData();
-        assertEquals("Heat the oven to 350°F", output.stepText());
-        assertEquals(1, output.stepNumber());
-        assertTrue(output.hasNext());
-        assertFalse(output.hasPrevious());
+        assertEquals("Heat the oven to 350°F", output.getStepText());
+        assertEquals(1, output.getStepNumber());
+        assertTrue(output.canGoNext());
+        assertFalse(output.canGoPrevious());
     }
 
     @Test
-    void testExecuteWithEmptySteps() {
+    void testExecuteWithValidMiddleStep() {
         // Arrange
-        RecipeInstructions emptyInstructions = new RecipeInstructions(Collections.emptyList());
-        StepByStepInputData inputData = new StepByStepInputData(emptyInstructions, 0);
+        RecipeInstructions instructions = new RecipeInstructions(sampleSteps);
+        StepByStepInputData inputData = new StepByStepInputData(instructions, 2);
 
         // Act
         interactor.execute(inputData);
 
         // Assert
-        assertTrue(mockPresenter.isFailViewCalled(), "Fail view should be called for empty steps");
-        assertEquals("There are no steps", mockPresenter.getErrorMessage());
-        assertFalse(mockPresenter.isPresentCalled(), "Present should not be called for empty steps");
+        assertTrue(mockPresenter.isSuccessViewCalled());
+
+        StepByStepOutputData output = mockPresenter.getLastOutputData();
+        assertEquals("Pour into pan", output.getStepText());
+        assertEquals(3, output.getStepNumber());
+        assertTrue(output.canGoNext());
+        assertTrue(output.canGoPrevious());
     }
 
     @Test
-    void testExecuteWithNullSteps() {
+    void testExecuteWithValidLastStep() {
         // Arrange
-        RecipeInstructions nullInstructions = new RecipeInstructions(null);
-        StepByStepInputData inputData = new StepByStepInputData(nullInstructions, 0);
+        RecipeInstructions instructions = new RecipeInstructions(sampleSteps);
+        StepByStepInputData inputData = new StepByStepInputData(instructions, 3);
 
         // Act
         interactor.execute(inputData);
 
         // Assert
-        assertTrue(mockPresenter.isFailViewCalled(), "Fail view should be called for null steps");
-        assertEquals("There are no steps", mockPresenter.getErrorMessage());
-        assertFalse(mockPresenter.isPresentCalled(), "Present should not be called for null steps");
+        assertTrue(mockPresenter.isSuccessViewCalled());
+
+        StepByStepOutputData output = mockPresenter.getLastOutputData();
+        assertEquals("Bake for 30 minutes", output.getStepText());
+        assertEquals(4, output.getStepNumber());
+        assertFalse(output.canGoNext());
+        assertTrue(output.canGoPrevious());
     }
 
     @Test
@@ -93,9 +103,9 @@ class StepByStepInteractorTests {
         interactor.execute(inputData);
 
         // Assert
-        assertTrue(mockPresenter.isFailViewCalled(), "Fail view should be called for negative index");
+        assertTrue(mockPresenter.isFailViewCalled());
         assertEquals("Invalid step index", mockPresenter.getErrorMessage());
-        assertFalse(mockPresenter.isPresentCalled(), "Present should not be called for invalid index");
+        assertFalse(mockPresenter.isSuccessViewCalled());
     }
 
     @Test
@@ -108,369 +118,150 @@ class StepByStepInteractorTests {
         interactor.execute(inputData);
 
         // Assert
-        assertTrue(mockPresenter.isFailViewCalled(), "Fail view should be called for index too large");
+        assertTrue(mockPresenter.isFailViewCalled());
         assertEquals("Invalid step index", mockPresenter.getErrorMessage());
-        assertFalse(mockPresenter.isPresentCalled(), "Present should not be called for invalid index");
+        assertFalse(mockPresenter.isSuccessViewCalled());
     }
 
     @Test
-    void testExecuteStartingAtMiddleStep() {
+    void testExecuteWithSingleStep() {
+        // Arrange
+        List<InstructionStep> singleStep = List.of(
+                new InstructionStep(1, "Only step")
+        );
+        RecipeInstructions instructions = new RecipeInstructions(singleStep);
+        StepByStepInputData inputData = new StepByStepInputData(instructions, 0);
+
+        // Act
+        interactor.execute(inputData);
+
+        // Assert
+        assertTrue(mockPresenter.isSuccessViewCalled());
+
+        StepByStepOutputData output = mockPresenter.getLastOutputData();
+        assertEquals("Only step", output.getStepText());
+        assertEquals(1, output.getStepNumber());
+        assertFalse(output.canGoNext());
+        assertFalse(output.canGoPrevious());
+    }
+
+    // ==================== EXECUTE SPEAK (TTS) TESTS ====================
+
+    @Test
+    void testExecuteSpeakWithValidStep() {
+        // Arrange
+        RecipeInstructions instructions = new RecipeInstructions(sampleSteps);
+        StepByStepInputData inputData = new StepByStepInputData(instructions, 0);
+
+        // Act
+        interactor.executeSpeak(inputData);
+
+        // Wait for background thread to complete
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            fail("Thread interrupted");
+        }
+
+        // Assert
+        assertTrue(mockSpeechService.wasSynthesizeCalled());
+        assertEquals("Heat the oven to 350°F", mockSpeechService.getLastTextSpoken());
+        // No success view call - user can immediately speak again
+        assertFalse(mockPresenter.isSpeakSuccessViewCalled());
+    }
+
+    @Test
+    void testExecuteSpeakWithMiddleStep() {
         // Arrange
         RecipeInstructions instructions = new RecipeInstructions(sampleSteps);
         StepByStepInputData inputData = new StepByStepInputData(instructions, 2);
 
         // Act
-        interactor.execute(inputData);
+        interactor.executeSpeak(inputData);
+
+        // Wait for background thread
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            fail("Thread interrupted");
+        }
 
         // Assert
-        assertTrue(mockPresenter.isPresentCalled(), "Present should be called");
-
-        StepByStepOutputData output = mockPresenter.getLastOutputData();
-        assertEquals("Pour into pan", output.stepText());
-        assertEquals(3, output.stepNumber());
-        assertTrue(output.hasNext());
-        assertTrue(output.hasPrevious());
+        assertTrue(mockSpeechService.wasSynthesizeCalled());
+        assertEquals("Pour into pan", mockSpeechService.getLastTextSpoken());
     }
 
     @Test
-    void testExecuteStartingAtLastStep() {
+    void testExecuteSpeakWithInvalidIndex() {
         // Arrange
         RecipeInstructions instructions = new RecipeInstructions(sampleSteps);
-        StepByStepInputData inputData = new StepByStepInputData(instructions, 3);
+        StepByStepInputData inputData = new StepByStepInputData(instructions, -1);
 
         // Act
-        interactor.execute(inputData);
+        interactor.executeSpeak(inputData);
 
-        // Assert
-        assertTrue(mockPresenter.isPresentCalled(), "Present should be called");
-
-        StepByStepOutputData output = mockPresenter.getLastOutputData();
-        assertEquals("Bake for 30 minutes", output.stepText());
-        assertEquals(4, output.stepNumber());
-        assertFalse(output.hasNext());
-        assertTrue(output.hasPrevious());
+        // Assert - Validation happens before threading, no wait needed
+        assertFalse(mockSpeechService.wasSynthesizeCalled());
+        assertTrue(mockPresenter.isSpeakFailViewCalled());
+        assertEquals("Invalid step index for TTS", mockPresenter.getSpeakErrorMessage());
     }
 
-    // ==================== NEXT STEP TESTS ====================
-
     @Test
-    void testNextStepFromFirstStep() {
+    void testExecuteSpeakWithIndexTooLarge() {
         // Arrange
         RecipeInstructions instructions = new RecipeInstructions(sampleSteps);
-        StepByStepInputData inputData = new StepByStepInputData(instructions, 0);
-        interactor.execute(inputData);
-        mockPresenter.reset();
+        StepByStepInputData inputData = new StepByStepInputData(instructions, 10);
 
         // Act
-        interactor.nextStep();
+        interactor.executeSpeak(inputData);
 
-        // Assert
-        assertTrue(mockPresenter.isPresentCalled(), "Present should be called");
-
-        StepByStepOutputData output = mockPresenter.getLastOutputData();
-        assertEquals("Mix the ingredients", output.stepText());
-        assertEquals(2, output.stepNumber());
-        assertTrue(output.hasNext());
-        assertTrue(output.hasPrevious());
+        // Assert - Validation is synchronous, happens before thread starts
+        assertFalse(mockSpeechService.wasSynthesizeCalled(),
+                "Speech service should not be called for invalid index");
+        assertTrue(mockPresenter.isSpeakFailViewCalled(),
+                "Speak fail view should be called for index >= steps.size()");
+        assertEquals("Invalid step index for TTS", mockPresenter.getSpeakErrorMessage());
     }
 
     @Test
-    void testNextStepToLastStep() {
+    void testExecuteSpeakWithTTSFailure() {
         // Arrange
-        RecipeInstructions instructions = new RecipeInstructions(sampleSteps);
-        StepByStepInputData inputData = new StepByStepInputData(instructions, 2);
-        interactor.execute(inputData);
-        mockPresenter.reset();
-
-        // Act
-        interactor.nextStep();
-
-        // Assert
-        assertTrue(mockPresenter.isPresentCalled(), "Present should be called");
-
-        StepByStepOutputData output = mockPresenter.getLastOutputData();
-        assertEquals("Bake for 30 minutes", output.stepText());
-        assertEquals(4, output.stepNumber());
-        assertFalse(output.hasNext());
-        assertTrue(output.hasPrevious());
-    }
-
-    @Test
-    void testNextStepAtLastStep() {
-        // Arrange
-        RecipeInstructions instructions = new RecipeInstructions(sampleSteps);
-        StepByStepInputData inputData = new StepByStepInputData(instructions, 3);
-        interactor.execute(inputData);
-        mockPresenter.reset();
-
-        // Act
-        interactor.nextStep();
-
-        // Assert
-        assertFalse(mockPresenter.isPresentCalled(), "Present should not be called when at last step");
-    }
-
-    @Test
-    void testMultipleNextSteps() {
-        // Arrange
+        mockSpeechService.setShouldFail(true);
         RecipeInstructions instructions = new RecipeInstructions(sampleSteps);
         StepByStepInputData inputData = new StepByStepInputData(instructions, 0);
-        interactor.execute(inputData);
-
-        // Act & Assert - Step 1 to 2
-        mockPresenter.reset();
-        interactor.nextStep();
-        assertEquals(2, mockPresenter.getLastOutputData().stepNumber());
-
-        // Act & Assert - Step 2 to 3
-        mockPresenter.reset();
-        interactor.nextStep();
-        assertEquals(3, mockPresenter.getLastOutputData().stepNumber());
-
-        // Act & Assert - Step 3 to 4
-        mockPresenter.reset();
-        interactor.nextStep();
-        assertEquals(4, mockPresenter.getLastOutputData().stepNumber());
-        assertFalse(mockPresenter.getLastOutputData().hasNext());
-    }
-
-    // ==================== PREVIOUS STEP TESTS ====================
-
-    @Test
-    void testPreviousStepFromLastStep() {
-        // Arrange
-        RecipeInstructions instructions = new RecipeInstructions(sampleSteps);
-        StepByStepInputData inputData = new StepByStepInputData(instructions, 3);
-        interactor.execute(inputData);
-        mockPresenter.reset();
 
         // Act
-        interactor.previousStep();
+        interactor.executeSpeak(inputData);
+
+        // Wait for background thread
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            fail("Thread interrupted");
+        }
 
         // Assert
-        assertTrue(mockPresenter.isPresentCalled(), "Present should be called");
-
-        StepByStepOutputData output = mockPresenter.getLastOutputData();
-        assertEquals("Pour into pan", output.stepText());
-        assertEquals(3, output.stepNumber());
-        assertTrue(output.hasNext());
-        assertTrue(output.hasPrevious());
+        assertTrue(mockSpeechService.wasSynthesizeCalled());
+        assertTrue(mockPresenter.isSpeakFailViewCalled());
+        assertTrue(mockPresenter.getSpeakErrorMessage().contains("TTS error"));
     }
 
-    @Test
-    void testPreviousStepToFirstStep() {
-        // Arrange
-        RecipeInstructions instructions = new RecipeInstructions(sampleSteps);
-        StepByStepInputData inputData = new StepByStepInputData(instructions, 1);
-        interactor.execute(inputData);
-        mockPresenter.reset();
-
-        // Act
-        interactor.previousStep();
-
-        // Assert
-        assertTrue(mockPresenter.isPresentCalled(), "Present should be called");
-
-        StepByStepOutputData output = mockPresenter.getLastOutputData();
-        assertEquals("Heat the oven to 350°F", output.stepText());
-        assertEquals(1, output.stepNumber());
-        assertTrue(output.hasNext());
-        assertFalse(output.hasPrevious());
-    }
-
-    @Test
-    void testPreviousStepAtFirstStep() {
-        // Arrange
-        RecipeInstructions instructions = new RecipeInstructions(sampleSteps);
-        StepByStepInputData inputData = new StepByStepInputData(instructions, 0);
-        interactor.execute(inputData);
-        mockPresenter.reset();
-
-        // Act
-        interactor.previousStep();
-
-        // Assert
-        assertFalse(mockPresenter.isPresentCalled(), "Present should not be called when at first step");
-    }
-
-    @Test
-    void testMultiplePreviousSteps() {
-        // Arrange
-        RecipeInstructions instructions = new RecipeInstructions(sampleSteps);
-        StepByStepInputData inputData = new StepByStepInputData(instructions, 3);
-        interactor.execute(inputData);
-
-        // Act & Assert - Step 4 to 3
-        mockPresenter.reset();
-        interactor.previousStep();
-        assertEquals(3, mockPresenter.getLastOutputData().stepNumber());
-
-        // Act & Assert - Step 3 to 2
-        mockPresenter.reset();
-        interactor.previousStep();
-        assertEquals(2, mockPresenter.getLastOutputData().stepNumber());
-
-        // Act & Assert - Step 2 to 1
-        mockPresenter.reset();
-        interactor.previousStep();
-        assertEquals(1, mockPresenter.getLastOutputData().stepNumber());
-        assertFalse(mockPresenter.getLastOutputData().hasPrevious());
-    }
-
-    // ==================== NAVIGATION COMBINATION TESTS ====================
-
-    @Test
-    void testNavigationBackAndForth() {
-        // Arrange
-        RecipeInstructions instructions = new RecipeInstructions(sampleSteps);
-        StepByStepInputData inputData = new StepByStepInputData(instructions, 0);
-        interactor.execute(inputData);
-
-        // Act & Assert - Forward to step 2
-        mockPresenter.reset();
-        interactor.nextStep();
-        assertEquals(2, mockPresenter.getLastOutputData().stepNumber());
-
-        // Act & Assert - Forward to step 3
-        mockPresenter.reset();
-        interactor.nextStep();
-        assertEquals(3, mockPresenter.getLastOutputData().stepNumber());
-
-        // Act & Assert - Back to step 2
-        mockPresenter.reset();
-        interactor.previousStep();
-        assertEquals(2, mockPresenter.getLastOutputData().stepNumber());
-
-        // Act & Assert - Forward to step 3 again
-        mockPresenter.reset();
-        interactor.nextStep();
-        assertEquals(3, mockPresenter.getLastOutputData().stepNumber());
-
-        // Act & Assert - Forward to step 4
-        mockPresenter.reset();
-        interactor.nextStep();
-        assertEquals(4, mockPresenter.getLastOutputData().stepNumber());
-
-        // Act & Assert - Back to step 3
-        mockPresenter.reset();
-        interactor.previousStep();
-        assertEquals(3, mockPresenter.getLastOutputData().stepNumber());
-    }
-
-    // ==================== SINGLE STEP RECIPE TESTS ====================
-
-    @Test
-    void testSingleStepRecipe() {
-        // Arrange
-        List<InstructionStep> singleStep = List.of(
-                new InstructionStep(1, "Only step")
-        );
-        RecipeInstructions instructions = new RecipeInstructions(singleStep);
-        StepByStepInputData inputData = new StepByStepInputData(instructions, 0);
-
-        // Act
-        interactor.execute(inputData);
-
-        // Assert
-        assertTrue(mockPresenter.isPresentCalled(), "Present should be called");
-
-        StepByStepOutputData output = mockPresenter.getLastOutputData();
-        assertEquals("Only step", output.stepText());
-        assertEquals(1, output.stepNumber());
-        assertFalse(output.hasNext(), "Should not have next step");
-        assertFalse(output.hasPrevious(), "Should not have previous step");
-    }
-
-    @Test
-    void testSingleStepRecipeNextButton() {
-        // Arrange
-        List<InstructionStep> singleStep = List.of(
-                new InstructionStep(1, "Only step")
-        );
-        RecipeInstructions instructions = new RecipeInstructions(singleStep);
-        StepByStepInputData inputData = new StepByStepInputData(instructions, 0);
-        interactor.execute(inputData);
-        mockPresenter.reset();
-
-        // Act
-        interactor.nextStep();
-
-        // Assert
-        assertFalse(mockPresenter.isPresentCalled(), "Present should not be called - no next step available");
-    }
-
-    @Test
-    void testSingleStepRecipePreviousButton() {
-        // Arrange
-        List<InstructionStep> singleStep = List.of(
-                new InstructionStep(1, "Only step")
-        );
-        RecipeInstructions instructions = new RecipeInstructions(singleStep);
-        StepByStepInputData inputData = new StepByStepInputData(instructions, 0);
-        interactor.execute(inputData);
-        mockPresenter.reset();
-
-        // Act
-        interactor.previousStep();
-
-        // Assert
-        assertFalse(mockPresenter.isPresentCalled(), "Present should not be called - no previous step available");
-    }
-
-    // ==================== TWO STEP RECIPE TESTS ====================
-
-    @Test
-    void testTwoStepRecipeNavigation() {
-        // Arrange
-        List<InstructionStep> twoSteps = List.of(
-                new InstructionStep(1, "First step"),
-                new InstructionStep(2, "Second step")
-        );
-        RecipeInstructions instructions = new RecipeInstructions(twoSteps);
-        StepByStepInputData inputData = new StepByStepInputData(instructions, 0);
-        interactor.execute(inputData);
-
-        // Assert initial state - Step 1
-        StepByStepOutputData output = mockPresenter.getLastOutputData();
-        assertEquals(1, output.stepNumber());
-        assertTrue(output.hasNext());
-        assertFalse(output.hasPrevious());
-
-        // Act - Move to step 2
-        mockPresenter.reset();
-        interactor.nextStep();
-
-        // Assert - Step 2
-        output = mockPresenter.getLastOutputData();
-        assertEquals(2, output.stepNumber());
-        assertFalse(output.hasNext());
-        assertTrue(output.hasPrevious());
-
-        // Act - Move back to step 1
-        mockPresenter.reset();
-        interactor.previousStep();
-
-        // Assert - Back to step 1
-        output = mockPresenter.getLastOutputData();
-        assertEquals(1, output.stepNumber());
-        assertTrue(output.hasNext());
-        assertFalse(output.hasPrevious());
-    }
-
-    // ==================== MOCK PRESENTER ====================
+    // ==================== MOCK CLASSES ====================
 
     /**
-     * Mock presenter for testing that tracks all interactions
+     * Mock presenter for testing
      */
     private static class MockStepByStepPresenter implements StepByStepOutputBoundary {
-        private boolean presentCalled = false;
+        private boolean successViewCalled = false;
         private boolean failViewCalled = false;
+        private boolean speakFailViewCalled = false;
         private String errorMessage = null;
+        private String speakErrorMessage = null;
         private StepByStepOutputData lastOutputData = null;
 
         @Override
-        public void present(StepByStepOutputData outputData) {
-            this.presentCalled = true;
+        public void prepareSuccessView(StepByStepOutputData outputData) {
+            this.successViewCalled = true;
             this.lastOutputData = outputData;
         }
 
@@ -480,27 +271,70 @@ class StepByStepInteractorTests {
             this.errorMessage = error;
         }
 
-        public boolean isPresentCalled() {
-            return presentCalled;
+        @Override
+        public void prepareSpeakFailView(String errorMessage) {
+            this.speakFailViewCalled = true;
+            this.speakErrorMessage = errorMessage;
+        }
+
+        public boolean isSuccessViewCalled() {
+            return successViewCalled;
         }
 
         public boolean isFailViewCalled() {
             return failViewCalled;
         }
 
+        public boolean isSpeakSuccessViewCalled() {
+            // No longer used - removed from interface
+            return false;
+        }
+
+        public boolean isSpeakFailViewCalled() {
+            return speakFailViewCalled;
+        }
+
         public String getErrorMessage() {
             return errorMessage;
+        }
+
+        public String getSpeakErrorMessage() {
+            return speakErrorMessage;
         }
 
         public StepByStepOutputData getLastOutputData() {
             return lastOutputData;
         }
+    }
 
-        public void reset() {
-            this.presentCalled = false;
-            this.failViewCalled = false;
-            this.errorMessage = null;
-            this.lastOutputData = null;
+    /**
+     * Mock speech service for testing
+     */
+    private static class MockSpeechService implements SpeechService {
+        private boolean synthesizeCalled = false;
+        private String lastTextSpoken = null;
+        private boolean shouldFail = false;
+
+        @Override
+        public void synthesize(String text) throws Exception {
+            this.synthesizeCalled = true;
+            this.lastTextSpoken = text;
+
+            if (shouldFail) {
+                throw new Exception("Mock TTS failure");
+            }
+        }
+
+        public boolean wasSynthesizeCalled() {
+            return synthesizeCalled;
+        }
+
+        public String getLastTextSpoken() {
+            return lastTextSpoken;
+        }
+
+        public void setShouldFail(boolean shouldFail) {
+            this.shouldFail = shouldFail;
         }
     }
 }

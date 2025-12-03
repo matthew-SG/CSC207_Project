@@ -58,4 +58,12 @@ public class StepByStepController {
         currentStepIndex--;
         interactor.execute(new StepByStepInputData(instructions, currentStepIndex));
     }
+
+    /**
+     * Triggers text-to-speech for the current step.
+     * Delegates to the interactor to handle TTS logic.
+     */
+    public void speak() {
+        interactor.executeSpeak(new StepByStepInputData(instructions, currentStepIndex));
+    }
 }
